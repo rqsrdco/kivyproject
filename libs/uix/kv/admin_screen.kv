@@ -1,0 +1,97 @@
+#: import ew kivy.uix.effectwidget
+
+<AdminScreen>
+    canvas.before:
+        Color:
+            rgba: app.theme_cls.divider_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    EffectWidget:
+        effects: [ew.VerticalBlurEffect(size=10),ew.HorizontalBlurEffect(size=10)]
+        FitImage:
+            source: "assets/images/musicbg.jpg"
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: ['10dp', '10dp', '10dp', '10dp']
+        SongCover:
+            canvas.before:
+                Color:
+                    rgba: [1,1,1,0]
+                RoundedRectangle:
+                    size: self.size
+                    pos: self.pos
+                    radius: [250,]
+            id: sc
+            size: (250, 250)
+            size_hint: None, None
+            pos_hint: {'center_x': .5,}
+            RotatingImage:
+                angle: sc.angle
+                radius: [250,]
+                source: "assets/images/songcover.jpg"
+        Widget:
+            size_hint: None, None
+            height: '25dp'
+        Label:
+            text: "Song Name"
+            bold: True
+            font_size: '25sp'
+            size_hint_y: None
+            height: self.texture_size[1]
+        Label:
+            text: "Artist Name"
+            size_hint_y: None
+            height: self.texture_size[1]
+        
+        MDBoxLayout:
+            orientation: 'vertical'
+            Slider:
+                id: progress
+                color: [.7,0,0,1]
+                min: 0
+                max: 100
+                value: 0
+                background_width: '20dp'
+                cursor_image: ''
+                cursor_size: ('10dp', '10dp')
+                value_track_color: [1,1,1,0]
+                value_track: True
+            MDBoxLayout:
+                id: play_option
+                MyIcon:
+                    icon: 'restart'
+                MyIcon:
+                    icon: 'skip-previous-outline'
+                MyIcon:
+                    icon: 'skip-backward-outline'
+                MyIcon:
+                    icon: 'play-outline'
+                    on_press: sc.play(progress)
+                MyIcon:
+                    icon: 'skip-forward'
+                MyIcon:
+                    icon: 'skip-next-outline'
+                MyIcon:
+                    icon: 'format-list-bulleted'
+                MyIcon:
+                    icon: 'location-exit'
+                    on_release: app.root.set_current("authority", side="left")
+
+<MyIcon@MDIconButton>
+    color: [.7,0,0,1]
+    size_hint: None, None
+    user_font_size: '20sp'
+    theme_text_color: 'Custom'
+    size: ('20dp', '20dp')
+    text_color: [1,1,1,1]
+
+<RotatingImage@FitImage>
+    angle: 0
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: root.angle
+            origin: self.center
+    canvas.after:
+        PopMatrix

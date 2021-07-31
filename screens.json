@@ -1,0 +1,32 @@
+{
+    "authority": {
+        "import": "from baseclass.authority_screen import AuthorityScreen",
+        "object": "AuthorityScreen()",
+        "kv": "libs/uix/kv/authority_screen.kv"
+    },
+    "administrator": {
+        "import": "from baseclass.admin_screen import AdminScreen",
+        "object": "AdminScreen()",
+        "kv": "libs/uix/kv/admin_screen.kv"
+    },
+    "mdicons": {
+        "import": "from baseclass.mdicons_screen import PreviousMDIcons",
+        "object": "PreviousMDIcons()",
+        "kv": "libs/uix/kv/mdicons_screen.kv"
+    },
+    "cashier": {
+        "import": "from baseclass.cashier_screen import CashierWindow",
+        "object": "CashierWindow()",
+        "kv": "libs/uix/kv/cashier_screen.kv"
+    },
+    "salesstaff": {
+        "import": "from baseclass.salestaff_screen import SalesStaff",
+        "object": "SalesStaff()",
+        "kv": "libs/uix/kv/salestaff_screen.kv"
+    },
+    "portfolio": {
+        "import": "from baseclass.popup import PortfolioScreen",
+        "object": "PortfolioScreen()",
+        "kv": "libs/uix/kv/popup.kv"
+    }
+}

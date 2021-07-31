@@ -1,0 +1,545 @@
+#:import cfh kivy.utils.get_color_from_hex
+
+
+<ScaleBox>
+    canvas.before:
+        PushMatrix
+        Scale:
+            x: root.scale
+            y: root.scale
+            z: root.scale
+            origin: self.center
+    canvas.after:
+        PopMatrix
+
+<SignUpBox>
+    orientation: "vertical"
+    #adaptive_height: True
+    spacing: "12dp"
+    padding: "12dp", "39dp", "12dp", '17dp'
+    pos_hint: {"center_x": .5, "center_y": .5}
+    MDLabel:
+        text: "Sign Up"
+        font_style: "H5"
+        adaptive_size: True
+        pos_hint: {"center_x": .5}
+        theme_text_color: "Custom"
+        text_color: app.theme_cls.primary_color
+        halign: "center"
+        #font_name: "NunitoExtraLight"
+    #MDLabel:
+    #    text: "SignUP Form"
+    #    adaptive_height: True
+    #    theme_text_color: "Custom"
+    #    text_color: cfh("#E3BFA3")
+    #    bold: True
+    #    pos_hint: {"center_x": .65, "center_y": .5}
+    #    font_style: "H4"
+    Widget:
+        size_hint_y: None
+        height: '17dp'
+    MDGridLayout:
+        cols: 5
+        size_hint_y: None
+        #height: '68dp'
+        pos_hint: {"center_x": .5, "center_y": .5}
+        adaptive_height: True
+        MDLabel:
+            id: name
+            text: "Name"
+            pos_hint: {'center_y': .5}
+            font_style: "H6"
+            theme_text_color: 'Custom'
+            text_color: app.theme_cls.divider_color
+        Widget:
+        MDLabel:
+            id: contact
+            text: "Contact"
+            pos_hint: {'center_y': .5}
+            font_style: "H6"
+            theme_text_color: 'Custom'
+            text_color: app.theme_cls.divider_color
+        Widget:
+        MDLabel:
+            id: submit
+            text: "Submit"
+            pos_hint: {'center_y': .5}
+            font_style: "H6"
+            theme_text_color: 'Custom'
+            text_color: app.theme_cls.divider_color
+        MDIconButton:
+            id: btn_name
+            icon: "account-network-outline"
+            pos_hint: {'center_y': .5}
+            user_font_size: '39sp'
+            theme_text_color: 'Custom'
+            text_color: app.theme_cls.divider_color
+        MDProgressBar:
+            id: progress
+            size_hint_x: .1
+            pos_hint: {'center_y': .5}
+            color: cfh("#F1E9C60F")
+        MDIconButton:
+            id: btn_contact
+            icon: "card-account-phone-outline"
+            pos_hint: {'center_y': .5}
+            user_font_size: '39sp'
+            theme_text_color: 'Custom'
+            text_color: app.theme_cls.divider_color
+        MDProgressBar:
+            id: progress1
+            size_hint_x: .1
+            pos_hint: {'center_y': .5}
+            color: app.theme_cls.divider_color
+        MDIconButton:
+            id: btn_submit
+            icon: "account-key-outline"
+            pos_hint: {'center_y': .5}
+            user_font_size: '39sp'
+            theme_text_color: 'Custom'
+            text_color: app.theme_cls.divider_color
+    MDCard:
+        #size_hint_y: None
+        #height: '233dp'
+        apaptive_height: True
+        pos_hint: {"center_x": .5, "center_y": .5}
+        padding: "12dp", 0, "12dp", '12dp'
+        spacing: "12dp"
+        radius: ['12dp', '12dp','12dp', '12dp']
+        elevation: "0dp"
+        md_bg_color: app.theme_cls.ripple_color
+        Carousel:
+            id: slide
+            MDBoxLayout:
+                orientation: 'vertical'
+                spacing: '12dp'
+                pos_hint: {"center_x": .5, "center_y": .5}
+                MyTextField:
+                    hint_text: "First Name"
+                    size_hint_x: .8
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    icon_right: "target-account"
+                    focus: True
+                    on_text_validate: txtF_last_name.focus = True
+                MyTextField:
+                    id: txtF_last_name
+                    hint_text: "Last Name"
+                    size_hint_x: .8
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    icon_right: "tooltip-account"
+                    on_text_validate: btn_next_contact.focus = True
+                #Widget:
+                MDFillRoundFlatIconButton:
+                    id: btn_next_contact
+                    size_hint_x: .8
+                    adaptive_size: True
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    icon: 'menu-right-outline'
+                    text: "Contact"
+                    on_release: root.next()
+                    theme_text_color: "Primary"
+                    text_color: app.theme_cls.primary_color
+                    md_bg_color: app.theme_cls.accent_color
+                    icon_color: app.theme_cls.primary_color
+            MDBoxLayout:
+                orientation: 'vertical'
+                spacing: '12dp'
+                pos_hint: {"center_x": .5, "center_y": .5}
+                MyTextField:
+                    hint_text: "Email Address"
+                    size_hint_x: .8
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    icon_right: "email-variant"
+                    focus: True
+                    on_text_validate: txtF_phone.focus = True
+                MyTextField:
+                    id: txtF_phone
+                    hint_text: "Phone Number"
+                    size_hint_x: .8
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    icon_right: "phone-in-talk-outline"
+                    on_text_validate: btn_next_pwd.focus = True
+                #Widget:
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    spacing: '12dp'
+                    padding: '12dp', 0, '12dp', 0
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+                    MDFillRoundFlatIconButton:
+                        icon: 'menu-left-outline'
+                        text: "Name"
+                        adaptive_size: True
+                        pos_hint: {"center_y": .5}
+                        size_hint_x: .33
+                        on_release: root.previous()
+                        theme_text_color: "Primary"
+                        text_color: app.theme_cls.primary_color
+                        md_bg_color: app.theme_cls.accent_color
+                        icon_color: app.theme_cls.primary_color
+                    MDFillRoundFlatIconButton:
+                        id: btn_next_pwd
+                        size_hint_x: .33
+                        adaptive_size: True
+                        pos_hint: {"center_y": .5}
+                        icon: 'menu-right-outline'
+                        text: "Password"
+                        on_release: root.next1()
+                        theme_text_color: "Primary"
+                        text_color: app.theme_cls.primary_color
+                        md_bg_color: app.theme_cls.accent_color
+                        icon_color: app.theme_cls.primary_color
+            MDBoxLayout:
+                orientation: 'vertical'
+                spacing: '12dp'
+                pos_hint: {"center_x": .5, "center_y": .5}
+                MyTextField:
+                    hint_text: "Password"
+                    password: True
+                    size_hint_x: .8
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    icon_right: "form-textbox-password"
+                    focus: True
+                    on_text_validate: txtF_confirmpwd.focus = True
+                MyTextField:
+                    id: txtF_confirmpwd
+                    hint_text: "Confirm Password"
+                    password: True
+                    size_hint_x: .8
+                    pos_hint: {"center_x": .5, "center_y": .5}
+                    icon_right: "form-textbox-password"
+                    on_text_validate: btn_submit.focus = True
+                #Widget:
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    spacing: '12dp'
+                    padding: '12dp', 0, '12dp', 0
+                    pos_hint: {'center_x': .5, 'center_y': .5}
+                    MDFillRoundFlatIconButton:
+                        icon: 'menu-left-outline'
+                        text: "Contact"
+                        adaptive_size: True
+                        size_hint_x: .33
+                        pos_hint: {"center_y": .5}
+                        theme_text_color: "Primary"
+                        text_color: app.theme_cls.primary_color
+                        md_bg_color: app.theme_cls.accent_color
+                        icon_color: app.theme_cls.primary_color
+                        on_release: root.previous1()
+                    MDFillRoundFlatIconButton:
+                        id: btn_submit
+                        adaptive_size: True
+                        size_hint_x: .33
+                        icon: 'transfer-right'
+                        text: "Submit"
+                        pos_hint: {"center_y": .5}
+                        theme_text_color: "Primary"
+                        text_color: app.theme_cls.primary_color
+                        md_bg_color: app.theme_cls.accent_color
+                        icon_color: app.theme_cls.primary_color
+                        elevation: 18
+    
+<MyTextField@MDTextField>
+    adaptive_height: True
+    #font_name_hint_text: "NunitoBlack"
+    helper_text: "example@gmail.com"
+    helper_text_mode: "on_error"
+    #font_name_helper_text: "NunitoSemiBold"
+    color_mode: "primary" #["primary", "accent", "custom"]
+    #current_hint_text_color: cfh("#E6C67C")
+    #line_color_normal:  cfh("#F1E9C60F")
+    #line_color_focus: cfh("#E6C67C")
+    #error_color: [239/255, 12/255, 14/255, 1]
+    #icon_right_color: cfh("#E6C67C")
+    #text_color: cfh("#F1E9C6")
+    font_size: "18sp"
+    active_line: True
+    multiline: False
+    line_anim: True
+
+<ForgetpPasswordBox>
+    orientation: "vertical"
+    adaptive_height: True
+    spacing: "12dp"
+    padding: "36dp", 0, "36dp", 0
+    pos_hint: {"center_x": .5, "center_y": .5}
+
+    MDLabel:
+        text: "Place Your Email !"
+        font_style: "H5"
+        adaptive_size: True
+        pos_hint: {"center_x": .5}
+        theme_text_color: "Primary"
+        text_color: app.theme_cls.primary_color
+        halign: "center"
+        #font_name: "NunitoExtraLight"
+
+    Widget:
+        size_hint_y: None
+        height: "36dp"
+
+    MDTextField:
+        id: get_email_field
+        adaptive_height: True
+        radius: [10,10,10,10]
+        mode: "fill" # ["rectangle", "fill"]
+        hint_text: "Email Address ?"
+        font_size: "18sp"
+        #font_name_hint_text: "NunitoLight"
+        #icon_left: 'email'
+        icon_right: "email"
+        helper_text: "example@gmail.com"
+        helper_text_mode: "on_error"
+        #font_name_helper_text: "FS GillSansMTPro VietCup"
+        max_text_length: 36
+        color_mode: "primary" #["primary", "accent", "custom"]
+        current_hint_text_color: app.theme_cls.accent_color
+        line_color_normal:  app.theme_cls.ripple_color
+        line_color_focus: app.theme_cls.primary_color
+        #error_color: [239/255, 12/255, 14/255, 1]
+        fill_color: app.theme_cls.divider_color
+        icon_right_color: app.theme_cls.primary_color
+        #text_color: cfh("#F1E9C6")
+        line_anim: True
+        multiline: False
+        active_line: True
+        #max_height: 68
+        focus: True
+
+    Widget:
+        size_hint_y: None
+        height: "36dp"
+
+    MDIconButton:
+        id: forgotpass_btn
+        adaptive_height: True
+        on_release: app.root.set_current("mdicons", side="right")
+        canvas:
+            Color:
+                rgba: app.theme_cls.accent_color
+            Line:
+                width: 1
+                circle: (self.center_x, self.center_y, sp(52))
+
+        icon: "key"
+        user_font_size: "48sp"
+        pos_hint: {"center_x": .5}
+        md_bg_color: app.theme_cls.primary_color
+
+
+<SignInBox>
+    orientation: "vertical"
+    adaptive_height: True
+    spacing: "12dp"
+    padding: "36dp", 0, "36dp", 0
+    pos_hint: {"center_x": .5, "center_y": .5}
+
+    MDLabel:
+        text: "Sign In"
+        font_style: "H5"
+        adaptive_size: True
+        pos_hint: {"center_x": .5}
+        theme_text_color: "Custom"
+        text_color: app.theme_cls.primary_color
+        halign: "center"
+        #font_name: "NunitoBlack"
+
+    Widget:
+        size_hint_y: None
+        height: "36dp"
+
+    MDTextFieldRound:
+        id: email_field
+        adaptive_height: True
+        markup: True
+        icon_left: 'email'
+        text: "c"
+        focus: True
+        multiline: False        
+        hint_text: "Email address"
+        helper_text: "Invalid Email"
+        helper_text_mode: "on_error"
+        icon_left: 'email'
+        normal_color: app.theme_cls.accent_color
+        color_active: app.theme_cls.primary_light
+        icon_left_color: app.theme_cls.ripple_color
+        line_color: app.theme_cls.divider_color
+        on_text_validate: pwd_text_field.focus = True
+        color: app.theme_cls.primary_light
+
+    MDRelativeLayout:
+        size_hint_y: None
+        height: pwd_text_field.height
+
+        MDTextFieldRound:
+            id: pwd_text_field
+            on_text_validate: signin_btn.focus = True
+            adaptive_height: True
+            markup: True
+            text: "c"
+            hint_text: "Password"
+            password: True
+            icon_left: "key-variant"
+            color: app.theme_cls.primary_light
+            normal_color: app.theme_cls.accent_color
+            color_active: app.theme_cls.primary_light
+            icon_left_color: app.theme_cls.ripple_color
+            line_color: app.theme_cls.divider_color
+            padding:
+                self._lbl_icon_left.texture_size[1] + dp(10) if self.icon_left else dp(15), (self.height / 2) - (self.line_height / 2), self._lbl_icon_right.texture_size[1] + dp(20), 0
+
+        MDIconButton:
+            icon: "eye-off"
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.text_color
+            ripple_scale: .5
+            pos_hint: {"center_y": .5}
+            pos: pwd_text_field.width - self.width + dp(8), 0
+            on_release:
+                self.icon = "eye" if self.icon == "eye-off" else "eye-off"
+                pwd_text_field.password = False if pwd_text_field.password is True else True
+
+    Widget:
+        size_hint_y: None
+        height: "36dp"
+
+    MDRoundFlatButton:
+        id: signin_btn
+        adaptive_height: True
+        text: "Sign In"
+        pos_hint: {"center_x": .5}
+        line_width: 1
+        theme_text_color: "Custom"
+        text_color: app.theme_cls.text_color
+        line_color: app.theme_cls.accent_color
+        on_press: root.validate_account()
+
+<SignInButton@FloatLayout>
+    id: layout
+    canvas.before:
+        Color:
+            rgba: 0,0,0,1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    canvas:
+        Color:
+            rgba: (0,0,1,1)
+        RoundedRectangle:
+            size : self.width/2, self.height/3
+            pos : self.center_x - self.width/4 , self.center_y - self.height/6                         
+            radius: [(40, 40), (40, 40), (40, 40), (40, 40)]
+    Button:
+        id: signin_btn
+        #adaptive_height: True
+        text: "Sign In"
+        on_press: root.validate_account()
+        size_hint:None,None
+        size: layout.width/2, layout.height/3
+        pos: layout.center_x - layout.width/4 , layout.center_y - layout.height/6    
+        background_color: 1,0,0,.5
+
+
+<AuthorityScreen>
+    #md_bg_color: cfh("#382B2A")
+    canvas.before:
+        Color:
+            rgba: self.bg_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    MDCard:
+        id: box
+        #size_hint: .9, .9
+        size_hint: None, None
+        size: 600, 400
+        pos_hint: {"center_x": .5, "center_y": .5}
+        radius: [12,]
+        elevation: 12
+        md_bg_color: app.theme_cls.accent_color
+
+        ScaleBox:
+            id: auth_box_bg
+            orientation: "vertical"
+            adaptive_height: True
+            spacing: "32dp"
+            pos_hint: {"center_x": .5, "center_y": .5}
+
+            MDLabel:
+                text: "Start your Session ?"
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                opposite_colors: True
+                font_style: "H5"
+                adaptive_size: True
+                pos_hint: {"center_x": .5}
+
+            MDRoundFlatButton:
+                id: enter_signin
+                adaptive_height: True
+                text: "Sign In"
+                pos_hint: {"center_x": .5}
+                line_width: 1
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                line_color: app.theme_cls.ripple_color
+                on_release: root.animation_to_signin()
+
+            MDLabel:
+                text: "Needs an Account ?"
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                opposite_colors: True
+                font_style: "Caption"
+                adaptive_size: True
+                pos_hint: {"center_x": .5}
+
+            MDRoundFlatButton:
+                id: enter_signup
+                adaptive_height: True
+                text: "Register"
+                pos_hint: {"center_x": .5}
+                line_width: 1
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                line_color: app.theme_cls.ripple_color
+                on_release: root.animation_to_signup()
+
+        ScaleBox:
+            id: forgotpwd_box_bg
+            orientation: "vertical"
+            adaptive_height: True
+            spacing: "32dp"
+            pos_hint: {"center_x": .5, "center_y": .5}
+
+            MDLabel:
+                text: "Forgot your \nPassword ?"
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                opposite_colors: True
+                font_style: "H5"
+                adaptive_size: True
+                pos_hint: {"center_x": .5}
+
+            MDRoundFlatButton:
+                id: enter_getpwd
+                adaptive_height: True
+                text: "Get Password"
+                pos_hint: {"center_x": .5}
+                line_width: 1
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_color
+                line_color: app.theme_cls.ripple_color
+                on_release: root.animation_to_getpwd()
+
+    MDCard:
+        id: box2
+        md_bg_color: app.theme_cls.ripple_color
+        size_hint: None, None
+        size: box.width / 2, box.height + dp(24)
+        radius: [39,]
+        elevation: 39
+        x: box.x + dp(12) + root.card_x
+        y: box.y - dp(12)
+
+        SignInBox:
+            id: signin_box

@@ -1,0 +1,20 @@
+{
+    "libs.uix.components.bottomnav" : [
+        "BottomNavigation", "Button_Item", "BadgeContent", "BadgeItem"," BadgeLayout"
+    ],
+    "libs.uix.components.label": [
+        "AutoScaleLabel"
+    ],
+    "libs.uix.components.textfield": [
+        "TextFieldRound"
+    ],
+    "libs.uix.components.listitem": [
+        "ListItem"
+    ],
+    "libs.uix.components.bill": [
+        "BillRecycleView"
+    ],
+    "libs.uix.components.menu": [
+        "MenuRecycleView"
+    ]
+}

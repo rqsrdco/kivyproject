@@ -1,0 +1,292 @@
+#: import ColorHex kivy.utils.get_color_from_hex
+<SalesStaff>
+    MDBoxLayout:
+        orientation: "vertical"
+        spacing: dp(6)
+        canvas.before:
+            Color:
+                rgba: app.theme_cls.accent_color
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        MDToolbar:
+            title: "POS Coffee System"
+            anchor_title: "center"
+            specific_text_color: app.theme_cls.accent_color
+            elevation: 12
+            left_action_items: [["assets/images/logoclose.png", lambda x: root.open_infos(), "Information"]]
+            right_action_items: [[app.theme_icon, lambda x: root.show_menu(), "More Options"]]
+
+        MDBoxLayout:
+            orientation: "horizontal"
+            padding: dp(6), 0, dp(6),dp(6)
+            spacing: dp(6)
+
+            MDBoxLayout:
+                orientation: 'vertical'
+                spacing: dp(6)
+                MDBoxLayout:
+                    id: menu_op
+                    MenuRecycleView:
+                        id: rv_menu
+                        on__selected_item: root.add_item_to_order(*args)
+                MDCard:
+                    orientation: "horizontal"
+                    size_hint_y: None
+                    height: dp(68)
+                    spacing: dp(12)
+                    padding: (self.width - dp(276))/2,dp(14),(self.width - dp(276))/2,dp(14)
+                    pos_hint: {'center_y': .5}
+                    elevation: dp(0)
+                    md_bg_color: 0.3,.3,.3,0
+                    radius: [12]
+                    Button_Item:
+                        text: "Coffee"
+                        icon: "coffee"
+                        icon_color: app.theme_cls.primary_color
+                        text_color: app.theme_cls.text_color
+                        button_bg_color: app.theme_cls.divider_color
+                        #badgeitem_color: C("#025F50")
+                        #badge_bg_color: C("#F1E9C60F")
+                        badge_disabled: True
+                        on_release: rv_menu.fake_data("coffee")
+                    Button_Item:
+                        text: "Drink"
+                        icon: "cup-water"
+                        icon_color: app.theme_cls.primary_color
+                        text_color: app.theme_cls.text_color
+                        button_bg_color: app.theme_cls.divider_color
+                        #badgeitem_color: C("#025F50")
+                        #badge_bg_color: C("#F1E9C60F")
+                        badge_disabled: True
+                        on_release: rv_menu.fake_data("drink")
+                    Button_Item:
+                        icon: "food"
+                        text: "Food"
+                        icon_color: app.theme_cls.primary_color
+                        text_color: app.theme_cls.text_color
+                        button_bg_color: app.theme_cls.divider_color
+                        #badge_text: "+12"
+                        badge_bg_color: app.theme_cls.divider_color
+                        badgeitem_color: app.theme_cls.divider_color
+                        badge_bold: True
+                        badge_disabled: True
+                        on_release: rv_menu.fake_data("food")
+                    Button_Item:
+                        text: "Ordered"
+                        text_size: sp(12)
+                        text_color: app.theme_cls.text_color
+                        icon: "view-list"
+                        icon_size: dp(39)
+                        icon_color: app.theme_cls.primary_color
+                        button_width: dp(120)
+                        button_height: dp(40)
+                        button_bg_color: app.theme_cls.divider_color
+                        #mode: "color_on_active"
+                        #badge_text: "+12"
+                        badge_bg_color: app.theme_cls.divider_color
+                        badgeitem_color: app.theme_cls.divider_color
+                        badge_bold: True
+                        badge_text: str(rv_menu._total_order) if rv_menu._total_order else "0"
+                        on_release: rv_menu.take_order()
+
+            MDBoxLayout:
+                orientation: 'vertical'
+                size_hint_x: None
+                width: dp(422)
+                spacing: dp(12)
+                MDCard:
+                    orientation: 'horizontal'
+                    pos_hint: {'center_y': .5}
+                    elevation: dp(0)
+                    md_bg_color: app.theme_cls.accent_color
+                    radius: [dp(0),dp(0),0,0]
+                    size_hint_y: None
+                    height: dp(52)
+                    padding: dp(6),dp(6),dp(6),dp(6)
+                    pos_hint: {'center_y': .5}
+                    MDLabel:
+                        text: rv_bill._code if rv_bill._code else root.times
+                        halign: "center"
+                        text_color: app.theme_cls.text_color
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+                        text_size: self.width, None
+                BillRecycleView:
+                    id: rv_bill
+                MDCard:
+                    orientation: "vertical"
+                    pos_hint: {'center_y': .5}
+                    elevation: dp(0)
+                    md_bg_color: app.theme_cls.accent_color
+                    radius: [0,0,dp(12),dp(12)]
+                    size_hint_y: None
+                    height: dp(199)
+                    spacing: 12
+                    padding: 39,12,39,12
+                    MDBoxLayout:
+                        MDLabel:
+                            text: str(rv_bill._quantity)
+                            theme_text_color: "Custom"
+                            text_color: app.theme_cls.primary_color
+                            halign: "center"
+                            font_style: "Button"
+                            #font_name: "FS GillSansMTPro VietCup"
+                            bold: True
+                            pos_hint: {'center_y': .5}
+                        MDLabel:
+                            text: "Qty"
+                            theme_text_color: "Custom"
+                            text_color: ColorHex("#9C27B0")
+                            halign: "center"
+                            font_style: "Subtitle2"
+                            #font_name: "VDUFFY VietCup"
+                            bold: True
+                            pos_hint: {'center_y': .5}
+                    Separator:
+                    MDBoxLayout:
+                        MDLabel:
+                            text: str(rv_bill._tax)
+                            theme_text_color: "Custom"
+                            text_color: app.theme_cls.primary_color
+                            halign: "center"
+                            font_style: "Button"
+                            #font_name: "FS GillSansMTPro VietCup"
+                            bold: True
+                            pos_hint: {'center_y': .5}
+                        MDLabel:
+                            text: "TAX"
+                            theme_text_color: "Custom"
+                            text_color: ColorHex("#9C27B0")
+                            halign: "center"
+                            font_style: "Subtitle2"
+                            #font_name: "VDUFFY VietCup"
+                            bold: True
+                            pos_hint: {'center_y': .5}
+                    Separator:
+                    MDBoxLayout:
+                        MDLabel:
+                            text: str(rv_bill._sub_total)
+                            theme_text_color: "Custom"
+                            text_color: app.theme_cls.primary_color
+                            halign: "center"
+                            font_style: "Button"
+                            #font_name: "FS GillSansMTPro VietCup"
+                            bold: True
+                            pos_hint: {'center_y': .5}
+                        MDLabel:
+                            text: "Sub Total"
+                            theme_text_color: "Custom"
+                            text_color: ColorHex("#9C27B0")
+                            halign: "center"
+                            font_style: "Subtitle2"
+                            #font_name: "VDUFFY VietCup"
+                            bold: True
+                            pos_hint: {'center_y': .5}
+                    Separator:
+                    MDBoxLayout:    
+                        MDLabel:
+                            text: str(rv_bill._total_price)
+                            theme_text_color: "Custom"
+                            text_color: app.theme_cls.primary_color
+                            halign: "center"
+                            font_style: "Button"
+                            #font_name: "FS GillSansMTPro VietCup"
+                            bold: True
+                            pos_hint: {'center_y': .5}
+                        MDLabel:
+                            text: "Total"
+                            theme_text_color: "Custom"
+                            text_color: ColorHex("#9C27B0")
+                            halign: "center"
+                            font_style: "Subtitle2"
+                            #font_name: "VDUFFY VietCup"
+                            bold: True
+                            pos_hint: {'center_y': .5}
+                    MDBoxLayout:
+                        orientation: "horizontal"
+                        pos_hint: {'center_y': .5}
+                        size_hint_y: None
+                        height: dp(68)
+                        spacing: dp(12)
+                        padding: (self.width - dp(276))/2,dp(14),(self.width - dp(276))/2,dp(14)
+                        pos_hint: {'center_y': .5}
+                        Button_Item:
+                            text: "Clear Order"
+                            icon: "delete-sweep-outline"
+                            icon_color: app.theme_cls.primary_color
+                            text_color: app.theme_cls.text_color
+                            button_bg_color: app.theme_cls.divider_color
+                            #badgeitem_color: C("#025F50")
+                            #badge_bg_color: C("#F1E9C60F")
+                            badge_disabled: True
+                            on_release: rv_bill.data = []
+                        Button_Item:
+                            text: "Printer"
+                            icon: "printer"
+                            icon_color: app.theme_cls.primary_color
+                            text_color: app.theme_cls.text_color
+                            button_bg_color: app.theme_cls.divider_color
+                            #badgeitem_color: C("#025F50")
+                            #badge_bg_color: C("#F1E9C60F")
+                            badge_disabled: True
+                            on_release: print(rv_bill._code)
+                        Button_Item:
+                            text: "Save Order"
+                            icon: "content-save"
+                            icon_color: app.theme_cls.primary_color
+                            text_color: app.theme_cls.text_color
+                            button_bg_color: app.theme_cls.divider_color
+                            #badgeitem_color: C("#025F50")
+                            #badge_bg_color: C("#F1E9C60F")
+                            badge_disabled: True
+                            on_release: rv_bill.save_order_toPay_later()
+                        Button_Item:
+                            icon: "cash"
+                            text: "Pay"
+                            icon_color: app.theme_cls.primary_color
+                            text_color: app.theme_cls.text_color
+                            button_bg_color: app.theme_cls.divider_color
+                            #badge_text: "+12"
+                            badge_bg_color: app.theme_cls.divider_color
+                            badgeitem_color: app.theme_cls.divider_color
+                            badge_bold: True
+                            badge_disabled: True
+                            on_release: rv_bill.do_payment()
+
+<Separator@Widget>:
+    size_hint_y: None
+    thickness: 2
+    margin: 2
+    height: self.thickness + 2 * self.margin
+    canvas:
+        Color:
+            rgba: app.theme_cls.divider_color
+        Rectangle:
+            pos: self.x + self.margin, self.y + self.margin + 1
+            size: self.width - 2 * self.margin , self.thickness
+
+<MenuDialogContent>
+    orientation: "vertical"
+    adaptive_height: True
+    padding: dp(15)
+    spacing: dp(10)
+
+    ListItem:
+        text: "Sign Out"
+        secondary_text: "End of Session"
+        icon: "location-exit"
+        icon_color: app.theme_cls.primary_color
+        bg_color: app.theme_cls.divider_color
+        on_release:
+            root.parent.parent.parent.dismiss()
+            app.root.set_current("authority")
+
+    ListItem:
+        text: "Themes and Style"
+        secondary_text: "Change themes in-app"
+        icon: app.theme_icon
+        icon_color: app.theme_cls.accent_color
+        bg_color: app.theme_cls.divider_color
+        on_release:
+            root.parent.parent.parent.dismiss()
+            app.change_theme()

@@ -1,0 +1,171 @@
+#:import images_path kivymd.images_path
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#: import colors kivymd.color_definitions.colors
+
+<CustomLabel@MDLabel>:
+    adaptive_height: True
+
+<CustomOneLineIconListItem>:
+
+    IconLeftWidget:
+        icon: root.icon
+
+
+<PreviousMDIcons>:
+    md_bg_color: app.theme_cls.divider_color
+    MDBoxLayout:
+        canvas.before:
+            Color:
+                rgba: app.theme_cls.divider_color
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        orientation: 'vertical'
+        spacing: dp(10)
+        padding: dp(20)
+
+        MDBoxLayout:
+            adaptive_height: True
+            padding: (dp(22), 0, dp(22), 0)
+
+            PrimaryTheming:
+                id: primary
+            Widget:
+            AccentTheming:
+                id: accent
+            Widget:
+            ThemeStyleTheming:
+                id: theme_style
+
+        MDBoxLayout:
+            adaptive_height: True
+
+            MDTextField:
+                id: search_field
+                hint_text: 'Search icon'
+                on_text: root.set_list_md_icons(self.text, True)
+
+            MDIconButton:
+                on_release: app.root.set_current("authority", side="left")
+                icon: "location-exit"
+
+        RecycleView:
+            id: rv
+            key_viewclass: 'viewclass'
+            key_size: 'height'
+
+            RecycleBoxLayout:
+                padding: dp(10)
+                default_size: None, dp(48)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+
+<PrimaryTheming@MDBoxLayout>
+    orientation: "vertical"
+    adaptive_size: True
+    spacing: dp(5)
+
+    CustomLabel:
+        text: "Primary"
+        font_style: "Button"
+        halign: "center"
+
+    MDSeparator:
+
+    MDBoxLayout:
+        adaptive_size: True
+
+        MDBoxLayout:
+            adaptive_size: True
+            orientation: "vertical"
+
+            DropDownItem:
+                id: primary_palette
+                text: "Blue"
+                on_release: root.parent.parent.parent.primary_palette_menu.open()
+
+            DropDownItem:
+                id: primary_hue
+                text: "500"
+                on_release: root.parent.parent.parent.primary_hue_menu.open()
+
+        ColorWidget:
+            rgba_color: colors[primary_palette.current_item][primary_hue.current_item] if primary_palette.current_item else "FFFFFF"
+
+<AccentTheming@MDBoxLayout>
+    orientation: "vertical"
+    adaptive_size: True
+    spacing: dp(5)
+
+    CustomLabel:
+        text: "Accent"
+        font_style: "Button"
+        halign: "center"
+
+    MDSeparator:
+
+    MDBoxLayout:
+        adaptive_size: True
+
+        MDBoxLayout:
+            adaptive_size: True
+            orientation: "vertical"
+
+            DropDownItem:
+                id: accent_palette
+                text: "Amber"
+                on_release: root.parent.parent.parent.accent_palette_menu.open()
+
+            DropDownItem:
+                id: accent_hue
+                text: "500"
+                on_release: root.parent.parent.parent.accent_hue_menu.open()
+
+        ColorWidget:
+            rgba_color: colors[accent_palette.current_item][accent_hue.current_item] if accent_palette.current_item else "FFFFFF"
+
+<ThemeStyleTheming@MDBoxLayout>
+    orientation: "vertical"
+    adaptive_size: True
+    spacing: dp(5)
+
+    CustomLabel:
+        text: "Theme Style"
+        font_style: "Button"
+        halign: "center"
+
+    MDSeparator:
+
+    MDBoxLayout:
+        adaptive_size: True
+
+        MDBoxLayout:
+            orientation: "vertical"
+            adaptive_size: True
+
+            DropDownItem:
+                id: theme_style
+                text: "Light"
+                on_release: root.parent.parent.parent.theme_style_menu.open()
+
+            DropDownItem: # dummy
+                opacity: 0
+
+        ColorWidget:
+            rgba_color: "FAFAFA" if theme_style.current_item == "Light" else "121212"
+
+<DropDownItem@MDDropDownItem>
+    current_item: self.text
+
+<ColorWidget>
+    size_hint_x: None
+
+    canvas:
+        Color:
+            rgba: self.rgba_color
+        RoundedRectangle:
+            size: self.size
+            pos: self.pos
+            radius: [dp(10),]
