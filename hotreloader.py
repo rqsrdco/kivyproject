@@ -42,19 +42,16 @@ class KivyMDApp(MDApp, HotReloaderApp):  # NOQA: N801
     # Class to watch from *.py files
     # You need to register the *.py files in libs/uix/baseclass/*.py
     CLASSES = {
-        'Root': 'libs.uix.root',
-        # 'AuthorityScreen': 'libs.uix.baseclass.authority_screen',
-        # 'AdminScreen': 'libs.uix.baseclass.admin_screen',
-        # 'PreviousMDIcons': 'libs.uix.baseclass.mdicons_screen'
-        # 'AuthScreen': 'libs.uix.baseclass.auth_screen'
-        'CashierWindow': 'libs.uix.baseclass.cashier_screen',
-        'LeftNavigation': 'libs.uix.components.left_navigation',
-        'LeftNavigation': 'libs.uix.components.left_navigation',
-        'LeftLogoItem': 'libs.uix.components.left_navigation',
-        'LeftNavigationContent': 'libs.uix.components.left_navigation',
-        'BillsOperation': 'libs.uix.components.bills',
-        'ListItemBill': 'libs.uix.components.item_bill',
-        'Button_Item': 'libs.uix.components.bottomnav'
+        "Root": "libs.uix.root",
+        "AuthorityScreen": "libs.uix.baseclass.authority_screen",
+        "AdminScreen": "libs.uix.baseclass.admin_screen",
+        "PreviousMDIcons": "libs.uix.baseclass.mdicons_screen",
+        "SalesStaff": "libs.uix.baseclass.salestaff_screen",
+        "MenuRecycleView": "libs.uix.components.menu",
+        "BillRecycleView": "libs.uix.components.bill",
+        "ListItem": "libs.uix.components.listitem",
+        "Button_Item": "libs.uix.components.bottomnav",
+        "ProfilePreview": "libs.uix.components.profile_preview_dialog"
     }  # NOQA: F821
 
     # Auto Reloader Path
@@ -77,7 +74,7 @@ class KivyMDApp(MDApp, HotReloaderApp):  # NOQA: N801
 
     def build_app(self):  # build_app works like build method
         abc = Root()
-        abc.set_current('cashier')
+        abc.set_current('authority')
         return abc
 
 
