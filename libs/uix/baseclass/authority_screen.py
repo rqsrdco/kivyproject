@@ -30,7 +30,6 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
         Window.minimum_width, Window.minimum_height = Window.size
 
     def on_enter(self):
-        print("---|LoginScreen| --- |on_enter|---")
         self.animation_to_signin()
 
     def on_size(self, *args):
@@ -111,10 +110,12 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
                 acc_type = user[7]
                 if acc_type == "Administrator":
                     self.manager.set_current("administrator", side="right")
+                    MDApp.get_running_app().get_date()
+                    self.manager.get_screen(
+                        "administrator").curr_date.text = MDApp.get_running_app().date
                 else:
                     self.manager.set_current("salesstaff", side="right")
-                    salesstaff_screen = self.manager.get_screen("salesstaff")
-                    salesstaff_screen.user = user[4]
+                    self.manager.get_screen("salesstaff").user = user[4]
             else:
                 self.ids.box2.children[0].ids.pwd_text_field.text = ""
                 self.ids.box2.children[0].ids.pwd_text_field.hint_text = "Invalid Password"

@@ -104,6 +104,18 @@ Builder.load_string(
 )
 
 
+class Menu(dict):
+    def __init__(self, name, quantity, price, image, _list_of_order):
+        dict.__init__(
+            self,
+            name=name,
+            quantity=quantity,
+            price=price,
+            image=image,
+            _list_of_order=_list_of_order
+        )
+
+
 class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior, RecycleGridLayout):
     pass
 
@@ -143,13 +155,13 @@ class MenuRecycleView(RecycleView):
                     "price": len(o),
                     "image": "assets/images/order.png",
                     "_list_of_order": o,
-                    "on_press": lambda x={
-                        "name": _ma,
-                        "quantity": round(_money, 2),
-                        "price": len(o),
-                        "image": "assets/images/order.png",
-                        "_list_of_order": o
-                    }: self.set_curr(x)
+                    "on_press": lambda x=json.dumps(Menu(
+                        _ma,
+                        round(_money, 2),
+                        len(o),
+                        "assets/images/order.png",
+                        o
+                    )): self.set_curr(x)
                 }
                 self.data.append(od)
 
@@ -164,13 +176,13 @@ class MenuRecycleView(RecycleView):
                 "quantity": self.menu_data[i]["quantity"],
                 "price": self.menu_data[i]["price"],
                 "image": self.menu_data[i]["image"],
-                "on_press": lambda x={
-                    "name": i,
-                    "quantity": self.menu_data[i]["quantity"],
-                    "price": self.menu_data[i]["price"],
-                    "image": self.menu_data[i]["image"],
-                    "_list_of_order": []
-                }: self.set_curr(x)
+                "on_press": lambda x=json.dumps(Menu(
+                    i,
+                    self.menu_data[i]["quantity"],
+                    self.menu_data[i]["price"],
+                    self.menu_data[i]["image"],
+                    []
+                )): self.set_curr(x)
             }
             self.data.append(mn)
 

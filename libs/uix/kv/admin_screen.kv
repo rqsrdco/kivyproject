@@ -1,12 +1,14 @@
 #: import ew kivy.uix.effectwidget
 
 <AdminScreen>
+    curr_date: curr_date
     canvas.before:
         Color:
             rgba: app.theme_cls.divider_color
         Rectangle:
             size: self.size
             pos: self.pos
+
     EffectWidget:
         effects: [ew.VerticalBlurEffect(size=10),ew.HorizontalBlurEffect(size=10)]
         FitImage:
@@ -14,6 +16,11 @@
     MDBoxLayout:
         orientation: 'vertical'
         padding: ['10dp', '10dp', '10dp', '10dp']
+        MDLabel:
+            id: curr_date
+            text: ""
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            font_style: "Button"
         SongCover:
             canvas.before:
                 Color:

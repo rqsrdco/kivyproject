@@ -2,7 +2,7 @@ import json
 
 from kivy.lang import Builder
 from kivy.core.window import Window
-from kivy.uix.screenmanager import ScreenManager
+from kivy.uix.screenmanager import ScreenManager, SwapTransition
 from kivy.properties import ObjectProperty
 # SQLite
 from databaseSQLite import DatabaseSQLite
@@ -16,6 +16,7 @@ class Root(ScreenManager):
         super().__init__(**kwargs)
         Window.bind(on_keyboard=self._goto_previous_screen)
         self.local_sqlite = DatabaseSQLite()
+        self.transition = SwapTransition()
         # Clock.schedule_once(self.add_screens)
         # getting screens data from screens.json
         with open("screens.json") as f:

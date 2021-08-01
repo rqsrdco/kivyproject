@@ -47,11 +47,11 @@ class KivyMDApp(MDApp, HotReloaderApp):  # NOQA: N801
         "AdminScreen": "libs.uix.baseclass.admin_screen",
         "PreviousMDIcons": "libs.uix.baseclass.mdicons_screen",
         "SalesStaff": "libs.uix.baseclass.salestaff_screen",
-        "MenuRecycleView": "libs.uix.components.menu",
-        "BillRecycleView": "libs.uix.components.bill",
-        "ListItem": "libs.uix.components.listitem",
-        "Button_Item": "libs.uix.components.bottomnav",
-        "ProfilePreview": "libs.uix.components.profile_preview_dialog"
+        # "MenuRecycleView": "libs.uix.components.menu",
+        # "BillRecycleView": "libs.uix.components.bill",
+        # "ListItem": "libs.uix.components.listitem",
+        # "Button_Item": "libs.uix.components.bottomnav",
+        # "ProfilePreview": "libs.uix.components.profile_preview_dialog"
     }  # NOQA: F821
 
     # Auto Reloader Path

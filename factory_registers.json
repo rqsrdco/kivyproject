@@ -16,5 +16,8 @@
     ],
     "libs.uix.components.menu": [
         "MenuRecycleView"
+    ],
+    "libs.uix.components.profile_preview_dialog":[
+        "ProfilePreview"
     ]
 }

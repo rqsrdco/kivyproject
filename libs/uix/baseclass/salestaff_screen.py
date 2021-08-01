@@ -8,6 +8,8 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screen import MDScreen
 from kivymd.toast import toast
 from libs.uix.components.profile_preview_dialog import ProfilePreview
+from kivy.utils import get_random_color
+from kivy.graphics import Color
 
 
 class SalesStaff(MDScreen):
@@ -20,35 +22,46 @@ class SalesStaff(MDScreen):
         super().__init__(**kwargs)
 
     def on_pre_enter(self):
+        Clock.schedule_interval(self.update_clock, 1)
+
+    def on_enter(self):
         Window.size = (1024, 768)
         Window.minimum_width, Window.minimum_height = Window.size
         # Window.maximize()
-        Clock.schedule_interval(self.update_clock, 1)
+
+    def on_pre_leave(self):
+        Clock.unschedule(self.update_clock)
+
+    def on_leave(self):
+        Window.size = (636, 474)
+        Window.minimum_width, Window.minimum_height = Window.size
 
     def update_clock(self, *args):
         self.times = time.strftime("%c")
+        self.ids.lbl_bill.text_color = get_random_color(alpha=.99)
 
     def open_infos(self):
         ProfilePreview().fire(title="Contact with US", image="assets/images/logoopen.png")
 
     def add_item_to_order(self, *args):
-        if args[1]["_list_of_order"]:
+        menu_item = json.loads(args[1])
+        if menu_item["_list_of_order"]:
             self.ids.rv_bill.data = []
-            for order in args[1]["_list_of_order"]:
+            for order in menu_item["_list_of_order"]:
                 bill_item = {
                     "name": order[2],
                     "quantity": order[3],
                     "price": order[4],
-                    "image": args[1]["image"]
+                    "image": menu_item["image"]
                 }
                 self.ids.rv_bill.add_item(bill_item)
-            self.ids.rv_bill._code = args[1]["name"]
+            self.ids.rv_bill._code = menu_item["name"]
         else:
             bill_item = {
-                "name": args[1]["name"],
-                "quantity": args[1]["quantity"],
-                "price": args[1]["price"],
-                "image": args[1]["image"]
+                "name": menu_item["name"],
+                "quantity": menu_item["quantity"],
+                "price": menu_item["price"],
+                "image": menu_item["image"]
             }
             self.ids.rv_bill.add_item(bill_item)
 

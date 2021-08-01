@@ -7,7 +7,7 @@ from kivymd.theming import ThemableBehavior
 from kivy.uix.recycleview import RecycleView
 from kivymd.uix.card import MDCard
 import time
-import datetime
+from datetime import date, datetime
 from kivymd.app import MDApp
 from kivymd.toast import toast
 
@@ -172,7 +172,7 @@ class BillRecycleView(RecycleView):
     def _insert_to_bills(self):
         db = MDApp.get_running_app().root.local_sqlite
 
-        _dt = datetime.datetime.now()
+        _dt = datetime.now()
         for order in self.data:
             _cur_bill = (
                 self._code,
@@ -235,7 +235,7 @@ class BillRecycleView(RecycleView):
     def _insert_to_orders(self):
         db = MDApp.get_running_app().root.local_sqlite
 
-        _dt = datetime.datetime.now()
+        _dt = datetime.now()
         for order in self.data:
             _cur_order = (
                 self._code,

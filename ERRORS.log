@@ -1,0 +1,28 @@
+Traceback (most recent call last):
+  File "D:\PYTHON\Kivy\kivyproject\main.py", line 30, in <module>
+    KivyMDApp().run()
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\app.py", line 950, in run
+    runTouchApp()
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 582, in runTouchApp
+    EventLoop.mainloop()
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 347, in mainloop
+    self.idle()
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 391, in idle
+    self.dispatch_input()
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 342, in dispatch_input
+    post_dispatch_input(*pop(0))
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 308, in post_dispatch_input
+    wid.dispatch('on_touch_up', me)
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\behaviors\button.py", line 179, in on_touch_up
+    self.dispatch('on_release')
+  File "kivy\_event.pyx", line 705, in kivy._event.EventDispatcher.dispatch
+  File "kivy\_event.pyx", line 1248, in kivy._event.EventObservers.dispatch
+  File "kivy\_event.pyx", line 1132, in kivy._event.EventObservers._dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\lang\builder.py", line 57, in custom_callback
+    exec(__kvlang__.co_value, idmap)
+  File "D:\PYTHON\Kivy\kivyproject\libs\uix\kv\salestaff_screen.kv", line 91, in <module>
+    on_release: rv_menu.take_order()
+  File "D:\PYTHON\Kivy\kivyproject\libs\uix\components\menu.py", line 160, in take_order
+    self.menu_data[i]["quantity"],
+KeyError: 12

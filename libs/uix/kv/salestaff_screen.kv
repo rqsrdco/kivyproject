@@ -106,6 +106,7 @@
                     padding: dp(6),dp(6),dp(6),dp(6)
                     pos_hint: {'center_y': .5}
                     MDLabel:
+                        id: lbl_bill
                         text: rv_bill._code if rv_bill._code else root.times
                         halign: "center"
                         text_color: app.theme_cls.text_color

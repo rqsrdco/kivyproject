@@ -27,7 +27,6 @@ class CustomOneLineIconListItem(OneLineIconListItem):
 
 
 class PreviousMDIcons(Screen):
-    anim_pt = ListProperty([])
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -35,38 +34,15 @@ class PreviousMDIcons(Screen):
         Clock.schedule_once(self._late_init)
 
     def on_pre_enter(self):
-        Window.size = (999, 777)
-        Window.minimum_width, Window.minimum_height = Window.size
-        with self.canvas.before:
-            Color(1, 1, 1)
-            Line(points=[100, 100, 100, 200, 200, 200,
-                 200, 100, 300, 100, 300, 200], width=3)
+        self.set_list_md_icons()
 
     def on_enter(self):
-        self.set_list_md_icons()
-        # start the red line with no points
-        with self.canvas.before:
-            Color(1, 0, 0)
-            self.line = Line(width=5)    # saves a reference to the line
+        Window.size = (999, 777)
+        Window.minimum_width, Window.minimum_height = Window.size
 
-        # animate the end point (self.anim_pt)
-        self.anim_pt = [100, 100]
-        anim = Animation(anim_pt=[100, 200], d=3)
-        anim.start(self)
-
-    def on_anim_pt(self, widget, progress):
-        # called when anim_pt changes
-
-        # set up the line points
-        points = [100, 100]
-        points.extend(self.anim_pt)
-
-        # remove the old line
-        self.canvas.before.remove(self.line)
-
-        # draw the updated line
-        with self.canvas.before:
-            self.line = Line(points=points, width=5)
+    def on_leave(self):
+        Window.size = (636, 474)
+        Window.minimum_width, Window.minimum_height = Window.size
 
     def set_list_md_icons(self, text="", search=False):
         '''Builds a list of icons for the screen MDIcons.'''
