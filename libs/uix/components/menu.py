@@ -12,6 +12,7 @@ from kivy.properties import BooleanProperty, ListProperty, StringProperty, Numer
 from kivymd.toast import toast
 import json
 from kivymd.app import MDApp
+from kivy.clock import mainthread
 
 
 Builder.load_string(
@@ -128,6 +129,7 @@ class MenuRecycleView(RecycleView):
         super(MenuRecycleView, self).__init__(**kwargs)
         self.fake_data("coffee")
 
+    @mainthread
     def take_order(self):
         self.data = []
         dbsql = MDApp.get_running_app().root.local_sqlite
@@ -165,6 +167,7 @@ class MenuRecycleView(RecycleView):
                 }
                 self.data.append(od)
 
+    @mainthread
     def fake_data(self, data):
         with open("assets/%s.json" % data) as f:
             self.menu_data = json.load(f)
@@ -186,6 +189,7 @@ class MenuRecycleView(RecycleView):
             }
             self.data.append(mn)
 
+    @mainthread
     def on_data(self, instance, data):
         self.refresh_from_data()
 

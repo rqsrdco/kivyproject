@@ -1,6 +1,6 @@
 import json
 import time
-from kivy.clock import Clock
+from kivy.clock import Clock, mainthread
 from kivy.properties import ListProperty, NumericProperty, StringProperty
 from kivy.core.window import Window
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -36,6 +36,7 @@ class SalesStaff(MDScreen):
         Window.size = (636, 474)
         Window.minimum_width, Window.minimum_height = Window.size
 
+    @mainthread
     def update_clock(self, *args):
         self.times = time.strftime("%c")
         self.ids.lbl_bill.text_color = get_random_color(alpha=.99)
@@ -43,6 +44,7 @@ class SalesStaff(MDScreen):
     def open_infos(self):
         ProfilePreview().fire(title="Contact with US", image="assets/images/logoopen.png")
 
+    @mainthread
     def add_item_to_order(self, *args):
         menu_item = json.loads(args[1])
         if menu_item["_list_of_order"]:
@@ -65,6 +67,7 @@ class SalesStaff(MDScreen):
             }
             self.ids.rv_bill.add_item(bill_item)
 
+    @mainthread
     def show_menu(self):
         MDDialog(
             title="Options",
@@ -72,6 +75,17 @@ class SalesStaff(MDScreen):
             content_cls=MenuDialogContent()
         ).open()
 
+    def show_scanner(self):
+        MDDialog(
+            title="Scanning...",
+            type="custom",
+            content_cls=ScanCode()
+        ).open()
+
 
 class MenuDialogContent(MDBoxLayout):
+    pass
+
+
+class ScanCode(MDBoxLayout):
     pass

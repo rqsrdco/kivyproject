@@ -16,6 +16,7 @@ from androspecific import statusbar
 from root import Root
 # kivymd
 from kivymd.uix.picker import MDThemePicker
+from kivymd.uix.dialog import MDDialog
 
 
 # This is needed for supporting Windows 10 with OpenGL < v2.0
@@ -69,6 +70,9 @@ class KivyMDApp(MDApp):
         )
 
     def change_theme(self):
+        '''
+        CHange theme Light / Dark
+        '''
         def _change_theme(i):
             self.theme_cls.theme_style = (
                 "Dark" if self.theme_cls.theme_style == "Light" else "Light"
@@ -101,9 +105,26 @@ class KivyMDApp(MDApp):
         time = '{}:{}:{}'.format(now.hour, now.minute, now.second)
         self.time = time
 
-    def get_ip(self, *args):
-        '''
-        Get the current ip.
-        '''
+    def get_local_IP():
         import socket
-        self.ip = socket.gethostbyname(socket.gethostname())
+        try:
+            host_name = socket.gethostname()
+            local_ip = socket.gethostbyname(host_name)
+            print("Local IP: ", local_ip)
+        except Exception:
+            MDDialog(
+                text="Unable to get Local IP",
+                radius=[20, 7, 20, 7],
+            ).open()
+
+    def get_public_IP():
+        import requests
+        try:
+            public_ip = requests.get(
+                'http://www.icanhazip.com').content.decode()
+            print("Public IP: ", public_ip)
+        except Exception:
+            MDDialog(
+                text="Unable to get Public IP",
+                radius=[20, 7, 20, 7],
+            ).open()

@@ -1,11 +1,13 @@
 import json
-
+import os
 from kivy.lang import Builder
 from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, SwapTransition
 from kivy.properties import ObjectProperty
+from kivy.clock import mainthread
 # SQLite
 from databaseSQLite import DatabaseSQLite
+MODULE_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 
 class Root(ScreenManager):
@@ -45,6 +47,9 @@ class Root(ScreenManager):
         self.current = screen_name
 
     def _goto_previous_screen(self, instance, key, *args):
+        '''
+        ESC key
+        '''
         if key == 27:
             self.goto_previous_screen()
             return True

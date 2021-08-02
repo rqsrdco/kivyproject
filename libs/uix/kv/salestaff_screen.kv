@@ -1,4 +1,6 @@
 #: import ColorHex kivy.utils.get_color_from_hex
+#:import ZBarCam kivy_garden.zbarcam.ZBarCam
+
 <SalesStaff>
     MDBoxLayout:
         orientation: "vertical"
@@ -112,6 +114,16 @@
                         text_color: app.theme_cls.text_color
                         pos_hint: {'center_x': .5, 'center_y': .5}
                         text_size: self.width, None
+                    MDIconButton:
+                        adaptive_height: True
+                        icon: "qrcode"
+                        #user_font_size: "18"
+                        theme_text_color: "Custom"
+                        text_color: app.theme_cls.primary_color
+                        pos_hint: {'center_y': .5}
+                        on_release: root.show_scanner()
+                        size_hint: None, None
+                        size: dp(39),dp(39),
                 BillRecycleView:
                     id: rv_bill
                 MDCard:
@@ -291,3 +303,17 @@
         on_release:
             root.parent.parent.parent.dismiss()
             app.change_theme()
+
+<ScanCode>
+    orientation: 'vertical'
+    adaptive_height: True
+    padding: dp(15)
+    spacing: dp(10)
+    ZBarCam:
+        id: zbarcam
+        # optional, by default checks all types
+        code_types: 'QRCODE', 'EAN13'
+    Label:
+        size_hint: None, None
+        size: self.texture_size[0], 50
+        text: ', '.join([str(symbol.data) for symbol in zbarcam.symbols])

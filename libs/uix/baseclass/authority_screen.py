@@ -13,6 +13,7 @@ from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.utils import get_color_from_hex as ColorHex
+from kivy.clock import mainthread
 
 
 class AuthorityScreen(ThemableBehavior, MDScreen):
@@ -36,6 +37,7 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
         if self.card_x:
             self.card_x = self.ids.box.width - self.ids.box2.width - dp(40)
 
+    @mainthread
     def animation_to_getpwd(self):
         def animation_complete(*args):
             self.ids.box2.add_widget(ForgetpPasswordBox())
@@ -55,6 +57,7 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
         self.ids.enter_signin.disabled = False
         self.ids.enter_signup.disabled = False
 
+    @mainthread
     def animation_to_signup(self):
         def animation_complete(*args):
             self.ids.box2.add_widget(SignUpBox())
@@ -74,6 +77,7 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
         self.ids.enter_signin.disabled = True
         self.ids.enter_signup.disabled = True
 
+    @mainthread
     def animation_to_signin(self):
         def animation_complete(*args):
             self.ids.box2.add_widget(SignInBox())
@@ -93,6 +97,7 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
         self.ids.enter_signin.disabled = True
         self.ids.enter_signup.disabled = True
 
+    @mainthread
     def do_login(self, email, pwd):
         user = None
         try:

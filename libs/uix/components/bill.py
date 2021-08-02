@@ -10,6 +10,7 @@ import time
 from datetime import date, datetime
 from kivymd.app import MDApp
 from kivymd.toast import toast
+from kivy.clock import mainthread
 
 Builder.load_string(
     """
@@ -186,6 +187,7 @@ class BillRecycleView(RecycleView):
             db.insert_into_database(
                 "Bills", conn, _cur_bill)
 
+    @mainthread
     def do_payment(self):
         if not self.data:
             toast("Empty Order")
@@ -208,6 +210,7 @@ class BillRecycleView(RecycleView):
                 self.data = []
                 toast("Bill Save")
 
+    @mainthread
     def save_order_toPay_later(self):
         if not self.data:
             toast("Empty Order")

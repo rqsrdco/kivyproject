@@ -16,6 +16,7 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.metrics import dp
 from kivy.clock import Clock
+from kivy.clock import mainthread
 
 
 class ColorWidget(BoxLayout):
@@ -44,6 +45,7 @@ class PreviousMDIcons(Screen):
         Window.size = (636, 474)
         Window.minimum_width, Window.minimum_height = Window.size
 
+    @mainthread
     def set_list_md_icons(self, text="", search=False):
         '''Builds a list of icons for the screen MDIcons.'''
 
