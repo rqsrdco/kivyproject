@@ -1,3 +1,4 @@
+from kivy.config import Config
 import os
 import sys
 import json
@@ -10,6 +11,7 @@ sys.path.insert(0, os.path.join(root_dir, "local_database"))
 #
 import traceback  # NOQA: E402
 from kivymdapp import KivyMDApp  # NOQA: E402
+Config.set('graphics', 'borderless', '1')
 
 """
 Registering factories from factory.json.

@@ -1,5 +1,5 @@
 Traceback (most recent call last):
-  File "D:\PYTHON\Kivy\kivyproject\main.py", line 30, in <module>
+  File "D:\PYTHON\Kivy\kivyproject\main.py", line 32, in <module>
     KivyMDApp().run()
   File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\app.py", line 950, in run
     runTouchApp()
@@ -14,10 +14,6 @@ Traceback (most recent call last):
   File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 308, in post_dispatch_input
     wid.dispatch('on_touch_up', me)
   File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivymd\uix\behaviors\ripple_behavior.py", line 296, in on_touch_up
-    return super().on_touch_up(touch)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivymd\uix\button.py", line 981, in on_touch_up
-    return super().on_touch_up(touch)
   File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\behaviors\button.py", line 179, in on_touch_up
     self.dispatch('on_release')
   File "kivy\_event.pyx", line 705, in kivy._event.EventDispatcher.dispatch
@@ -25,28 +21,11 @@ Traceback (most recent call last):
   File "kivy\_event.pyx", line 1132, in kivy._event.EventObservers._dispatch
   File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\lang\builder.py", line 57, in custom_callback
     exec(__kvlang__.co_value, idmap)
-  File "D:\PYTHON\Kivy\kivyproject\libs\uix\kv\salestaff_screen.kv", line 122, in <module>
-    on_release: root.show_scanner()
-  File "D:\PYTHON\Kivy\kivyproject\libs\uix\baseclass\salestaff_screen.py", line 82, in show_scanner
-    content_cls=ScanCode()
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\boxlayout.py", line 145, in __init__
-    super(BoxLayout, self).__init__(**kwargs)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\layout.py", line 76, in __init__
-    super(Layout, self).__init__(**kwargs)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivymd\uix\behaviors\backgroundcolor_behavior.py", line 220, in __init__
-    super().__init__(**kwargs)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivymd\uix\behaviors\backgroundcolor_behavior.py", line 178, in __init__
-    super().__init__(**kwarg)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivymd\uix\behaviors\elevation.py", line 847, in __init__
-    super().__init__(**kwargs)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 359, in __init__
-    self.apply_class_lang_rules(
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 463, in apply_class_lang_rules
-    Builder.apply(
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\lang\builder.py", line 541, in apply
-    self._apply_rule(
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\lang\builder.py", line 621, in _apply_rule
-    cls = Factory_get(cname)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\factory.py", line 146, in __getattr__
-    raise FactoryException('Unknown class <%s>' % name)
-kivy.factory.FactoryException: Unknown class <ZBarCam>
+  File "D:\PYTHON\Kivy\kivyproject\libs\uix\kv\salestaff_screen.kv", line 91, in <module>
+    menu_mngr.transition = SwapTransition
+  File "kivy\weakproxy.pyx", line 35, in kivy.weakproxy.WeakProxy.__setattr__
+  File "kivy\properties.pyx", line 498, in kivy.properties.Property.__set__
+  File "kivy\properties.pyx", line 542, in kivy.properties.Property.set
+  File "kivy\properties.pyx", line 533, in kivy.properties.Property.set
+  File "kivy\properties.pyx", line 1005, in kivy.properties.ObjectProperty.check
+ValueError: ScreenManager.transition accept only object based on TransitionBase

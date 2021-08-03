@@ -1,5 +1,8 @@
 #: import ColorHex kivy.utils.get_color_from_hex
-#:import ZBarCam kivy_garden.zbarcam.ZBarCam
+#: import ZBarCam kivy_garden.zbarcam.ZBarCam
+#: import FallOutTransition kivy.uix.screenmanager
+#: import WipeTransition kivy.uix.screenmanager
+#: import SwapTransition kivy.uix.screenmanager
 
 <SalesStaff>
     MDBoxLayout:
@@ -29,9 +32,28 @@
                 spacing: dp(6)
                 MDBoxLayout:
                     id: menu_op
-                    MenuRecycleView:
-                        id: rv_menu
-                        on__selected_item: root.add_item_to_order(*args)
+                    ScreenManager:
+                        id: menu_mngr
+                        Screen:
+                            name: "coffee_scrn"
+                            MenuRecycleView:
+                                id: rv_coffee
+                                on__selected_item: root.add_item_to_order(*args)
+                        Screen:
+                            name: "food_scrn"
+                            MenuRecycleView:
+                                id: rv_food
+                                on__selected_item: root.add_item_to_order(*args)
+                        Screen:
+                            name: "drink_scrn"
+                            MenuRecycleView:
+                                id: rv_drink
+                                on__selected_item: root.add_item_to_order(*args)
+                        Screen:
+                            name: "ordered_scrn"
+                            MenuRecycleView:
+                                id: rv_ordered
+                                on__selected_item: root.add_item_to_order(*args)
                 MDCard:
                     orientation: "horizontal"
                     size_hint_y: None
@@ -51,7 +73,10 @@
                         #badgeitem_color: C("#025F50")
                         #badge_bg_color: C("#F1E9C60F")
                         badge_disabled: True
-                        on_release: rv_menu.fake_data("coffee")
+                        on_release: 
+                            rv_coffee.fake_data("coffee")
+                            menu_mngr.transition.direction = 'right'
+                            menu_mngr.current = 'coffee_scrn'
                     Button_Item:
                         text: "Drink"
                         icon: "cup-water"
@@ -61,7 +86,10 @@
                         #badgeitem_color: C("#025F50")
                         #badge_bg_color: C("#F1E9C60F")
                         badge_disabled: True
-                        on_release: rv_menu.fake_data("drink")
+                        on_release: 
+                            rv_drink.fake_data("drink")
+                            menu_mngr.transition.direction = 'left'
+                            menu_mngr.current = 'drink_scrn'
                     Button_Item:
                         icon: "food"
                         text: "Food"
@@ -73,7 +101,10 @@
                         badgeitem_color: app.theme_cls.divider_color
                         badge_bold: True
                         badge_disabled: True
-                        on_release: rv_menu.fake_data("food")
+                        on_release: 
+                            rv_food.fake_data("food")
+                            menu_mngr.transition.direction = 'right'
+                            menu_mngr.current = 'food_scrn'
                     Button_Item:
                         text: "Ordered"
                         text_size: sp(12)
@@ -89,8 +120,11 @@
                         badge_bg_color: app.theme_cls.divider_color
                         badgeitem_color: app.theme_cls.divider_color
                         badge_bold: True
-                        badge_text: str(rv_menu._total_order) if rv_menu._total_order else "0"
-                        on_release: rv_menu.take_order()
+                        badge_text: str(rv_ordered._total_order) if rv_ordered._total_order else "0"
+                        on_release: 
+                            rv_ordered.take_order()
+                            menu_mngr.transition.direction = 'left'
+                            menu_mngr.current = 'ordered_scrn'
 
             MDBoxLayout:
                 orientation: 'vertical'
@@ -306,7 +340,8 @@
 
 <ScanCode>
     orientation: 'vertical'
-    adaptive_height: True
+    size_hint: None,None
+    size: "200dp", "234dp" 
     padding: dp(15)
     spacing: dp(10)
     ZBarCam:

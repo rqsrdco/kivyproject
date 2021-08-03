@@ -29,7 +29,7 @@ Builder.load_string(
     ripple_behavior: True
     focus_color: app.theme_cls.ripple_color
     unfocus_color: app.theme_cls.divider_color
-    md_bg_color: app.theme_cls.divider_color
+    md_bg_color: app.theme_cls.primary_color if root.selected else app.theme_cls.divider_color
     radius: [12]
 
     MDBoxLayout:
@@ -117,10 +117,6 @@ class Menu(dict):
         )
 
 
-class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior, RecycleGridLayout):
-    pass
-
-
 class MenuRecycleView(RecycleView):
     _selected_item = ObjectProperty()
     _total_order = NumericProperty(0)
@@ -200,18 +196,36 @@ class MenuRecycleView(RecycleView):
         pass
 
 
+class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior, RecycleGridLayout):
+    obj = ObjectProperty(None)
+
+
 class MenuCardItem(RecycleDataViewBehavior, MDCard):
     image = StringProperty()
     name = StringProperty()
     price = NumericProperty()
     quantity = NumericProperty(1)
     _list_of_order = ListProperty(None)
+    index = None
+    selected = BooleanProperty(False)
+    selectable = BooleanProperty(True)
 
     def __init__(self, **kwargs):
         super(MenuCardItem, self).__init__(**kwargs)
         self._list_of_order = []
 
-    # def on_press(self):
-    #    print("MenuCardItem -|name|- %s" % self.name)
-    #    print("MenuCardItem -|_list_of_order|- %s" % len(self._list_of_order))
-    #    self.parent.parent._selected_item = self
+    def refresh_view_attrs(self, rv, index, data):
+        """ Catch and handle the view changes """
+        self.index = index
+        return super(MenuCardItem, self).refresh_view_attrs(rv, index, data)
+
+    def on_touch_down(self, touch):
+        ''' Add selection on touch down '''
+        if super(MenuCardItem, self).on_touch_down(touch):
+            return True
+        if self.collide_point(*touch.pos) and self.selectable:
+            return self.parent.select_with_touch(self.index, touch)
+
+    def apply_selection(self, rv, index, is_selected):
+        ''' Respond to the selection of items in the view. '''
+        self.selected = is_selected

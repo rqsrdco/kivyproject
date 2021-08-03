@@ -1,4 +1,70 @@
 #: import ew kivy.uix.effectwidget
+#: import Window kivy.core.window.Window
+
+<LeftPanel>
+    size_hint_x: None
+    width: dp(60)
+
+<TitleButtons>
+    canvas:
+        Color:
+            rgba: 0,0,0,0
+            group: 'a'
+
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+<CointainerHeaders>
+    canvas:
+        Color:
+            rgba: 0, 52/255, 102/255, 1
+        Rectangle:
+            size: dp(5), dp(0)
+            pos: 0, Window.size[1]
+            group: 'rec'
+    size_hint: 1, None
+    size: 260, 50
+    orientation: 'vertical'
+    BoxLayout:
+        padding: dp(16),0,dp(16),0
+        spacing: dp(8)
+        MDIconButton:
+            icon: root.icon
+            font_name: 'assets/fonts/materialdesignicons-webfont.ttf'
+            size_hint: None, None
+            size: dp(32), dp(32)
+            font_size: '24sp'
+            color: root.color
+            pos_hint: {'center_x':.5, 'center_y':.5}
+
+        ScreenManager:
+            id: sm_main
+            Screen:
+                name: 'one'
+
+            Screen:
+                name: 'two'
+                BoxLayout:
+                    padding: dp(0),0,dp(6),0
+                    spacing: dp(8)
+                    
+                    MDLabel:
+                        text: root.text
+                        color: root.color
+                        halign: 'left'
+                        size_hint_x: None
+                        width: self.parent.width - dp(39)
+                        valign: 'center'
+                        
+                    MDIconButton:
+                        icon: root.icon1
+                        font_size: '24sp'
+                        color: root.color
+                        size: dp(32), dp(32)
+                        font_name: 'assets/fonts/materialdesignicons-webfont.ttf'
+                        size_hint: None, None
+                        pos_hint: {'center_x':.5, 'center_y':.5}
 
 <AdminScreen>
     curr_date: curr_date
@@ -9,81 +75,222 @@
             size: self.size
             pos: self.pos
 
-    EffectWidget:
-        effects: [ew.VerticalBlurEffect(size=10),ew.HorizontalBlurEffect(size=10)]
-        FitImage:
-            source: "assets/images/musicbg.jpg"
     MDBoxLayout:
-        orientation: 'vertical'
-        padding: ['10dp', '10dp', '10dp', '10dp']
-        MDLabel:
-            id: curr_date
-            text: ""
-            pos_hint: {'center_x': .5, 'center_y': .5}
-            font_style: "Button"
-        SongCover:
-            canvas.before:
+        LeftPanel:
+            orientation:'vertical'
+            on_state: root.change_state_toolbar(self.state)
+            canvas:
                 Color:
-                    rgba: [1,1,1,0]
-                RoundedRectangle:
-                    size: self.size
+                    rgba: app.theme_cls.primary_color
+                Rectangle:
+                    size:self.size
                     pos: self.pos
-                    radius: [250,]
-            id: sc
-            size: (250, 250)
-            size_hint: None, None
-            pos_hint: {'center_x': .5,}
-            RotatingImage:
-                angle: sc.angle
-                radius: [250,]
-                source: "assets/images/songcover.jpg"
-        Widget:
-            size_hint: None, None
-            height: '25dp'
-        Label:
-            text: "Song Name"
-            bold: True
-            font_size: '25sp'
-            size_hint_y: None
-            height: self.texture_size[1]
-        Label:
-            text: "Artist Name"
-            size_hint_y: None
-            height: self.texture_size[1]
-        
+                Color:
+                    rgba: 0,0,0,.3 if root.line_nav==True else 1,1,1,0
+                Line:
+                    rectangle: self.x,self.y, self.width,self.height
+            id: hvrt
+            BoxLayout:
+                id: headers
+                elevation: 18
+                size_hint:1,None
+                size: 1,140
+                FloatLayout:
+                    Widget:
+                        canvas:
+                            Color:
+                                rgba: 1,1,1,1
+                                
+                            Rectangle:
+                                source: 'assets/images/logoclose.png'
+                                size: self.size
+                                pos: self.pos
+                        id: prof_pic
+                        size_hint: None,None
+                        size: 68 if hvrt.state== 'normal' else 120, 68 if hvrt.state == 'normal' else 120
+                        x: self.parent.x+self.parent.width/2-self.width/2
+                        y: self.parent.y+self.parent.height/2-self.height/2
+            ScrollView:
+                bar_width: 0
+                do_scroll_x: False
+                do_scroll_y: True
+                MDBoxLayout:
+                    id: hvrt_boxl
+                    size_hint_y: None
+                    height: self.minimum_height
+                    orientation: 'vertical'
+                    padding: 0,dp(8),0,dp(8)
+
+                    CointainerHeaders:
+                        id: contH1
+                        icon: 'home'
+                        group:'a'
+                        text: 'Home'
+
+                        
+                        TitleButtons:
+                            size_hint: 1, None
+                            height: 50
+                            text: "Dashboard"
+                            on_press:sm_content.current='dashboard'
+                            on_press: self.state='down'
+                            on_press:sm_title.current='dashboard'
+                    CointainerHeaders:
+                        id: contH2
+                        icon: 'table'
+                        group:'a'
+                        text: 'Table'
+
+                        
+                        TitleButtons:
+                            size_hint: 1, None
+                            height: 50
+                            text: "Table"
+                            on_press:sm_content.current='table'
+                            on_press: self.state='down'
+                            on_press:sm_title.current='table'
+                    CointainerHeaders:
+                        id: contH3
+                        icon: 'desktop-classic'
+                        group:'a'
+                        text: 'Exit'
+
+                        
+                        TitleButtons:
+                            size_hint: 1, None
+                            height: 50
+                            text: "Sign Out"
+                            on_press: self.state='down'
+                            on_press: app.root.set_current("authority", side="left")
         MDBoxLayout:
             orientation: 'vertical'
-            Slider:
-                id: progress
-                color: [.7,0,0,1]
-                min: 0
-                max: 100
-                value: 0
-                background_width: '20dp'
-                cursor_image: ''
-                cursor_size: ('10dp', '10dp')
-                value_track_color: [1,1,1,0]
-                value_track: True
+            size_hint: 1, 1
             MDBoxLayout:
-                id: play_option
-                MyIcon:
-                    icon: 'restart'
-                MyIcon:
-                    icon: 'skip-previous-outline'
-                MyIcon:
-                    icon: 'skip-backward-outline'
-                MyIcon:
-                    icon: 'play-outline'
-                    on_press: sc.play(progress)
-                MyIcon:
-                    icon: 'skip-forward'
-                MyIcon:
-                    icon: 'skip-next-outline'
-                MyIcon:
-                    icon: 'format-list-bulleted'
-                MyIcon:
-                    icon: 'location-exit'
-                    on_release: app.root.set_current("authority", side="left")
+                id: box_title
+                size_hint:1,None
+                size:1,50
+                canvas:
+                    Color:
+                        rgba: 0,1,1,.3
+
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                ScreenManager:
+                    id: sm_title
+                    Screen:
+                        name:'dashboard'                    
+                        Label:
+                            text:'Dashboard'
+                            font_size: '18sp'
+                            font_style:'Button'
+                            halign:'left'
+                            text_size: (self.width, None)
+                            padding_x:40
+                            color: 0,0,0,.63
+                            size_hint_x:1
+                    Screen:
+                        name:'table'                    
+                        Label:
+                            text:'Table Data'
+                            font_size: '18sp'
+                            font_style:'Button'
+                            halign:'left'
+                            text_size: (self.width, None)
+                            padding_x:40
+                            color: 0,0,0,.63
+                            size_hint_x:1
+            MDBoxLayout:
+                id: box_notify
+                size_hint:1,None
+                size: 1,0
+            MDBoxLayout:
+                ScreenManager:
+                    id: sm_content
+                    Screen:
+                        name: 'dashboard'
+                        canvas.before:
+                            Color:
+                                rgba: app.theme_cls.divider_color
+                            Rectangle:
+                                size: self.size
+                                pos: self.pos
+                        EffectWidget:
+                            effects: [ew.VerticalBlurEffect(size=10),ew.HorizontalBlurEffect(size=10)]
+                            FitImage:
+                                source: "assets/images/musicbg.jpg"
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            padding: ['10dp', '10dp', '10dp', '10dp']
+                            MDLabel:
+                                id: curr_date
+                                text: ""
+                                pos_hint: {'center_x': .5, 'center_y': .5}
+                                font_style: "Button"
+                            SongCover:
+                                canvas.before:
+                                    Color:
+                                        rgba: [1,1,1,0]
+                                    RoundedRectangle:
+                                        size: self.size
+                                        pos: self.pos
+                                        radius: [250,]
+                                id: sc
+                                size: (250, 250)
+                                size_hint: None, None
+                                pos_hint: {'center_x': .5,}
+                                RotatingImage:
+                                    angle: sc.angle
+                                    radius: [250,]
+                                    source: "assets/images/songcover.jpg"
+                            Widget:
+                                size_hint: None, None
+                                height: '25dp'
+                            Label:
+                                text: "Song Name"
+                                bold: True
+                                font_size: '25sp'
+                                size_hint_y: None
+                                height: self.texture_size[1]
+                            Label:
+                                text: "Artist Name"
+                                size_hint_y: None
+                                height: self.texture_size[1]
+                            
+                            MDBoxLayout:
+                                orientation: 'vertical'
+                                Slider:
+                                    id: progress
+                                    color: [.7,0,0,1]
+                                    min: 0
+                                    max: 100
+                                    value: 0
+                                    background_width: '20dp'
+                                    cursor_image: ''
+                                    cursor_size: ('10dp', '10dp')
+                                    value_track_color: [1,1,1,0]
+                                    value_track: True
+                                MDBoxLayout:
+                                    id: play_option
+                                    MyIcon:
+                                        icon: 'restart'
+                                    MyIcon:
+                                        icon: 'skip-previous-outline'
+                                    MyIcon:
+                                        icon: 'skip-backward-outline'
+                                    MyIcon:
+                                        icon: 'play-outline'
+                                        on_press: sc.play(progress)
+                                    MyIcon:
+                                        icon: 'skip-forward'
+                                    MyIcon:
+                                        icon: 'skip-next-outline'
+                                    MyIcon:
+                                        icon: 'format-list-bulleted'
+                    Screen:
+                        name: "table"
+                        MyTable:
+                            id: mytable
 
 <MyIcon@MDIconButton>
     color: [.7,0,0,1]
@@ -102,3 +309,168 @@
             origin: self.center
     canvas.after:
         PopMatrix
+
+<MyTable>
+    states_cities_or_areas: states_cities_or_areas
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            canvas.before:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            size_hint_y: 1
+
+            MenuButton:
+                id: btn
+                text: 'Bills'
+                size : (60,30)
+                on_release: root.display_states()
+
+
+        BoxLayout:
+            canvas.before:
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+                Color:
+                    rgb: (1,1,1)
+
+            Label:
+                size_hint_x: 45
+
+        BoxLayout:
+            id: states_cities_or_areas
+            size_hint_y: 10
+
+        Label:
+            size_hint_y: 1
+
+<PopupLabelCell>
+    size_hint: (None, None)
+    height: 30
+    text_size: self.size
+    halign: "left"
+    valign: "middle"
+
+<EditStatePopup>
+    container: container
+    size_hint: None, None
+    size: 400, 275
+    title_size: 20
+    # title_font: "Verdana"
+    auto_dismiss: False
+
+    BoxLayout:
+        orientation: "vertical"
+        ScrollView:
+            bar_width: 10
+            bar_color: 1, 0, 0, 1   # red
+            bar_inactive_color: 0, 0, 1, 1   # blue
+            effect_cls: "ScrollEffect"
+            scroll_type: ['bars']
+            size_hint: (1, None)
+
+            GridLayout:
+                id: container
+                cols: 2
+                row_default_height: 30
+                cols_minimum: {0: 100, 1: 300}
+                # spacing: 10, 10
+                # padding: 20, 20
+                size_hint: (None, None)
+                height: self.minimum_height
+
+        BoxLayout:
+            Button:
+                size_hint: 1, 0.2
+                text: "Save Changes"
+                on_release:
+                    root.dismiss()
+            Button:
+                size_hint: 1, 0.2
+                text: "Cancel Changes"
+                on_release: root.dismiss()
+
+<SelectableButton>
+    canvas.before:
+        Color:
+            rgba: (0, 0.517, 0.705, 1) if self.selected else (0, 0.517, 0.705, 1)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    background_color: [1, 0, 0, 1]  if self.selected else [1, 1, 1, 1]  # dark red else dark grey
+    on_press: app.root.get_screen("administrator").ids.mytable.table.rv.on_mouse_select(self)
+
+<HeaderCell>
+    size_hint: (None, None)
+    height: 25
+    text_size: self.size
+    halign: "left"
+    valign: "middle"
+    background_disabled_normal: ''
+    disabled_color: (1, 1, 1, 1)
+
+    canvas.before:
+        Color:
+            rgba: 1, 0.502, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+<TableHeader>
+    header: header
+    bar_width: 0
+    do_scroll: False
+    size_hint: (1, None)
+    height: 25
+    effect_cls: "ScrollEffect"
+
+    GridLayout:
+        id: header
+        rows: 1
+        cols_minimum: root.cols_minimum
+        size_hint: (None, None)
+        width: self.minimum_width
+        height: self.minimum_height
+
+<RV>
+    row_controller: row_controller
+
+    bar_width: 10
+    bar_color: 1, 0, 0, 1   # red
+    bar_inactive_color: 0, 0, 1, 1   # blue
+    effect_cls: "ScrollEffect"
+    scroll_type: ['bars']
+
+    data: root.rv_data
+    viewclass: 'SelectableButton'
+
+    SelectableRecycleGridLayout:
+        id: row_controller
+        key_selection: 'selectable'
+        cols: root.total_col_headings
+        cols_minimum: root.cols_minimum
+        default_size: None, dp(26)
+        default_size_hint: 1, None
+        size_hint: None, None
+        height: self.minimum_height
+        width: self.minimum_width
+        multiselect: True
+        touch_multiselect: True
+
+
+<MenuButton@Button>
+    text_size: self.size
+    valign: "middle"
+    padding_x: 5
+    size : (80,30)
+    size_hint : (None, None)
+    background_color: 90 , 90, 90, 90
+    background_normal: ''
+    color: 0, 0.517, 0.705, 1
+    border: (0, 10, 0, 0)

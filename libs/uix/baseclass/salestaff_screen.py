@@ -10,11 +10,12 @@ from kivymd.toast import toast
 from libs.uix.components.profile_preview_dialog import ProfilePreview
 from kivy.utils import get_random_color
 from kivy.graphics import Color
+from kivy_garden.zbarcam import ZBarCam
 
 
 class SalesStaff(MDScreen):
-    #menu = ListProperty(None)
-    #order = ListProperty(None)
+    # menu = ListProperty(None)
+    # order = ListProperty(None)
     user = StringProperty()
     times = StringProperty()
 
@@ -44,8 +45,8 @@ class SalesStaff(MDScreen):
     def open_infos(self):
         ProfilePreview().fire(title="Contact with US", image="assets/images/logoopen.png")
 
-    @mainthread
     def add_item_to_order(self, *args):
+        from components.bill import BillListItem
         menu_item = json.loads(args[1])
         if menu_item["_list_of_order"]:
             self.ids.rv_bill.data = []
@@ -67,7 +68,6 @@ class SalesStaff(MDScreen):
             }
             self.ids.rv_bill.add_item(bill_item)
 
-    @mainthread
     def show_menu(self):
         MDDialog(
             title="Options",

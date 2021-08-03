@@ -161,6 +161,7 @@ class BillRecycleView(RecycleView):
                 self._sub_total += round(item["quantity"] * item["price"], 2)
             self._total_price = round(
                 ((self._sub_total * self._tax) + self._sub_total), 2)
+        self.refresh_from_data()
 
     def on_data(self, *args):
         self._update()
@@ -187,7 +188,6 @@ class BillRecycleView(RecycleView):
             db.insert_into_database(
                 "Bills", conn, _cur_bill)
 
-    @mainthread
     def do_payment(self):
         if not self.data:
             toast("Empty Order")
@@ -210,7 +210,6 @@ class BillRecycleView(RecycleView):
                 self.data = []
                 toast("Bill Save")
 
-    @mainthread
     def save_order_toPay_later(self):
         if not self.data:
             toast("Empty Order")
@@ -253,27 +252,23 @@ class BillRecycleView(RecycleView):
                 "Orders", conn, _cur_order)
 
     def reduce_quantity(self, item_bill):
-        print(item_bill.name, item_bill.quantity)
         for item in self.data:
             if item["name"] == item_bill.name:
                 if item["quantity"] > 1:
                     item["quantity"] -= 1
-                    print(item["name"], item["quantity"])
-                    self.refresh_from_data()
                     self._update()
 
     def raise_quantity(self, item_bill):
         for item in self.data:
             if item["name"] == item_bill.name:
                 item["quantity"] += 1
-                self.refresh_from_data()
                 self._update()
 
     def delete_item(self, item_bill):
         for item in self.data:
             if item["name"] == item_bill.name:
                 self.data.remove(item)
-                self.refresh_from_data()
+                # self.refresh_from_data()
 
     def check_item(self, item_add):
         for item in self.data:
@@ -284,7 +279,6 @@ class BillRecycleView(RecycleView):
     def add_item(self, item):
         if self.check_item(item):
             self.data.append(item)
-            self.refresh_from_data()
 
 
 class BillListItem(MDCard):
@@ -313,9 +307,12 @@ class BillListItem(MDCard):
 
     def _minus_amount(self):
         self.parent.parent.reduce_quantity(self)
+        # if self.quantity > 1:
+        #    self.quantity -= 1
 
     def _plus_amount(self):
         self.parent.parent.raise_quantity(self)
+        #self.quantity += 1
 
     def _delete_item(self):
         self.parent.parent.delete_item(self)
