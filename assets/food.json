@@ -1,42 +1,82 @@
 {
     "Noodles": {
         "image": "assets/images/food.png",
-        "quantity": 3,
-        "price": 1905.99
+        "descriptions": "ngon lắm nhá",
+        "price": 19705.99
     },
     "Zucchini": {
         "image": "assets/images/food.png",
-        "quantity": 5,
-        "price": 2940.99
+        "descriptions": "ok !",
+        "price": 29540.99
     },
     "Lasagna": {
         "image": "assets/images/food.png",
-        "quantity": 2,
-        "price": 1900.99
+        "descriptions": "trying",
+        "price": 19440.99
     },
     "huenos rancheros": {
         "image": "assets/images/food.png",
-        "quantity": 27,
-        "price": 1945.99
+        "descriptions": "for your taste",
+        "price": 19445.99
     },
     "Graham crackers": {
         "image": "assets/images/food.png",
-        "quantity": 23,
-        "price": 3900.99
+        "descriptions": "delicious",
+        "price": 39300.99
     },
     "CFrench toast": {
         "image": "assets/images/food.png",
-        "quantity": 3,
-        "price": 2390.99
+        "descriptions": "ngon !",
+        "price": 22390.99
     },
     "Avocado roll": {
         "image": "assets/images/food.png",
-        "quantity": 7,
-        "price": 1988.99
+        "descriptions": "ngon lắm nhá",
+        "price": 19288.99
     },
     "Bruscetta": {
         "image": "assets/images/food.png",
-        "quantity": 12,
+        "descriptions": "cái gì nhỉ",
+        "price": 34567.99
+    },
+    "Pho": {
+        "image": "assets/images/food.png",
+        "descriptions": "ngon lắm nhá",
+        "price": 19705.99
+    },
+    "Cha ca": {
+        "image": "assets/images/food.png",
+        "descriptions": "ok !",
+        "price": 29540.99
+    },
+    "Banh xeo": {
+        "image": "assets/images/food.png",
+        "descriptions": "trying",
+        "price": 19440.99
+    },
+    "Cao lau": {
+        "image": "assets/images/food.png",
+        "descriptions": "for your taste",
+        "price": 19445.99
+    },
+    "Nem ran/cha gio": {
+        "image": "assets/images/food.png",
+        "descriptions": "delicious",
+        "price": 39300.99
+    },
+    "Goi cuon": {
+        "image": "assets/images/food.png",
+        "descriptions": "ngon !",
+        "price": 22390.99
+    },
+    "Bun bo Hue": {
+        "image": "assets/images/food.png",
+        "descriptions": "ngon lắm nhá",
+        "price": 19288.99
+    },
+    "Banh khot": {
+        "image": "assets/images/food.png",
+        "descriptions": "cái gì nhỉ",
         "price": 34567.99
     }
 }

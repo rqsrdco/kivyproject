@@ -168,7 +168,7 @@ class BillRecycleView(RecycleView):
 
     def generate_curr_bill_code(self):
         cs_u = MDApp.get_running_app().root.get_screen("salesstaff").user
-        self._code = "%s %d %s" % (cs_u, len(
+        self._code = "Cashier_%s_%d_%s" % (cs_u, len(
             self.data), time.strftime("%c"))
 
     def _insert_to_bills(self):
@@ -181,7 +181,7 @@ class BillRecycleView(RecycleView):
                 order["name"],
                 order["quantity"],
                 order["price"],
-                "Cashier",
+                MDApp.get_running_app().root.get_screen('salesstaff').user,
                 '{}'.format(_dt)
             )
             conn = db.connect_database()
@@ -194,12 +194,14 @@ class BillRecycleView(RecycleView):
             return
         else:
             if not self._code:
+                # Pay for Instance Order
                 self.generate_curr_bill_code()
                 self._insert_to_bills()
                 self._code = ""
                 self.data = []
-                toast("New Bill Saved")
+                toast("Pay for Instance Order")
             else:
+                # Pay for Order Stored
                 db = MDApp.get_running_app().root.local_sqlite
                 conn = db.connect_database()
                 db.delete_from_database(
@@ -208,7 +210,7 @@ class BillRecycleView(RecycleView):
                 self._insert_to_bills()
                 self._code = ""
                 self.data = []
-                toast("Bill Save")
+                toast("Pay for Ordered")
 
     def save_order_toPay_later(self):
         if not self.data:
@@ -217,13 +219,13 @@ class BillRecycleView(RecycleView):
         else:
             if not self._code:
                 self.generate_curr_bill_code()
-                # save NEW
+                # save NEW Order to Pay later
                 self._insert_to_orders()
                 self._code = ""
                 self.data = []
                 toast("New Order Saved")
             else:
-                # save EDIT
+                # save EDITED Order to Pay later
                 db = MDApp.get_running_app().root.local_sqlite
                 conn = db.connect_database()
                 db.delete_from_database(
@@ -244,7 +246,7 @@ class BillRecycleView(RecycleView):
                 order["name"],
                 order["quantity"],
                 order["price"],
-                "Cashier",
+                MDApp.get_running_app().root.get_screen('salesstaff').user,
                 '{}'.format(_dt)
             )
             conn = db.connect_database()

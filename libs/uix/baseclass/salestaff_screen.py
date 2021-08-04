@@ -46,8 +46,7 @@ class SalesStaff(MDScreen):
         ProfilePreview().fire(title="Contact with US", image="assets/images/logoopen.png")
 
     def add_item_to_order(self, *args):
-        from components.bill import BillListItem
-        menu_item = json.loads(args[1])
+        menu_item = args[1]  # json.loads(args[1])
         if menu_item["_list_of_order"]:
             self.ids.rv_bill.data = []
             for order in menu_item["_list_of_order"]:
@@ -62,7 +61,7 @@ class SalesStaff(MDScreen):
         else:
             bill_item = {
                 "name": menu_item["name"],
-                "quantity": menu_item["quantity"],
+                "quantity": 1,
                 "price": menu_item["price"],
                 "image": menu_item["image"]
             }

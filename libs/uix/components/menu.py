@@ -8,7 +8,7 @@ from kivymd.uix.card import MDCard
 from kivy.uix.recyclegridlayout import RecycleGridLayout
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
-from kivy.properties import BooleanProperty, ListProperty, StringProperty, NumericProperty, ObjectProperty
+from kivy.properties import BooleanProperty, ListProperty, StringProperty, NumericProperty, ObjectProperty, DictProperty
 from kivymd.toast import toast
 import json
 from kivymd.app import MDApp
@@ -74,7 +74,7 @@ Builder.load_string(
         padding: dp(6), dp(6), dp(6), dp(6)
 
         MDLabel:
-            text: str(root.quantity)
+            text: str(root.quantity) if root._list_of_order else root.descriptions
             pos_hint: {"center_y": .5}
             theme_text_color: "Primary"
             halign: "center"
@@ -118,7 +118,7 @@ class Menu(dict):
 
 
 class MenuRecycleView(RecycleView):
-    _selected_item = ObjectProperty()
+    _selected_item = DictProperty(None)
     _total_order = NumericProperty(0)
 
     def __init__(self, **kwargs):
@@ -152,36 +152,38 @@ class MenuRecycleView(RecycleView):
                     "quantity": round(_money, 2),
                     "price": len(o),
                     "image": "assets/images/order.png",
-                    "_list_of_order": o,
-                    "on_press": lambda x=json.dumps(Menu(
-                        _ma,
-                        round(_money, 2),
-                        len(o),
-                        "assets/images/order.png",
-                        o
-                    )): self.set_curr(x)
+                    "_list_of_order": o
+                    # "on_press": lambda x=json.dumps(Menu(
+                    #    _ma,
+                    #    round(_money, 2),
+                    #    len(o),
+                    #    "assets/images/order.png",
+                    #    o
+                    # )): self.set_curr(x)
                 }
                 self.data.append(od)
 
     @mainthread
     def fake_data(self, data):
-        with open("assets/%s.json" % data) as f:
+        with open("assets/%s.json" % data, encoding='utf-8') as f:
             self.menu_data = json.load(f)
 
         self.data = []
         for i in self.menu_data:
             mn = {
                 "name": i,
-                "quantity": self.menu_data[i]["quantity"],
+                # "quantity": 1,
+                "descriptions": self.menu_data[i]["descriptions"],
                 "price": self.menu_data[i]["price"],
                 "image": self.menu_data[i]["image"],
-                "on_press": lambda x=json.dumps(Menu(
-                    i,
-                    self.menu_data[i]["quantity"],
-                    self.menu_data[i]["price"],
-                    self.menu_data[i]["image"],
-                    []
-                )): self.set_curr(x)
+                "_list_of_order": []
+                # "on_press": lambda x=json.dumps(Menu(
+                #    i,
+                #    self.menu_data[i]["quantity"],
+                #    self.menu_data[i]["price"],
+                #    self.menu_data[i]["image"],
+                #    []
+                # )): self.set_curr(x)
             }
             self.data.append(mn)
 
@@ -189,21 +191,19 @@ class MenuRecycleView(RecycleView):
     def on_data(self, instance, data):
         self.refresh_from_data()
 
-    def set_curr(self, item):
-        self._selected_item = item
-
     def on__selected_item(self, *args):
         pass
 
 
 class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior, RecycleGridLayout):
-    obj = ObjectProperty(None)
+    selected_item = DictProperty(None)
 
 
 class MenuCardItem(RecycleDataViewBehavior, MDCard):
     image = StringProperty()
     name = StringProperty()
     price = NumericProperty()
+    descriptions = StringProperty('')
     quantity = NumericProperty(1)
     _list_of_order = ListProperty(None)
     index = None
@@ -229,3 +229,6 @@ class MenuCardItem(RecycleDataViewBehavior, MDCard):
     def apply_selection(self, rv, index, is_selected):
         ''' Respond to the selection of items in the view. '''
         self.selected = is_selected
+        if self.selected:
+            rv._selected_item = rv.data[index]
+            self.selected = False

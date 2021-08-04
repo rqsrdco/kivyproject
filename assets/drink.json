@@ -1,42 +1,82 @@
 {
     "Beer in Austria": {
         "image": "assets/images/drink.png",
-        "quantity": 3,
+        "descriptions": "sữa đá mát lạnh",
         "price": 1905.99
     },
     "Cocktails": {
         "image": "assets/images/drink.png",
-        "quantity": 5,
+        "descriptions": "tình yêu vẫy gọi",
         "price": 2940.99
     },
     "Hard soda": {
         "image": "assets/images/drink.png",
-        "quantity": 2,
+        "descriptions": "from aanother",
         "price": 1900.99
     },
     "Wine": {
         "image": "assets/images/drink.png",
-        "quantity": 27,
+        "descriptions": "Nhập khẩu",
         "price": 1945.99
     },
     "Chocolate": {
         "image": "assets/images/drink.png",
-        "quantity": 23,
+        "descriptions": "cái gì nhỉ",
         "price": 3900.99
     },
     "Caffeinated milk": {
         "image": "assets/images/drink.png",
-        "quantity": 3,
+        "descriptions": "ngon lắm nhá",
         "price": 2390.99
     },
     "Soft drinks": {
         "image": "assets/images/drink.png",
-        "quantity": 7,
+        "descriptions": "wow!",
         "price": 1988.99
     },
     "Barley": {
         "image": "assets/images/drink.png",
-        "quantity": 12,
+        "descriptions": "Hà Nội trong em",
+        "price": 34567.99
+    },
+    "Dừa Tươi (Fresh Coconut)": {
+        "image": "assets/images/drink.png",
+        "descriptions": "sữa đá mát lạnh",
+        "price": 1905.99
+    },
+    "Sinh Tố (Fruit Smoothie)": {
+        "image": "assets/images/drink.png",
+        "descriptions": "tình yêu vẫy gọi",
+        "price": 2940.99
+    },
+    "Nước Sâm (Herbal Tea)": {
+        "image": "assets/images/drink.png",
+        "descriptions": "from aanother",
+        "price": 1900.99
+    },
+    "Nước Mía (Sugar Cane Juice)": {
+        "image": "assets/images/drink.png",
+        "descriptions": "Nhập khẩu",
+        "price": 1945.99
+    },
+    "Trà Atisô (Artichoke Tea)": {
+        "image": "assets/images/drink.png",
+        "descriptions": "cái gì nhỉ",
+        "price": 3900.99
+    },
+    "Soda Chanh (Lime Soda)": {
+        "image": "assets/images/drink.png",
+        "descriptions": "ngon lắm nhá",
+        "price": 2390.99
+    },
+    "Bia (Beer)": {
+        "image": "assets/images/drink.png",
+        "descriptions": "drinking session!",
+        "price": 1988.99
+    },
+    "Rượu Nếp Cẩm (Sticky Rice Wine)": {
+        "image": "assets/images/drink.png",
+        "descriptions": "A range of wonderful snacks",
         "price": 34567.99
     }
 }
