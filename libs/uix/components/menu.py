@@ -13,6 +13,7 @@ from kivymd.toast import toast
 import json
 from kivymd.app import MDApp
 from kivy.clock import mainthread
+from kivy.metrics import dp
 
 
 Builder.load_string(
@@ -39,6 +40,7 @@ Builder.load_string(
         padding: dp(6), dp(6), dp(6), dp(6)
         adaptive_size: True
         FitImage:
+            id: img
             source: root.image
             size_hint: None, None
             size: dp(68), dp(68)
@@ -52,19 +54,22 @@ Builder.load_string(
 
             MDLabel:
                 text: root.name
+                size_hint_x: None
+                width: root.width - img.width - dp(24)
                 theme_text_color: "Primary"
-                font_style: "Button"
+                font_style: "Subtitle2"
                 bold: True
                 halign: "left"
                 adaptive_height: True
-                text_size: self.width, None
+                #text_size: self.width, None
 
             MDLabel:
-                text: str(root.price)
+                text: "{:,}-item".format(root.price) if root._list_of_order else "{:,.2f} vnd".format(root.price)
                 halign: "left"
                 adaptive_height: True
                 text_size: self.width, None
                 theme_text_color: "Primary"
+                font_style: "Subtitle2"
     MDSeparator:
 
     MDBoxLayout:
@@ -74,12 +79,13 @@ Builder.load_string(
         padding: dp(6), dp(6), dp(6), dp(6)
 
         MDLabel:
-            text: str(root.quantity) if root._list_of_order else root.descriptions
+            text: "{:,.2f} vnd".format(root.quantity) if root._list_of_order else root.descriptions
             pos_hint: {"center_y": .5}
             theme_text_color: "Primary"
             halign: "center"
             adaptive_height: True
             text_size: self.width, None
+            font_style: "Caption"
 
 <MenuRecycleView>
     canvas.before:
@@ -92,10 +98,10 @@ Builder.load_string(
     viewclass: 'MenuCardItem'
     bar_width: dp(0)
     SelectableRecycleGridLayout:
-        padding: dp(6)
-        spacing: dp(12)
-        cols: 3
-        default_size: None, dp(145)
+        padding: root.width * 0.02, root.height * 0.02
+        spacing: min(root.width, root.height) * 0.02
+        cols: 2 if root.width <= 345 else 3 if root.width > 345 and root.width <= 768 else 4
+        default_size: None, dp(152)
         default_size_hint: 1, None
         size_hint_y: None
         height: self.minimum_height
@@ -123,7 +129,7 @@ class MenuRecycleView(RecycleView):
 
     def __init__(self, **kwargs):
         super(MenuRecycleView, self).__init__(**kwargs)
-        self.fake_data("coffee")
+        self.data = []
 
     @mainthread
     def take_order(self):
@@ -153,19 +159,12 @@ class MenuRecycleView(RecycleView):
                     "price": len(o),
                     "image": "assets/images/order.png",
                     "_list_of_order": o
-                    # "on_press": lambda x=json.dumps(Menu(
-                    #    _ma,
-                    #    round(_money, 2),
-                    #    len(o),
-                    #    "assets/images/order.png",
-                    #    o
-                    # )): self.set_curr(x)
                 }
                 self.data.append(od)
 
     @mainthread
-    def fake_data(self, data):
-        with open("assets/%s.json" % data, encoding='utf-8') as f:
+    def fake_data(self, name):
+        with open("assets/%s.json" % name, encoding='utf-8') as f:
             self.menu_data = json.load(f)
 
         self.data = []
@@ -212,7 +211,6 @@ class MenuCardItem(RecycleDataViewBehavior, MDCard):
 
     def __init__(self, **kwargs):
         super(MenuCardItem, self).__init__(**kwargs)
-        self._list_of_order = []
 
     def refresh_view_attrs(self, rv, index, data):
         """ Catch and handle the view changes """
@@ -220,7 +218,7 @@ class MenuCardItem(RecycleDataViewBehavior, MDCard):
         return super(MenuCardItem, self).refresh_view_attrs(rv, index, data)
 
     def on_touch_down(self, touch):
-        ''' Add selection on touch down '''
+
         if super(MenuCardItem, self).on_touch_down(touch):
             return True
         if self.collide_point(*touch.pos) and self.selectable:

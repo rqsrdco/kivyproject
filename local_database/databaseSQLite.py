@@ -1,4 +1,6 @@
 import sqlite3
+import traceback
+import sys
 from sqlite3 import Error
 import time
 from time import strftime
@@ -18,125 +20,138 @@ class DatabaseSQLite:
 
         # .db file
         self.db = "VietCupPOS.db"
+        self.connection = None
 
-    def fetchLastRow(self, table_name, conn):
+    # connect database
+    def connect_database(self):
         try:
-            rw = conn.execute(
+            self.connection = sqlite3.connect(
+                self.db_dir + self.db, detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
+            print("DB connected")
+        except Error as er:
+            print('SQLite error: %s' % (' '.join(er.args)))
+            print("Exception class is: ", er.__class__)
+            print('SQLite traceback: ')
+            exc_type, exc_value, exc_tb = sys.exc_info()
+            print(traceback.format_exception(exc_type, exc_value, exc_tb))
+            self.connection = None
+
+    def fetchLastRow(self, table_name):
+        if self.connection is None:
+            self.connect_database()
+        try:
+            kq = self.connection.execute(
                 'select * from {}'.format(table_name)).fetchall()[-1]
-            return rw
+            return kq
         except Error as e:
             # pass
             print(e)
             return None
-        finally:
-            if conn:
-                conn.close()
 
     # Insert into database
-    def insert_into_database(self, tableName, conn, data):
-
-        if conn is not None:
-            try:
-                c = conn.execute("select * from {}".format(tableName))
-                fields = tuple([des[0] for des in c.description][:])
-                # print(fields)
-                #print("DATA : {}".format(data))
-                if "id" in fields:
-                    fields = tuple(list(fields)[1:])
-                #print("FIELDS : {}".format(fields))
-                cur = conn.cursor()
-                cur.execute("""
-					INSERT INTO {} {} VALUES {}
-					""".format(tableName, fields, data)
-                )
-                cur.close()
-                conn.commit()
-                print("Inserted")
-                return self.fetchLastRow(tableName, conn)
-            except Error as e:
-                # pass
-                print(e)
-            finally:
-                if conn:
-                    conn.close()
-        return None
+    def insert_into_database(self, tableName, data):
+        if self.connection is None:
+            self.connect_database()
+        try:
+            c = self.connection.execute("select * from {}".format(tableName))
+            fields = tuple([des[0] for des in c.description][:])
+            # print(fields)
+            #print("DATA : {}".format(data))
+            if "id" in fields:
+                fields = tuple(list(fields)[1:])
+            #print("FIELDS : {}".format(fields))
+            cur = self.connection.cursor()
+            cur.execute("""
+				INSERT INTO {} {} VALUES {}
+				""".format(tableName, fields, data)
+            )
+            cur.close()
+            self.connection.commit()
+            print("Inserted")
+            return True
+        except Error as e:
+            # pass
+            print(e)
+            return False
 
     # Update Database
-    def update_database(self, tableName, conn, fields, field_vals, ref, index):
-        if conn is not None:
-            try:
-                cur = conn.cursor()
-                if not isinstance(fields, tuple) and not isinstance(fields, list):
-                    fields = list([fields])
-                    field_vals = list([field_vals])
+    def update_database(self, tableName, fields, field_vals, ref, index):
+        if self.connection is None:
+            self.connect_database()
+        try:
+            cur = self.connection.cursor()
+            if not isinstance(fields, tuple) and not isinstance(fields, list):
+                fields = list([fields])
+                field_vals = list([field_vals])
 
-                for field, field_val in zip(fields, field_vals):
-                    # print(field,field_val)
-                    cur.execute(
-                        """
-							UPDATE {}
-							SET {}= ? WHERE {}= ?
-							""".format(
-                            tableName, field, ref
-                        ),
-                        (field_val, index),
-                    )
-                conn.commit()
-                return True
-            except Exception as e:
-                print("Error in updating data: {}".format(e))
-        return None
-
-    # Delete from Database
-    def delete_from_database(self, tableName, conn, condition, value):
-        if conn is not None:
-            try:
-                cur = conn.cursor()
-                # just to track if deletion was successful
-                count = len(
-                    cur.execute(
-                        """
-						SELECT * FROM {} WHERE {} = ?
-						""".format(
-                            tableName, condition
-                        ), (value,),
-                    ).fetchall()
-                )
-                if not count:
-                    return False
+            for field, field_val in zip(fields, field_vals):
+                # print(field,field_val)
                 cur.execute(
                     """
-						DELETE FROM {} WHERE {} = ?
+						UPDATE {}
+						SET {}= ? WHERE {}= ?
 						""".format(
+                        tableName, field, ref
+                    ),
+                    (field_val, index),
+                )
+            self.connection.commit()
+            return True
+        except Exception as e:
+            print("Error in updating data: {}".format(e))
+            return False
+
+    # Delete from Database
+    def delete_from_database(self, tableName, condition, value):
+        if self.connection is None:
+            self.connect_database()
+        try:
+            cur = self.connection.cursor()
+            # just to track if deletion was successful
+            count = len(
+                cur.execute(
+                    """
+					SELECT * FROM {} WHERE {} = ?
+					""".format(
                         tableName, condition
                     ), (value,),
-                )
-                conn.commit()
-                print("Deleted")
-                return True
-            except Error as e:
-                print("Error in deleting data: {}".format(e))
-        return False
+                ).fetchall()
+            )
+            if not count:
+                return False
+            cur.execute(
+                """
+					DELETE FROM {} WHERE {} = ?
+					""".format(
+                    tableName, condition
+                ), (value,),
+            )
+            self.connection.commit()
+            print("Deleted")
+            return True
+        except Error as e:
+            print("Error in deleting data: {}".format(e))
+            return False
 
     # Search in the database
-    def search_from_database(self, tableName, conn, prop, value, order_by="-id"):
-        if conn is not None:
-            try:
-                cur = conn.cursor()
-                # print("cur: {}".format(cur))
-                filtered_list = cur.execute(
-                    """
-							SELECT * FROM {} WHERE {} LIKE ? ORDER BY {};
-						""".format(
-                        tableName, prop, order_by
-                    ),
-                    (str(value) + "%",),
-                ).fetchall()
-                return filtered_list
-            except Error as e:
-                print("Error in searching: {}".format(e))
-
-        return None
+    def search_from_database(self, tableName, prop, value, order_by="-id"):
+        if self.connection is None:
+            self.connect_database()
+        try:
+            cur = self.connection.cursor()
+            # print("cur: {}".format(cur))
+            filtered_list = cur.execute(
+                """
+						SELECT * FROM {} WHERE {} LIKE ? ORDER BY {};
+					""".format(
+                    tableName, prop, order_by
+                ),
+                (str(value) + "%",),
+            ).fetchall()
+            return filtered_list
+        except Error as e:
+            print("Error in searching: {}".format(e))
+            return None
 
     def search_from_database_many(self, tableName, conn, condition):
         if conn is not None:
@@ -154,31 +169,22 @@ class DatabaseSQLite:
                 print("Error in deleting data: {}".format(e))
         return None
 
-    # connect database
-    def connect_database(self):
-        conn = None
-        try:
-            conn = sqlite3.connect(
-                self.db_dir + self.db, detect_types=sqlite3.PARSE_DECLTYPES | sqlite3.PARSE_COLNAMES)
-            print("DB connected")
-        except Error as e:
-            print("Error in database: {}".format(e))
-        finally:
-            return conn
-
     # create table
-    def create_table(self, table, conn):
-        if conn is not None:
-            try:
-                cur = conn.cursor()
-                cur.execute(table)
-                cur.close()
-                conn.commit()
-                print("Table created")
-            except Error:
-                pass
-            finally:
-                conn.close()
+
+    def create_table(self, table):
+        if not self.connection:
+            self.connect_database()
+        try:
+            cur = self.connection.cursor()
+            cur.execute(table)
+            cur.close()
+            self.connection.commit()
+            print("Table created")
+        except Error:
+            pass
+        finally:
+            if self.connection:
+                self.connection.close()
 
     def delete_table(self, db_file, table_name):
         conn = self.connect_database(db_file)
@@ -244,17 +250,17 @@ class DatabaseSQLite:
             return tmp
         return None
 
-    def extractAllData(self, tableName, order_by="reg"):
-        conn = self.connect_database()
-
-        if conn is not None:
-            cur = conn.execute(
+    def extractAllData(self, tableName, order_by="order_code"):
+        if self.connection is None:
+            self.connect_database()
+        try:
+            cur = self.connection.execute(
                 "SELECT * FROM {} ORDER BY {}".format(tableName, order_by)
             )
             data = cur.fetchall()
-            conn.close()
             return data
-        return None
+        except Error:
+            return None
 
     def delete_all_data(self, db_file, tableName):
         conn = self.connect_database(db_file)

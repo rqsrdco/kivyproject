@@ -40,11 +40,13 @@ Builder.load_string(
     MDBoxLayout:
         orientation: 'vertical'
         spacing: dp(7)
+        padding: [0, dp(6), 0, dp(6)]
         adaptive_width: True
         pos_hint: {"center_y": .5}
 
         MDLabel:
             text: root.name
+            adaptive_height: True
             halign: "center"
             font_style: "Body2"
             text_color: app.theme_cls.text_color
@@ -53,25 +55,26 @@ Builder.load_string(
         MDLabel:
             text: str(root.quantity)
             halign: "center"
-            font_style: "H6"
+            font_style: "Button"
             text_color: app.theme_cls.text_color
             text_size: self.width, None
     MDBoxLayout:
         orientation: 'vertical'
         spacing: dp(7)
+        padding: [0, dp(6), 0, dp(6)]
         adaptive_width: True
         pos_hint: {"center_y": .5}
 
         MDLabel:
             text: "Price"
             halign: "center"
-            font_style: "Body2"
+            font_style: "Subtitle2"
             text_color: app.theme_cls.text_color
             adaptive_width: True
             text_size: self.width, None
 
         MDLabel:
-            text: str(root.price)
+            text: "{:,.2f} vnd".format(root.price)
             halign: "center"
             text_color: app.theme_cls.text_color
             adaptive_width: True
@@ -184,9 +187,8 @@ class BillRecycleView(RecycleView):
                 MDApp.get_running_app().root.get_screen('salesstaff').user,
                 '{}'.format(_dt)
             )
-            conn = db.connect_database()
             db.insert_into_database(
-                "Bills", conn, _cur_bill)
+                "Bills", _cur_bill)
 
     def do_payment(self):
         if not self.data:
@@ -203,10 +205,8 @@ class BillRecycleView(RecycleView):
             else:
                 # Pay for Order Stored
                 db = MDApp.get_running_app().root.local_sqlite
-                conn = db.connect_database()
                 db.delete_from_database(
-                    "Orders", conn, "order_code", self._code)
-                conn.close()
+                    "Orders", "order_code", self._code)
                 self._insert_to_bills()
                 self._code = ""
                 self.data = []
@@ -227,10 +227,8 @@ class BillRecycleView(RecycleView):
             else:
                 # save EDITED Order to Pay later
                 db = MDApp.get_running_app().root.local_sqlite
-                conn = db.connect_database()
                 db.delete_from_database(
-                    "Orders", conn, "order_code", self._code)
-                conn.close()
+                    "Orders", "order_code", self._code)
                 self._insert_to_orders()
                 self._code = ""
                 self.data = []
@@ -249,9 +247,8 @@ class BillRecycleView(RecycleView):
                 MDApp.get_running_app().root.get_screen('salesstaff').user,
                 '{}'.format(_dt)
             )
-            conn = db.connect_database()
             db.insert_into_database(
-                "Orders", conn, _cur_order)
+                "Orders", _cur_order)
 
     def reduce_quantity(self, item_bill):
         for item in self.data:

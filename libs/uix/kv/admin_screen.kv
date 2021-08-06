@@ -360,20 +360,29 @@
 <EditStatePopup>
     container: container
     size_hint: None, None
-    size: 400, 275
+    size: 432, 279
     title_size: 20
     # title_font: "Verdana"
     auto_dismiss: False
-
+    title_align: 'center'
+    title_color: app.theme_cls.primary_color
+    separator_height: dp(0)
+    background_color: app.theme_cls.accent_color
     BoxLayout:
         orientation: "vertical"
+        #canvas.before:
+        #    Color:
+        #        rgba: app.theme_cls.divider_color
+        #    Rectangle:
+        #        size: self.size
+        #        pos: self.pos
         ScrollView:
             bar_width: 10
             bar_color: 1, 0, 0, 1   # red
             bar_inactive_color: 0, 0, 1, 1   # blue
             effect_cls: "ScrollEffect"
             scroll_type: ['bars']
-            size_hint: (1, None)
+            size_hint: (1, 1)
 
             GridLayout:
                 id: container
@@ -386,14 +395,19 @@
                 height: self.minimum_height
 
         BoxLayout:
+            size_hint_y: None
+            height: dp(52)
+            padding: dp(39), dp(6),dp(39),0
+            spacing: dp(39)
+            orientation: 'horizontal'
             Button:
-                size_hint: 1, 0.2
                 text: "Save Changes"
+                pos_hint: {'center_y': .5}
                 on_release:
                     root.dismiss()
             Button:
-                size_hint: 1, 0.2
                 text: "Cancel Changes"
+                pos_hint: {'center_y': .5}
                 on_release: root.dismiss()
 
 <SelectableButton>

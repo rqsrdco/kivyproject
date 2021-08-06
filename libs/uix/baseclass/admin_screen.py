@@ -163,9 +163,6 @@ class SongCover(MDBoxLayout):
         self.rotate()
 
 
-Window.size = (600, 325)
-
-
 class PopupLabelCell(Label):
     pass
 
@@ -174,6 +171,7 @@ class EditStatePopup(Popup):
 
     def __init__(self, obj, **kwargs):
         super(EditStatePopup, self).__init__(**kwargs)
+        self.title = "Edit"
         self.populate_content(obj)
 
     def populate_content(self, obj):
@@ -307,16 +305,20 @@ class TableHeader(ScrollView):
     def get_table_column_headings(self):
         self.db_cursor.execute("PRAGMA table_info(Bills)")
         col_headings = self.db_cursor.fetchall()
-        print(col_headings)
 
+        print("col_heading", col_headings)
         for col_heading in col_headings:
             data_type = col_heading[2]
-            if data_type == "INTEGER":
+
+            if data_type == "integer":
+                self.cols_minimum[col_heading[0]] = 49
+            elif data_type == 'real':
                 self.cols_minimum[col_heading[0]] = 100
+            elif data_type == 'datetime':
+                self.cols_minimum[col_heading[0]] = 120
             else:
-                self.cols_minimum[col_heading[0]] = 120  # int(
-                # re.findall(r'\d+', data_type).pop(0)) * 5
-            self.col_headings.append(col_heading[0])
+                self.cols_minimum[col_heading[0]] = 180
+            self.col_headings.append(col_heading[1])
             self.header.add_widget(HeaderCell(
                 text=col_heading[1], width=self.cols_minimum[col_heading[0]]))
 
@@ -418,7 +420,6 @@ class RV(RecycleView):
         self._request_keyboard()
 
     def setup_row_data(self, value):
-        print("value %s" % value)
         self.db_cursor.execute(
             "SELECT * FROM Bills WHERE id=?", value)
         self.row_data = self.db_cursor.fetchone()
@@ -445,7 +446,8 @@ class RV(RecycleView):
                 data.append([row[i], row[0], [low, high]])
             low += self.total_col_headings
             high += self.total_col_headings
-
+        for x in data:
+            print(x)
         self.rv_data = [{'text': str(x[0]), 'Index': str(
             x[1]), 'range': x[2], 'selectable': True} for x in data]
 

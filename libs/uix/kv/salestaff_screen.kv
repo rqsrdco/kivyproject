@@ -73,9 +73,9 @@
                         #badgeitem_color: C("#025F50")
                         #badge_bg_color: C("#F1E9C60F")
                         badge_disabled: True
-                        on_release: 
-                            rv_coffee.fake_data("coffee")
+                        on_release:
                             menu_mngr.transition.direction = 'right'
+                            rv_coffee.fake_data("coffee")
                             menu_mngr.current = 'coffee_scrn'
                     Button_Item:
                         text: "Drink"
@@ -86,9 +86,9 @@
                         #badgeitem_color: C("#025F50")
                         #badge_bg_color: C("#F1E9C60F")
                         badge_disabled: True
-                        on_release: 
-                            rv_drink.fake_data("drink")
+                        on_release:
                             menu_mngr.transition.direction = 'left'
+                            rv_drink.fake_data("drink")
                             menu_mngr.current = 'drink_scrn'
                     Button_Item:
                         icon: "food"
@@ -102,8 +102,8 @@
                         badge_bold: True
                         badge_disabled: True
                         on_release: 
-                            rv_food.fake_data("food")
                             menu_mngr.transition.direction = 'right'
+                            rv_food.fake_data("food")
                             menu_mngr.current = 'food_scrn'
                     Button_Item:
                         text: "Ordered"
@@ -122,8 +122,8 @@
                         badge_bold: True
                         badge_text: str(rv_ordered._total_order) if rv_ordered._total_order else "0"
                         on_release: 
-                            rv_ordered.take_order()
                             menu_mngr.transition.direction = 'left'
+                            rv_ordered.take_order()
                             menu_mngr.current = 'ordered_scrn'
 
             MDBoxLayout:
@@ -212,7 +212,7 @@
                     Separator:
                     MDBoxLayout:
                         MDLabel:
-                            text: str(rv_bill._sub_total)
+                            text: "{:,.2f} vnd".format(rv_bill._sub_total)
                             theme_text_color: "Custom"
                             text_color: app.theme_cls.primary_color
                             halign: "center"
@@ -232,7 +232,7 @@
                     Separator:
                     MDBoxLayout:    
                         MDLabel:
-                            text: str(rv_bill._total_price)
+                            text: "{:,.2f} vnd".format(rv_bill._total_price)
                             theme_text_color: "Custom"
                             text_color: app.theme_cls.primary_color
                             halign: "center"

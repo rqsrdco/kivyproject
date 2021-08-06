@@ -14,6 +14,7 @@ from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.utils import get_color_from_hex as ColorHex
 from kivy.clock import mainthread
+from db import orm
 
 
 class AuthorityScreen(ThemableBehavior, MDScreen):
@@ -101,18 +102,18 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
     def do_login(self, email, pwd):
         user = None
         try:
-            conn = self.manager.local_sqlite.connect_database()
-            user = self.manager.local_sqlite.search_from_database(
-                "Users", conn, "email", email, order_by="id")[0]
-            conn.close()
+            user = orm.get_user_by_email(
+                self.manager.db.db_session, email)
+        #    user = self.manager.local_sqlite.search_from_database(
+        #        "Users", "email", email, order_by="id")[0]
         except Exception:
             pass
-        if user is None or email != user[4]:
+        if user is None or email != user.email:
             self.ids.box2.children[0].ids.email_field.text = ""
             self.ids.box2.children[0].ids.email_field.hint_text = "Invalid Email"
         else:
-            if pwd == user[6]:
-                acc_type = user[7]
+            if pwd == user.password:
+                acc_type = user.role
                 if acc_type == "Administrator":
                     self.manager.set_current("administrator", side="right")
                     MDApp.get_running_app().get_date()
@@ -120,7 +121,7 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
                         "administrator").curr_date.text = MDApp.get_running_app().date
                 else:
                     self.manager.set_current("salesstaff", side="right")
-                    self.manager.get_screen("salesstaff").user = user[4]
+                    self.manager.get_screen("salesstaff").user = user.email
             else:
                 self.ids.box2.children[0].ids.pwd_text_field.text = ""
                 self.ids.box2.children[0].ids.pwd_text_field.hint_text = "Invalid Password"

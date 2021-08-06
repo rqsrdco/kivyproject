@@ -29,7 +29,7 @@ class SQLRawCommand:
             name text,
             import_amount integer,
             unit text,
-            price real
+            price_import real
             category text,
             description text,
             datetime_imported datetime,
@@ -37,13 +37,15 @@ class SQLRawCommand:
             );
     """
     create_table_menu = """
-        CREATE TABLE IF NOT EXISTS Menus (
-            id integer PRIMARY KEY,
-            code text,
-            name text,
-            price real,
-            quantity integer
-            );
+        CREATE TABLE Menus (
+        	code text PRIMARY KEY,
+         	category text,
+         	name text NOT NULL,
+        	price_sell real,
+         	quantity integer,
+         	is_enable integer,
+            FOREIGN KEY (category) REFERENCES Types (name)
+        );
     """
     create_table_bill = """
         CREATE TABLE IF NOT EXISTS Bills (
