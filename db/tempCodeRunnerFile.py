@@ -1,2 +1,4 @@
+cs, ad = objects.create_AccountType_objects()
 
-def main():
+    #cst = orm.create_account_type(session, cs)
+    #adt = orm.create_account_type(session, ad)

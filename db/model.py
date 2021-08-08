@@ -13,17 +13,60 @@ Base = declarative_base()
 bill_menu = Table(
     "bill_menu",
     Base.metadata,
-    Column('bill_id', Integer, ForeignKey("bill.bill_id")),
-    Column('menu_id', Integer, ForeignKey("menu.menu_id"))
+    Column('bill_id', ForeignKey("bill.id"), primary_key=True),
+    Column('menu_id', ForeignKey("menu.id"), primary_key=True)
 )
 
 
 order_menu = Table(
     "order_menu",
     Base.metadata,
-    Column('order_id', Integer, ForeignKey("order.order_id")),
-    Column('menu_id', Integer, ForeignKey("menu.menu_id"))
+    Column('order_id', ForeignKey("order.id"), primary_key=True),
+    Column('menu_id', ForeignKey("menu.id"), primary_key=True)
 )
+
+
+class Product(Base):
+    __tablename__ = 'product'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, unique=True)
+    image = Column(LargeBinary, nullable=True)
+    category_id = Column(Integer, ForeignKey('category.id'))
+    category = relationship("Category", back_populates="product")
+
+    menu = relationship("Menu", back_populates="product", uselist=False)
+
+    def __repr__(self):
+        return "Product(name= %s,image= %s, category_id= %s)" % (self.name, self.image, self.category_id)
+
+    def convertToBinaryData(filename):
+        # Convert digital data to binary format
+        with open(filename, 'rb') as file:
+            blobData = file.read()
+        return blobData
+
+    def writeTofile(data, filename):
+        import os.path
+        file_exists = os.path.isfile(filename)
+        if file_exists:
+            pass
+        else:
+            # Convert binary data to proper format and write it on Hard Disk
+            with open(filename, 'wb') as file:
+                file.write(data)
+
+
+class Category(Base):
+    __tablename__ = 'category'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String, unique=True)
+
+    product = relationship("Product", back_populates="category")
+
+    def __repr__(self):
+        return _repr(id=self.id, name=self.name)
 
 
 class AccountType(Base):
@@ -32,7 +75,7 @@ class AccountType(Base):
     id = Column(Integer, primary_key=True)
     role = Column(String, default="Cashier", unique=True)
 
-    users = relationship("User", backref=backref("account_type"))
+    users = relationship("User", back_populates="role")
 
     def __repr__(self):
         return f"AccountType(id={self.id!r}, role={self.role!r})"
@@ -41,7 +84,7 @@ class AccountType(Base):
 class User(Base):
     __tablename__ = 'user'
 
-    user_id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)
     email = Column(String, nullable=True, unique=True)
@@ -55,44 +98,46 @@ class User(Base):
                         server_default=func.now())
     updated_at = Column(DateTime(
         timezone=True), onupdate=func.now())
-    role = Column(String,
-                  ForeignKey('account_type.role'))
+    role_id = Column(Integer,
+                     ForeignKey('account_type.id'))
+    role = relationship("AccountType", back_populates="users")
 
-    bills = relationship("Bill", backref=backref("user"))
-    orders = relationship("Order", backref=backref("user"))
+    bills = relationship("Bill", back_populates="cashiers")
+    orders = relationship("Order", back_populates="cashiers")
 
     def __repr__(self):
-        return "<User(id='%s', email='%s', type_name='%s')>" % (self.user_id, self.email, self.role)
+        return "<User(id='%s', email='%s', role='%s')>" % (self.id, self.email, self.role_id)
 
 
 class Bill(Base):
     __tablename__ = 'bill'
 
-    bill_id = Column(Integer, primary_key=True, autoincrement=True)
-    bills_code = Column(String)
-    item_quantity = Column(Integer)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    code = Column(String)
+    quantity = Column(Integer)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    item_price = Column(Float, ForeignKey('menu.sell_price'))
-    item_bill = Column(String, ForeignKey('menu.item_name'))
-    user_sold = Column(Integer, ForeignKey('user.user_id'))
+    product = Column(Integer, ForeignKey('menu.id'))
+    cashier_id = Column(Integer, ForeignKey('user.id'))
+    cashiers = relationship("User", back_populates="bills")
+
     menus = relationship(
         "Menu", secondary=bill_menu, back_populates="bills"
     )
 
     def __repr__(self):
-        return _repr(bill_id=self.bill_id, item_quantity=self.item_quantity, bills_code=self.bills_code)
+        return _repr(id=self.id, quantity=self.quantity, code=self.code)
 
 
 class Order(Base):
     __tablename__ = 'order'
 
-    order_id = Column(Integer, primary_key=True, autoincrement=True)
-    orders_code = Column(String)
-    item_order = Column(String, ForeignKey('menu.item_name'))
-    item_quantity = Column(Integer)
-    item_price = Column(Float, ForeignKey('menu.sell_price'))
-    user_sell = Column(Integer, ForeignKey('user.user_id'))
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    code = Column(String)
+    quantity = Column(Integer)
+    product = Column(Integer, ForeignKey('menu.id'))
+    cashier_id = Column(Integer, ForeignKey('user.id'))
+    cashiers = relationship("User", back_populates="orders")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
@@ -101,17 +146,31 @@ class Order(Base):
     )
 
     def __repr__(self):
-        return _repr(order_id=self.order_id, item_quantity=self.item_quantity, orders_code=self.orders_code)
+        return _repr(id=self.id, quantity=self.quantity, code=self.code)
+
+
+class Store(Base):
+    __tablename__ = 'store'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    product_id = Column(Integer, ForeignKey('product.id'), unique=True)
+    products = relationship(
+        "Product", backref=backref("store", uselist=False))
+    input_price = Column(Float)
+    quantity = Column(Integer)
+
+    def __repr__(self):
+        return "Store(product= %s, input_price= %s, quantity= %s)" % (self.product, self.input_price, self.quantity)
 
 
 class Menu(Base):
     __tablename__ = 'menu'
 
-    menu_id = Column(Integer, primary_key=True, autoincrement=True)
-    item_name = Column(String, unique=True)
-    item_image = Column(LargeBinary, nullable=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    product_id = Column(Integer, ForeignKey('product.id'), unique=True)
+    product = relationship("Product", back_populates="menu")
     sell_price = Column(Float)
-    categories_name = Column(String, ForeignKey('category.category_name'))
+
     orders = relationship(
         "Order", secondary=order_menu, back_populates="menus"
     )
@@ -120,18 +179,7 @@ class Menu(Base):
     )
 
     def __repr__(self):
-        return _repr(menu_id=self.menu_id, item_name=self.item_name, sell_price=self.sell_price)
-
-
-class Category(Base):
-    __tablename__ = 'category'
-
-    category_id = Column(Integer, primary_key=True, autoincrement=True)
-    category_name = Column(String, unique=True)
-    menus = relationship("Menu", backref=backref("category"))
-
-    def __repr__(self):
-        return _repr(category_id=self.category_id, category_name=self.category_name)
+        return _repr(id=self.id, product_id=self.product_id, sell_price=self.sell_price)
 
 
 def _repr(self, **fields: typing.Dict[str, typing.Any]) -> str:
@@ -150,8 +198,3 @@ def _repr(self, **fields: typing.Dict[str, typing.Any]) -> str:
     if at_least_one_attached_attribute:
         return f"<{self.__class__.__name__}({','.join(field_strings)})>"
     return f"<{self.__class__.__name__} {id(self)}>"
-
-
-if __name__ == "__main__":
-    from database import MyDatabase
-    Base.metadata.create_all(MyDatabase().db_engine)

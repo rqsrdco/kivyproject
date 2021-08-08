@@ -1,24 +1,68 @@
 Traceback (most recent call last):
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\engine\base.py", line 1771, in _execute_context
+    self.dialect.do_execute(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\engine\default.py", line 717, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.IntegrityError: UNIQUE constraint failed: category.name
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
   File "D:\PYTHON\Kivy\kivyproject\main.py", line 32, in <module>
     KivyMDApp().run()
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\app.py", line 950, in run
-    runTouchApp()
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 582, in runTouchApp
-    EventLoop.mainloop()
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 347, in mainloop
-    self.idle()
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 387, in idle
-    Clock.tick()
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\clock.py", line 733, in tick
-    self.post_idle(ts, self.idle())
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\clock.py", line 776, in post_idle
-    self._process_events()
-  File "kivy\_clock.pyx", line 616, in kivy._clock.CyClockBase._process_events
-  File "kivy\_clock.pyx", line 649, in kivy._clock.CyClockBase._process_events
-  File "kivy\_clock.pyx", line 645, in kivy._clock.CyClockBase._process_events
-  File "kivy\_clock.pyx", line 218, in kivy._clock.ClockEvent.tick
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\clock.py", line 1095, in callback_func
-    func(*args, **kwargs)
-  File "D:\PYTHON\Kivy\kivyproject\libs\uix\components\menu.py", line 138, in take_order
-    order_wait = dbsql.extractAllData('Orders', order_by='order_code')
-AttributeError: 'MyDatabase' object has no attribute 'extractAllData'
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\app.py", line 949, in run
+    self._run_prepare()
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\app.py", line 919, in _run_prepare
+    root = self.build()
+  File "D:\PYTHON\Kivy\kivyproject\kivymdapp.py", line 58, in build
+    self.root = Root()
+  File "D:\PYTHON\Kivy\kivyproject\libs\uix\root.py", line 21, in __init__
+    self.db = MyDatabase()
+  File "D:\PYTHON\Kivy\kivyproject\db\database.py", line 24, in __init__
+    self.init_product_categories()
+  File "D:\PYTHON\Kivy\kivyproject\db\database.py", line 30, in init_product_categories
+    self.db_session.commit()
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\orm\session.py", line 1428, in commit
+    self._transaction.commit(_to_root=self.future)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\orm\session.py", line 829, in commit
+    self._prepare_impl()
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\orm\session.py", line 808, in _prepare_impl
+    self.session.flush()
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\orm\session.py", line 3298, in flush
+    self._flush(objects)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\orm\session.py", line 3438, in _flush
+    transaction.rollback(_capture_exception=True)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\util\langhelpers.py", line 70, in __exit__
+    compat.raise_(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\util\compat.py", line 207, in raise_
+    raise exception
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\orm\session.py", line 3398, in _flush
+    flush_context.execute()
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\orm\unitofwork.py", line 456, in execute
+    rec.execute(self)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\orm\unitofwork.py", line 630, in execute
+    util.preloaded.orm_persistence.save_obj(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\orm\persistence.py", line 242, in save_obj
+    _emit_insert_statements(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\orm\persistence.py", line 1219, in _emit_insert_statements
+    result = connection._execute_20(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\engine\base.py", line 1583, in _execute_20
+    return meth(self, args_10style, kwargs_10style, execution_options)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\sql\elements.py", line 323, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\engine\base.py", line 1452, in _execute_clauseelement
+    ret = self._execute_context(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\engine\base.py", line 1814, in _execute_context
+    self._handle_dbapi_exception(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\engine\base.py", line 1995, in _handle_dbapi_exception
+    util.raise_(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\util\compat.py", line 207, in raise_
+    raise exception
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\engine\base.py", line 1771, in _execute_context
+    self.dialect.do_execute(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\sqlalchemy\engine\default.py", line 717, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed: category.name
+[SQL: INSERT INTO category (name) VALUES (?)]
+[parameters: ('Coffee',)]
+(Background on this error at: https://sqlalche.me/e/14/gkpj)

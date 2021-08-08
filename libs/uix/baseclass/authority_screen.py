@@ -14,7 +14,6 @@ from kivy.metrics import dp
 from kivy.lang import Builder
 from kivy.utils import get_color_from_hex as ColorHex
 from kivy.clock import mainthread
-from db import orm
 
 
 class AuthorityScreen(ThemableBehavior, MDScreen):
@@ -102,10 +101,7 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
     def do_login(self, email, pwd):
         user = None
         try:
-            user = orm.get_user_by_email(
-                self.manager.db.db_session, email)
-        #    user = self.manager.local_sqlite.search_from_database(
-        #        "Users", "email", email, order_by="id")[0]
+            user = self.manager.db.get_user_by_email(email)
         except Exception:
             pass
         if user is None or email != user.email:
@@ -113,8 +109,8 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
             self.ids.box2.children[0].ids.email_field.hint_text = "Invalid Email"
         else:
             if pwd == user.password:
-                acc_type = user.role
-                if acc_type == "Administrator":
+                acc_type = user.role_id
+                if acc_type == 2:
                     self.manager.set_current("administrator", side="right")
                     MDApp.get_running_app().get_date()
                     self.manager.get_screen(

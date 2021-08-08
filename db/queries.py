@@ -1,9 +1,30 @@
 from typing import List, Optional
 
-from sqlalchemy import text, Integer
+from sqlalchemy import text, Integer, String
 from sqlalchemy.engine.base import Engine
 
 from logger import LOGGER
+
+
+def execute_query(engine: Engine, query: String):
+    if query == '':
+        return
+    try:
+        engine.execute(query)
+    except Exception as e:
+        print(e)
+
+
+def print_all_data(engine: Engine, table: String, query: String):
+    _query = query if query != '' else "SELECT * FROM '{}';".format(table)
+    try:
+        result = engine.execute(_query)
+    except Exception as e:
+        print(e)
+    else:
+        for row in result:
+            print(row)
+        result.close()
 
 
 def fetch_menu_listings(engine: Engine) -> Optional[List[dict]]:

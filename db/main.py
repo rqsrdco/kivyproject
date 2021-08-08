@@ -4,7 +4,6 @@ from sqlalchemy.sql.expression import update
 
 import objects
 import queries
-import orm
 from database import MyDatabase
 
 
@@ -17,16 +16,19 @@ def main():
     #menus = queries.fetch_menu_listings(engine)
     #kq = queries.update_order_listing(engine, 2, 3)
     # CREATE AccountType
-    #cs, ad = objects.create_AccountType_objects()
+    records = dbms.get_products()
+    for row in records:
+        #photoPath = config.PRODUCT_PHOTO_PATH + row.name + ".png"
+        #model.Product.writeTofile(row.image, photoPath)
+        print(row.name)
 
     #cst = orm.create_account_type(session, cs)
     #adt = orm.create_account_type(session, ad)
     # CREATE User
-    #cs1, cs2, admin = objects.create_User_objects()
-
-    #cs_1 = orm.create_account(session, cs1)
-    #cs_2 = orm.create_account(session, cs2)
-    #ad = orm.create_account(session, admin)
+    #cs_test, user_cs, user_ad = objects.create_User_objects()
+    #cs_1 = orm.create_account(session, cs_test)
+    #cs_2 = orm.create_account(session, user_cs)
+    #ad = orm.create_account(session, user_ad)
 
 
 if __name__ == "__main__":
