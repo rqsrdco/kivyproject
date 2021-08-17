@@ -21,7 +21,7 @@ Builder.load_string(
     """
 <MenuCardItem>
     orientation: "vertical"
-    # adaptive_size: True
+    #adaptive_size: True
     #size_hint: .5, None
     adaptive_height: True
     pos_hint: {"center_x": .5, "center_y": .5}
@@ -79,7 +79,7 @@ Builder.load_string(
         spacing: dp(12)
         padding: dp(6), dp(6), dp(6), dp(6)
         MDLabel:
-            text: root.descriptions + " vnd" if root._list_of_order else root.descriptions
+            text: "{:,.2f} vnd".format(float(root.descriptions)) if root._list_of_order else root.descriptions
             pos_hint: {"center_y": .5}
             theme_text_color: "Primary"
             halign: "center"
@@ -89,7 +89,8 @@ Builder.load_string(
 
 <MenuRecycleView>
     rv_menu: rv_menu
-    orientation: 'vertical'
+    orientation: 'horizontal'
+    #md_bg_color: app.theme_cls.primary_color
     RecycleView:
         id: rv_menu
         #canvas.before:
@@ -104,14 +105,14 @@ Builder.load_string(
         bar_width: dp(0)
         do_scroll_x: False
         SelectableRecycleGridLayout:
+            cols: root.cols
+            key_selection: 'selectable'
             padding: root.width * 0.02, root.height * 0.02
             spacing: min(root.width, root.height) * 0.02
-            cols: 2 if root.width <= 345 else 3 if root.width > 345 and root.width <= 768 else 4
-            default_size: None, dp(152)
-            default_size_hint: 1, None
+            default_size: dp(168), dp(152)
+            default_size_hint: 1/self.cols, None
             size_hint_y: None
             height: self.minimum_height
-            key_selection: 'selectable'
             #multiselect: True
             #touch_multiselect: True
     """
@@ -136,6 +137,7 @@ class MenuRecycleView(MDBoxLayout):
     _menu_item = ObjectProperty(None)
     data = ListProperty()
     rv_menu = ObjectProperty()
+    cols = NumericProperty(1)
 
     def __init__(self, **kwargs):
         super(MenuRecycleView, self).__init__(**kwargs)
@@ -143,6 +145,13 @@ class MenuRecycleView(MDBoxLayout):
 
     @mainthread
     def on_data(self, instance, data):
+        print(len(self.data))
+        if len(self.data) > 0 and len(self.data) <= 2:
+            self.cols = 1
+        elif len(self.data) == 3:
+            self.cols = 2
+        else:
+            self.cols = 3
         self.rv_menu.refresh_from_data()
 
 

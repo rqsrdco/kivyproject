@@ -21,23 +21,20 @@ Traceback (most recent call last):
     new, remaining, old = self.recycleview.view_adapter.set_visible_views(
   File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\recycleview\views.py", line 406, in set_visible_views
     view = get_view(index, data[index],
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\recycleview\views.py", line 262, in get_view
-    view = self.create_view(index, data_item, viewclass)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\recycleview\views.py", line 226, in create_view
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\recycleview\views.py", line 267, in get_view
     self.refresh_view_attrs(index, data_item, view)
   File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\recycleview\views.py", line 286, in refresh_view_attrs
     view.refresh_view_attrs(self.recycleview, index, data_item)
-  File "D:\PYTHON\Kivy\kivyproject\libs\uix\components\menu.py", line 170, in refresh_view_attrs
+  File "D:\PYTHON\Kivy\kivyproject\libs\uix\components\menu.py", line 179, in refresh_view_attrs
     return super(MenuCardItem, self).refresh_view_attrs(rv, index, data)
   File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\recycleview\views.py", line 77, in refresh_view_attrs
     setattr(self, key, value)
   File "kivy\properties.pyx", line 498, in kivy.properties.Property.__set__
-  File "kivy\properties.pyx", line 840, in kivy.properties.ListProperty.set
   File "kivy\properties.pyx", line 545, in kivy.properties.Property.set
   File "kivy\properties.pyx", line 600, in kivy.properties.Property.dispatch
   File "kivy\_event.pyx", line 1248, in kivy._event.EventObservers.dispatch
   File "kivy\_event.pyx", line 1130, in kivy._event.EventObservers._dispatch
   File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\lang\builder.py", line 66, in call_fn
     e_value = eval(value, idmap)
-  File "<string>", line 48, in <module>
-ValueError: Format specifier missing precision
+  File "<string>", line 62, in <module>
+ValueError: could not convert string to float: 'Coffee'

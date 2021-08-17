@@ -189,6 +189,7 @@ class BillRecycleView(RecycleView):
             # self.db.add_bill_detail_to_db(_cur_bill)
             bills.append(_cur_bill)
         self.db.add_bills_to_db(bills)
+        self.db.update_store_quantity_whenPay(bills)
 
     def do_payment(self):
         if not self.data:

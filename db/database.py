@@ -95,6 +95,23 @@ class MyDatabase:
         except Exception:
             return None
 
+    def get_productId_by_productName(self, productName: str) -> int:
+        try:
+            result = self.db_session.query(model.Product.id).filter(
+                model.Product.name == productName
+            ).first()
+            return result[0]
+        except Exception as e:
+            raise Exception(e)
+
+    def get_quantity_in_store(self, id: int) -> int:
+        try:
+            result = self.db_session.query(model.Store.quantity).filter(
+                model.Store.product_id == id).first()
+            return result[0]
+        except Exception as e:
+            print(e)
+
     def add_bills_to_db(self, bills: List[model.Bill]):
         try:
             self.db_session.add_all(bills)
@@ -106,6 +123,17 @@ class MyDatabase:
         try:
             self.db_session.add(bill)
             self.db_session.commit()
+        except Exception as e:
+            raise Exception(e)
+
+    def update_store_quantity_whenPay(self, bills: List[model.Bill]):
+        try:
+            for bill in bills:
+                product_id = self.get_productId_by_productName(bill.product)
+                store_quantity = self.get_quantity_in_store(product_id)
+                self.db_session.query(model.Store).filter(
+                    model.Store.product_id == product_id).update({"quantity": store_quantity - bill.quantity})
+                self.db_session.commit()
         except Exception as e:
             raise Exception(e)
 
