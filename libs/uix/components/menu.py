@@ -5,6 +5,7 @@ from kivy.uix.recycleview.layout import LayoutSelectionBehavior
 from kivy.clock import Clock
 from kivy.lang import Builder
 from kivymd.uix.card import MDCard
+from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.uix.recyclegridlayout import RecycleGridLayout
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.recycleview.views import RecycleDataViewBehavior
@@ -64,7 +65,7 @@ Builder.load_string(
                 #text_size: self.width, None
 
             MDLabel:
-                text: "{:,}-item".format(root.price) if root._list_of_order else "{:,.2f} vnd".format(root.price)
+                text: "{:,} item".format(root.price) if root._list_of_order else "{:,.2f} vnd".format(root.price)
                 halign: "left"
                 adaptive_height: True
                 text_size: self.width, None
@@ -77,9 +78,8 @@ Builder.load_string(
         adaptive_height: True
         spacing: dp(12)
         padding: dp(6), dp(6), dp(6), dp(6)
-
         MDLabel:
-            text: "{:,.2f} vnd".format(root.quantity) if root._list_of_order else root.descriptions
+            text: root.descriptions + " vnd" if root._list_of_order else root.descriptions
             pos_hint: {"center_y": .5}
             theme_text_color: "Primary"
             halign: "center"
@@ -88,25 +88,32 @@ Builder.load_string(
             font_style: "Caption"
 
 <MenuRecycleView>
-    canvas.before:
-        Color:
-            rgba: app.theme_cls.divider_color if self.data else app.theme_cls.accent_color
-        RoundedRectangle:
-            radius: [12]
-            size: self.size
-            pos: self.pos
-    viewclass: 'MenuCardItem'
-    bar_width: dp(0)
-    SelectableRecycleGridLayout:
-        padding: root.width * 0.02, root.height * 0.02
-        spacing: min(root.width, root.height) * 0.02
-        cols: 2 if root.width <= 345 else 3 if root.width > 345 and root.width <= 768 else 4
-        default_size: None, dp(152)
-        default_size_hint: 1, None
-        size_hint_y: None
-        height: self.minimum_height
-        #multiselect: True
-        #touch_multiselect: True
+    rv_menu: rv_menu
+    orientation: 'vertical'
+    RecycleView:
+        id: rv_menu
+        #canvas.before:
+        #    Color:
+        #        rgba: app.theme_cls.divider_color
+        #    RoundedRectangle:
+        #        radius: [12]
+        #        size: self.size
+        #        pos: self.pos
+        viewclass: 'MenuCardItem'
+        data: root.data
+        bar_width: dp(0)
+        do_scroll_x: False
+        SelectableRecycleGridLayout:
+            padding: root.width * 0.02, root.height * 0.02
+            spacing: min(root.width, root.height) * 0.02
+            cols: 2 if root.width <= 345 else 3 if root.width > 345 and root.width <= 768 else 4
+            default_size: None, dp(152)
+            default_size_hint: 1, None
+            size_hint_y: None
+            height: self.minimum_height
+            key_selection: 'selectable'
+            #multiselect: True
+            #touch_multiselect: True
     """
 )
 
@@ -123,88 +130,33 @@ class Menu(dict):
         )
 
 
-class MenuRecycleView(RecycleView):
-    _selected_item = DictProperty(None)
+class MenuRecycleView(MDBoxLayout):
+    _selected_item = NumericProperty()
     _total_order = NumericProperty(0)
+    _menu_item = ObjectProperty(None)
+    data = ListProperty()
+    rv_menu = ObjectProperty()
 
     def __init__(self, **kwargs):
         super(MenuRecycleView, self).__init__(**kwargs)
         self.data = []
 
     @mainthread
-    def take_order(self):
-        self.data = []
-        dbsql = MDApp.get_running_app().root.local_sqlite
-        order_wait = dbsql.extractAllData('Orders', order_by='order_code')
-        if not order_wait:
-            toast("Orders sold out !")
-            return
-        else:
-            _out_list = [[]]
-            _code = order_wait[0][1]
-            for i, item in enumerate(order_wait):
-                if item[1] != _code and i != len(order_wait) - 1:
-                    _code = item[1]
-                    _out_list.append([])
-                _out_list[-1].append(item)
-            self._total_order = len(_out_list)
-            for o in _out_list:
-                _ma = o[0][1]
-                _money = 0
-                for k in o:
-                    _money += round((k[3] * k[4]), 2)
-                od = {
-                    "name": _ma,
-                    "quantity": round(_money, 2),
-                    "price": len(o),
-                    "image": "assets/images/order.png",
-                    "_list_of_order": o
-                }
-                self.data.append(od)
-
-    @mainthread
-    def fake_data(self, name):
-        with open("assets/%s.json" % name, encoding='utf-8') as f:
-            self.menu_data = json.load(f)
-
-        self.data = []
-        for i in self.menu_data:
-            mn = {
-                "name": i,
-                # "quantity": 1,
-                "descriptions": self.menu_data[i]["descriptions"],
-                "price": self.menu_data[i]["price"],
-                "image": self.menu_data[i]["image"],
-                "_list_of_order": []
-                # "on_press": lambda x=json.dumps(Menu(
-                #    i,
-                #    self.menu_data[i]["quantity"],
-                #    self.menu_data[i]["price"],
-                #    self.menu_data[i]["image"],
-                #    []
-                # )): self.set_curr(x)
-            }
-            self.data.append(mn)
-
-    @mainthread
     def on_data(self, instance, data):
-        self.refresh_from_data()
-
-    def on__selected_item(self, *args):
-        pass
+        self.rv_menu.refresh_from_data()
 
 
 class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior, RecycleGridLayout):
-    selected_item = DictProperty(None)
+    ''' Adds selection and focus behaviour to the view. '''
 
 
 class MenuCardItem(RecycleDataViewBehavior, MDCard):
     image = StringProperty()
+    _list_of_order = ListProperty(None)
+    descriptions = StringProperty('')
     name = StringProperty()
     price = NumericProperty()
-    descriptions = StringProperty('')
-    quantity = NumericProperty(1)
-    _list_of_order = ListProperty(None)
+
     index = None
     selected = BooleanProperty(False)
     selectable = BooleanProperty(True)
@@ -227,6 +179,6 @@ class MenuCardItem(RecycleDataViewBehavior, MDCard):
     def apply_selection(self, rv, index, is_selected):
         ''' Respond to the selection of items in the view. '''
         self.selected = is_selected
-        if self.selected:
-            rv._selected_item = rv.data[index]
-            self.selected = False
+
+    def on_release(self):
+        self.parent.parent._selected_item = self.index

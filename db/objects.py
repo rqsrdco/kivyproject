@@ -1,8 +1,8 @@
-from typing import Tuple
+from typing import Tuple, List
 import model
 
 
-def create_Product_objects():
+def create_Product_objects() -> List[model.Product]:
     return [model.Product(
             name="Coffee %s" % p if p % 2 == 0 else "Food %s" % p if p % 3 == 0 else "Drink %s" % p,
             image=model.Product.convertToBinaryData(

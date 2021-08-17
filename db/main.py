@@ -16,11 +16,13 @@ def main():
     #menus = queries.fetch_menu_listings(engine)
     #kq = queries.update_order_listing(engine, 2, 3)
     # CREATE AccountType
-    records = dbms.get_products()
+    # dbms.init_store()
+    records = dbms.get_category()  # get_menu_by_category(3)
+    print(records)
     for row in records:
         #photoPath = config.PRODUCT_PHOTO_PATH + row.name + ".png"
         #model.Product.writeTofile(row.image, photoPath)
-        print(row.name)
+        print(row)
 
     #cst = orm.create_account_type(session, cs)
     #adt = orm.create_account_type(session, ad)

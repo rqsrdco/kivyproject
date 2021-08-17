@@ -1,10 +1,10 @@
 #: import ColorHex kivy.utils.get_color_from_hex
 #: import ZBarCam kivy_garden.zbarcam.ZBarCam
-#: import FallOutTransition kivy.uix.screenmanager
-#: import WipeTransition kivy.uix.screenmanager
-#: import SwapTransition kivy.uix.screenmanager
+#: import SwapTransition kivy.uix.screenmanager.SwapTransition
+
 
 <SalesStaff>
+    menu_mngr: menu_mngr
     MDBoxLayout:
         orientation: "vertical"
         spacing: dp(6)
@@ -32,99 +32,14 @@
                 spacing: dp(6)
                 MDBoxLayout:
                     id: menu_op
-                    ScreenManager:
+                    MenuManager:
                         id: menu_mngr
-                        Screen:
-                            name: "coffee_scrn"
-                            MenuRecycleView:
-                                id: rv_coffee
-                                on__selected_item: root.add_item_to_order(*args)
-                        Screen:
-                            name: "food_scrn"
-                            MenuRecycleView:
-                                id: rv_food
-                                on__selected_item: root.add_item_to_order(*args)
-                        Screen:
-                            name: "drink_scrn"
-                            MenuRecycleView:
-                                id: rv_drink
-                                on__selected_item: root.add_item_to_order(*args)
-                        Screen:
-                            name: "ordered_scrn"
-                            MenuRecycleView:
-                                id: rv_ordered
-                                on__selected_item: root.add_item_to_order(*args)
-                MDCard:
-                    orientation: "horizontal"
-                    size_hint_y: None
-                    height: dp(68)
-                    spacing: dp(12)
-                    padding: (self.width - dp(276))/2,dp(14),(self.width - dp(276))/2,dp(14)
-                    pos_hint: {'center_y': .5}
-                    elevation: dp(0)
-                    md_bg_color: 0.3,.3,.3,0
-                    radius: [12]
-                    Button_Item:
-                        text: "Coffee"
-                        icon: "coffee"
-                        icon_color: app.theme_cls.primary_color
-                        text_color: app.theme_cls.text_color
-                        button_bg_color: app.theme_cls.divider_color
-                        #badgeitem_color: C("#025F50")
-                        #badge_bg_color: C("#F1E9C60F")
-                        badge_disabled: True
-                        on_release:
-                            menu_mngr.transition.direction = 'right'
-                            rv_coffee.fake_data("coffee")
-                            menu_mngr.current = 'coffee_scrn'
-                    Button_Item:
-                        text: "Drink"
-                        icon: "cup-water"
-                        icon_color: app.theme_cls.primary_color
-                        text_color: app.theme_cls.text_color
-                        button_bg_color: app.theme_cls.divider_color
-                        #badgeitem_color: C("#025F50")
-                        #badge_bg_color: C("#F1E9C60F")
-                        badge_disabled: True
-                        on_release:
-                            menu_mngr.transition.direction = 'left'
-                            rv_drink.fake_data("drink")
-                            menu_mngr.current = 'drink_scrn'
-                    Button_Item:
-                        icon: "food"
-                        text: "Food"
-                        icon_color: app.theme_cls.primary_color
-                        text_color: app.theme_cls.text_color
-                        button_bg_color: app.theme_cls.divider_color
-                        #badge_text: "+12"
-                        badge_bg_color: app.theme_cls.divider_color
-                        badgeitem_color: app.theme_cls.divider_color
-                        badge_bold: True
-                        badge_disabled: True
-                        on_release: 
-                            menu_mngr.transition.direction = 'right'
-                            rv_food.fake_data("food")
-                            menu_mngr.current = 'food_scrn'
-                    Button_Item:
-                        text: "Ordered"
-                        text_size: sp(12)
-                        text_color: app.theme_cls.text_color
-                        icon: "view-list"
-                        icon_size: dp(39)
-                        icon_color: app.theme_cls.primary_color
-                        button_width: dp(120)
-                        button_height: dp(40)
-                        button_bg_color: app.theme_cls.divider_color
-                        #mode: "color_on_active"
-                        #badge_text: "+12"
-                        badge_bg_color: app.theme_cls.divider_color
-                        badgeitem_color: app.theme_cls.divider_color
-                        badge_bold: True
-                        badge_text: str(rv_ordered._total_order) if rv_ordered._total_order else "0"
-                        on_release: 
-                            menu_mngr.transition.direction = 'left'
-                            rv_ordered.take_order()
-                            menu_mngr.current = 'ordered_scrn'
+                        transition: SwapTransition()
+                        #Screen:
+                        #    name: "ordered_scrn"
+                        #    MenuRecycleView:
+                        #        id: rv_ordered
+                        #        on__selected_item: root.add_item_to_order(*args)
 
             MDBoxLayout:
                 orientation: 'vertical'
@@ -299,6 +214,8 @@
                             badge_bold: True
                             badge_disabled: True
                             on_release: rv_bill.do_payment()
+        
+    
 
 <Separator@Widget>:
     size_hint_y: None

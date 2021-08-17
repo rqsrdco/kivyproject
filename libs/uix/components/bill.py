@@ -1,4 +1,4 @@
-from kivy.properties import ColorProperty, StringProperty, NumericProperty
+from kivy.properties import ColorProperty, StringProperty, NumericProperty, ListProperty, ObjectProperty
 from kivy.animation import Animation
 from kivy.lang import Builder
 from kivy.uix.behaviors import ButtonBehavior
@@ -11,6 +11,7 @@ from datetime import date, datetime
 from kivymd.app import MDApp
 from kivymd.toast import toast
 from kivy.clock import mainthread
+import model
 
 Builder.load_string(
     """
@@ -145,10 +146,12 @@ class BillRecycleView(RecycleView):
     _sub_total = NumericProperty(0)
     _quantity = NumericProperty(0)
     _tax = NumericProperty(.05)
+    db = ObjectProperty()
 
     def __init__(self, **kwargs):
         super(BillRecycleView, self).__init__(**kwargs)
         self.data = []
+        self.db = MDApp.get_running_app().root.db
 
     def _update(self):
         if not self.data:
@@ -170,25 +173,22 @@ class BillRecycleView(RecycleView):
         self._update()
 
     def generate_curr_bill_code(self):
-        cs_u = MDApp.get_running_app().root.get_screen("salesstaff").user
-        self._code = "Cashier_%s_%d_%s" % (cs_u, len(
-            self.data), time.strftime("%c"))
+        cs_u = MDApp.get_running_app().root.get_screen("salesstaff").user.email
+        self._code = "%s_%s_%s" % (cs_u, self._quantity, self._total_price)
 
     def _insert_to_bills(self):
-        db = MDApp.get_running_app().root.local_sqlite
-
-        _dt = datetime.now()
+        bills = []
         for order in self.data:
-            _cur_bill = (
-                self._code,
-                order["name"],
-                order["quantity"],
-                order["price"],
-                MDApp.get_running_app().root.get_screen('salesstaff').user,
-                '{}'.format(_dt)
+            _cur_bill = model.Bill(
+                code=self._code,
+                quantity=order["quantity"],
+                price=order["price"],
+                product=order["name"],
+                cashier_id=MDApp.get_running_app().root.get_screen('salesstaff').user.id
             )
-            db.insert_into_database(
-                "Bills", _cur_bill)
+            # self.db.add_bill_detail_to_db(_cur_bill)
+            bills.append(_cur_bill)
+        self.db.add_bills_to_db(bills)
 
     def do_payment(self):
         if not self.data:
@@ -204,12 +204,11 @@ class BillRecycleView(RecycleView):
                 toast("Pay for Instance Order")
             else:
                 # Pay for Order Stored
-                db = MDApp.get_running_app().root.local_sqlite
-                db.delete_from_database(
-                    "Orders", "order_code", self._code)
+                self.db.delete_order_detail_by_code(self._code)
                 self._insert_to_bills()
                 self._code = ""
                 self.data = []
+                MDApp.get_running_app().root.get_screen("salesstaff").show_ordered()
                 toast("Pay for Ordered")
 
     def save_order_toPay_later(self):
@@ -226,29 +225,27 @@ class BillRecycleView(RecycleView):
                 toast("New Order Saved")
             else:
                 # save EDITED Order to Pay later
-                db = MDApp.get_running_app().root.local_sqlite
-                db.delete_from_database(
-                    "Orders", "order_code", self._code)
+                self.db.delete_order_detail_by_code(self._code)
                 self._insert_to_orders()
                 self._code = ""
                 self.data = []
                 toast("Edited Order Saved")
+            MDApp.get_running_app().root.get_screen("salesstaff").show_ordered()
 
     def _insert_to_orders(self):
-        db = MDApp.get_running_app().root.local_sqlite
-
-        _dt = datetime.now()
+        user = MDApp.get_running_app().root.get_screen("salesstaff").user
+        orders = []
         for order in self.data:
-            _cur_order = (
-                self._code,
-                order["name"],
-                order["quantity"],
-                order["price"],
-                MDApp.get_running_app().root.get_screen('salesstaff').user,
-                '{}'.format(_dt)
+            _cur_order = model.Order(
+                code=self._code,
+                quantity=order["quantity"],
+                price=order["price"],
+                product=order["name"],
+                cashier_id=user.id
             )
-            db.insert_into_database(
-                "Orders", _cur_order)
+            # self.db.add_order_detail_to_db(_cur_order)
+            orders.append(_cur_order)
+        self.db.add_orders_to_db(orders)
 
     def reduce_quantity(self, item_bill):
         for item in self.data:

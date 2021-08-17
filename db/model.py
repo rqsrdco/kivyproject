@@ -10,20 +10,12 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-bill_menu = Table(
-    "bill_menu",
-    Base.metadata,
-    Column('bill_id', ForeignKey("bill.id"), primary_key=True),
-    Column('menu_id', ForeignKey("menu.id"), primary_key=True)
-)
-
-
-order_menu = Table(
-    "order_menu",
-    Base.metadata,
-    Column('order_id', ForeignKey("order.id"), primary_key=True),
-    Column('menu_id', ForeignKey("menu.id"), primary_key=True)
-)
+# bill_menu = Table(
+#    "bill_menu",
+#    Base.metadata,
+#    Column('bill_id', ForeignKey("bill.id"), primary_key=True),
+#    Column('menu_id', ForeignKey("menu.id"), primary_key=True)
+# )
 
 
 class Product(Base):
@@ -38,7 +30,7 @@ class Product(Base):
     menu = relationship("Menu", back_populates="product", uselist=False)
 
     def __repr__(self):
-        return "Product(name= %s,image= %s, category_id= %s)" % (self.name, self.image, self.category_id)
+        return "Product(id= %s,name= %s, category_id= %s)" % (self.id, self.name, self.category_id)
 
     def convertToBinaryData(filename):
         # Convert digital data to binary format
@@ -66,7 +58,7 @@ class Category(Base):
     product = relationship("Product", back_populates="category")
 
     def __repr__(self):
-        return _repr(id=self.id, name=self.name)
+        return "Category(id=%s, name=%s)" % (self.id, self.name)
 
 
 class AccountType(Base):
@@ -115,18 +107,19 @@ class Bill(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(String)
     quantity = Column(Integer)
+    price = Column(Float)
+    product = Column(String)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    product = Column(Integer, ForeignKey('menu.id'))
     cashier_id = Column(Integer, ForeignKey('user.id'))
     cashiers = relationship("User", back_populates="bills")
 
-    menus = relationship(
-        "Menu", secondary=bill_menu, back_populates="bills"
-    )
+    # menus = relationship(
+    #    "Menu", secondary=bill_menu, back_populates="bills"
+    # )
 
     def __repr__(self):
-        return _repr(id=self.id, quantity=self.quantity, code=self.code)
+        return "id=%s, quantity=%s, code=%s" % (self.id, self.quantity, self.code)
 
 
 class Order(Base):
@@ -135,18 +128,15 @@ class Order(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(String)
     quantity = Column(Integer)
-    product = Column(Integer, ForeignKey('menu.id'))
+    price = Column(Float)
+    product = Column(String)
     cashier_id = Column(Integer, ForeignKey('user.id'))
     cashiers = relationship("User", back_populates="orders")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
-    menus = relationship(
-        "Menu", secondary=order_menu, back_populates="orders"
-    )
-
     def __repr__(self):
-        return _repr(id=self.id, quantity=self.quantity, code=self.code)
+        return "id=%s, quantity=%s, code=%s" % (self.id, self.quantity, self.code)
 
 
 class Store(Base):
@@ -171,15 +161,12 @@ class Menu(Base):
     product = relationship("Product", back_populates="menu")
     sell_price = Column(Float)
 
-    orders = relationship(
-        "Order", secondary=order_menu, back_populates="menus"
-    )
-    bills = relationship(
-        "Bill", secondary=bill_menu, back_populates="menus"
-    )
+    # bills = relationship(
+    #    "Bill", secondary=bill_menu, back_populates="menus"
+    # )
 
     def __repr__(self):
-        return _repr(id=self.id, product_id=self.product_id, sell_price=self.sell_price)
+        return "Menu(id=%s, product_id=%s, sell_price=%s)" % (self.id, self.product_id, self.sell_price)
 
 
 def _repr(self, **fields: typing.Dict[str, typing.Any]) -> str:

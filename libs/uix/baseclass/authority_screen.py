@@ -117,7 +117,8 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
                         "administrator").curr_date.text = MDApp.get_running_app().date
                 else:
                     self.manager.set_current("salesstaff", side="right")
-                    self.manager.get_screen("salesstaff").user = user.email
+                    cs = self.manager.get_screen("salesstaff")
+                    cs.user = user
             else:
                 self.ids.box2.children[0].ids.pwd_text_field.text = ""
                 self.ids.box2.children[0].ids.pwd_text_field.hint_text = "Invalid Password"

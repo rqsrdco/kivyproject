@@ -1,12 +1,6 @@
 {
     "libs.uix.components.bottomnav" : [
-        "BottomNavigation", "Button_Item", "BadgeContent", "BadgeItem"," BadgeLayout"
-    ],
-    "libs.uix.components.label": [
-        "AutoScaleLabel"
-    ],
-    "libs.uix.components.textfield": [
-        "TextFieldRound"
+        "Button_Item"
     ],
     "libs.uix.components.listitem": [
         "ListItem"

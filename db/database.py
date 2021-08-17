@@ -1,7 +1,8 @@
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
 from sqlalchemy import create_engine
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-
+import random
+from typing import List, Dict
 from logger import LOGGER
 import config
 import model
@@ -9,6 +10,10 @@ import objects
 
 
 class MyDatabase:
+    DB_ENGINE = {
+        'sqlite': 'sqlite:///{DB}',
+        #MYSQL: 'mysql+mysqlconnector://{USERNAME}:{PASSWORD}@localhost/{DB}'
+    }
     # CORE
     db_engine = None
     # ORM
@@ -17,10 +22,17 @@ class MyDatabase:
     def __init__(self):
         self.db_engine = create_engine(
             config.ENGINE_URL, encoding='utf-8', echo=config.DEBUG)
-        session = sessionmaker(bind=self.db_engine)
-        self.db_session = session()
         # create DATABASE TABLES
         model.Base.metadata.create_all(self.db_engine)
+        session = sessionmaker(bind=self.db_engine)
+        self.db_session = session()
+
+        # self.init_product_categories()
+        # self.init_products()
+        # self.init_account_roles()
+        # self.init_accounts()
+        # self.init_menu()
+        # self.init_store()
 
     def init_product_categories(self):
         self.db_session.add_all(objects.create_Category_objects())
@@ -38,23 +50,90 @@ class MyDatabase:
         self.db_session.add_all(objects.create_User_objects())
         self.db_session.commit()
 
+    def init_menu(self):
+        products = self.get_products()
+        menu = [model.Menu(
+            sell_price=round(random.uniform(19000.99, 39999.99), 2),
+            product_id=p.id
+        ) for p in products]
+        self.db_session.add_all(menu)
+        self.db_session.commit()
+
+    def init_store(self):
+        products = self.get_products()
+        store = [model.Store(
+            product_id=p.id,
+            input_price=round(random.uniform(18000.99, 29999.99), 2),
+            quantity=random.randint(79, 333)
+        ) for p in products]
+        self.db_session.add_all(store)
+        self.db_session.commit()
+
+    def get_category(self) -> List[model.Category]:
+        try:
+            return self.db_session.query(model.Category).all()
+        except Exception as e:
+            raise Exception(e)
+
+    def get_menu_by_category(self, category: int = 1) -> List[Dict]:
+        try:
+            records = self.db_session.query(model.Menu, model.Product, model.Category).join(model.Product, model.Menu.product_id == model.Product.id).join(
+                model.Category, model.Category.id == model.Product.category_id).filter(model.Product.category_id == category).all()
+            if records:
+                kq = []
+                for row in records:
+                    kq.append(dict(row))
+                return kq
+
+        except Exception as e:
+            raise Exception(e)
+
     def get_products(self):
         try:
             return self.db_session.query(
                 model.Product).all()
-        except Exception as e:
-            raise Exception(e)
+        except Exception:
+            return None
 
-    def get_orders_by_cashier(self, cashier: model.User):
+    def add_bills_to_db(self, bills: List[model.Bill]):
         try:
-            return self.db_session.query(model.Order).filter(
-                model.Order.cashier_id == cashier.id).all()
+            self.db_session.add_all(bills)
+            self.db_session.commit()
         except Exception as e:
             raise Exception(e)
 
-    def get_orders(self, skip: int = 0, limit: int = 100):
+    def add_bill_detail_to_db(self, bill: model.Bill):
+        try:
+            self.db_session.add(bill)
+            self.db_session.commit()
+        except Exception as e:
+            raise Exception(e)
+
+    def get_orders_by_cashier(self, cashier: model.User) -> List[Dict]:
+        try:
+            records = self.db_session.query(model.Order).filter(
+                model.Order.cashier_id == cashier.id).all()
+            if records:
+                print(records)
+                kq = []
+                for row in records:
+                    kq.append(dict(row))
+                return kq
+        except Exception as e:
+            print(e)
+            return None
+
+    def get_orders(self, skip: int = 0, limit: int = 100) -> List[model.Order]:
         try:
             return self.db_session.query(model.Order).offset(skip).limit(limit).all()
+        except Exception as e:
+            raise Exception(e)
+            return None
+
+    def add_orders_to_db(self, orders: List[model.Order]):
+        try:
+            self.db_session.add_all(orders)
+            self.db_session.commit()
         except Exception as e:
             raise Exception(e)
 
@@ -65,12 +144,26 @@ class MyDatabase:
         except Exception as e:
             raise Exception(e)
 
-    def update_order_detail(self, id: int, order: model.Order):
+    def update_order_detail_by_id(self, id: int, order: model.Order):
         try:
             self.db_session.query(model.Order).filter(
                 model.Order.order_id == id).update(vars(order))
             self.db_session.commit()
             return self.db_session.query(model.Order).filter(model.Order.id == id).first()
+        except Exception as e:
+            raise Exception(e)
+
+    def delete_order_detail_by_code(self, code: str):
+        '''
+        Delete an Order by code
+        '''
+        try:
+            self.db_session.query(model.Order).filter(
+                model.Order.code == code).delete(synchronize_session=False)
+            self.db_session.commit()
+            #del_query = model.Order.__table__.delete().where(model.Order.code == code)
+            # self.db_session.execute(del_query)
+            # self.db_session.commit()
         except Exception as e:
             raise Exception(e)
 
@@ -91,11 +184,11 @@ class MyDatabase:
             raise Exception(e)
 
     def get_user_by_email(self, email: str) -> model.User:
-        user = (
-            self.db_session.query(model.User).filter(
+        try:
+            return self.db_session.query(model.User).filter(
                 model.User.email == email).first()
-        )
-        return user
+        except Exception as e:
+            return None
 
     def create_account(self, user: model.User) -> model.User:
         '''

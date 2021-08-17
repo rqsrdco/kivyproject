@@ -12,7 +12,7 @@ MODULE_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 
 class Root(ScreenManager):
-    db = ObjectProperty()
+    db = ObjectProperty(None)
     previous_screen = None
 
     def __init__(self, **kwargs):
