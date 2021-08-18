@@ -86,7 +86,7 @@ class SalesStaff(MDScreen):
                             "descriptions": item["Category"].name,
                             "price": item["Menu"].sell_price,
                             "image": "assets/images/product/" + item["Product"].name + ".png",
-                            "on_press": lambda x=item, y=[]: self.add_item_to_order(x, y)
+                            "on_press": lambda x=item: self.add_item_to_order(x)
                         }
                     )
 
@@ -102,52 +102,32 @@ class SalesStaff(MDScreen):
 
     @ mainthread
     def show_ordered_if_exist(self, *args):
-        # orders = self.db.get_orders_by_cashier(self.user)
-        orders = self.db.get_orders()
+        orders = self.db.get_orders_orderBy_code()
         if orders is not None and len(orders) > 0:
-            _data = []
-            _out_list = [[]]
-            _code = orders[0].code
-            for i, item in enumerate(orders):
-                if item.code != _code and i != len(orders) - 1:
-                    _code = item.code
-                    _out_list.append([])
-                _out_list[-1].append(item)
-            self._total_order = len(_out_list)
-            for o in _out_list:
-                _ma = o[0].code
-                _money = 0
-                for k in o:
-                    _money += round((k.quantity * k.price), 2)
-                od = {
-                    "name": _ma,
-                    "descriptions": str(round(_money, 2)),
-                    "price": len(o),
-                    "image": "assets/images/order.png",
-                    "_list_of_order": o,
-                    "on_press": lambda x=_ma, y=o: self.add_item_to_order(x, y)
-                }
-                _data.append(od)
+            if self.speed_dial.data.get("Order") is None:
+                self.speed_dial.data["Order"] = "cart"
+            for order in orders:
+                _data = order.pop("list_items")
+                _data.append(order["name"])
+                order["on_press"] = lambda x=_data: self.add_item_to_order(x)
             if self.menu_mngr.has_screen("Order"):
-                self.menu_mngr.get_screen("Order").children[0].data = _data
+                self.menu_mngr.get_screen("Order").children[0].data = orders
             else:
                 order_scrn = Screen()
                 order_scrn.name = "Order"
                 order_rv = MenuRecycleView()
                 # order_rv.bind(on__selected_item=self.add_item_to_order)
-                order_rv.data = _data
+                order_rv.data = orders
                 order_scrn.add_widget(order_rv)
                 self.menu_mngr.add_widget(order_scrn)
-            if self.speed_dial.data.get("Order") is None:
-                self.speed_dial.data["Order"] = "cart"
         else:
             if self.speed_dial.data.get("Order") is not None:
                 self.speed_dial.data.pop("Order")
             if self.menu_mngr.has_screen("Order"):
                 order = self.menu_mngr.get_screen("Order")
                 self.menu_mngr.remove_widget(order)
-            else:
-                return
+            self.speed_dial.state = "close"
+            self.menu_mngr.current = "Coffee"
 
     def change_menu(self, instance):
         if instance.icon == "coffee":
@@ -189,26 +169,22 @@ class SalesStaff(MDScreen):
     def open_infos(self):
         ProfilePreview().fire(title="Contact with US", image="assets/images/logoopen.png")
 
-    def add_item_to_order(self, *args):  # json.loads(args[1])
-        if args[1]:
+    def add_item_to_order(self, values):  # json.loads(args[1])
+        if isinstance(values, list):
             self.ids.rv_bill.data = []
-            for order in args[1]:
-                bill_item = {
-                    "name": order.product,
-                    "quantity": order.quantity,
-                    "price": order.price,
-                    "image": "assets/images/product/" + order.product + ".png"
-                }
-                self.ids.rv_bill.add_item(bill_item)
-            self.ids.rv_bill._code = args[0]
-        else:
-            bill_item = {
-                "name": args[0]["Product"].name,
+            _data = values.copy()
+            self.ids.rv_bill._code = _data.pop(-1)
+            self.ids.rv_bill.data = _data
+            return
+        if isinstance(values, dict):
+            order_item = {
+                "name": values["Product"].name,
                 "quantity": 1,
-                "price": args[0]["Menu"].sell_price,
-                "image": "assets/images/product/" + args[0]["Product"].name + ".png"
+                "price": values["Menu"].sell_price,
+                "image": "assets/images/product/" + values["Product"].name + ".png"
             }
-            self.ids.rv_bill.add_item(bill_item)
+            self.ids.rv_bill.add_item(order_item)
+            return
 
     def show_menu(self):
         MDDialog(

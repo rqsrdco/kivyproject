@@ -24,7 +24,7 @@ Builder.load_string(
     #adaptive_size: True
     #size_hint: .5, None
     adaptive_height: True
-    pos_hint: {"center_x": .5, "center_y": .5}
+    #pos_hint: {"center_x": .5, "center_y": .5}
     padding: dp(6)
     elevation: 12
     focus_behavior: True
@@ -65,7 +65,7 @@ Builder.load_string(
                 #text_size: self.width, None
 
             MDLabel:
-                text: "{:,} item".format(root.price) if root._list_of_order else "{:,.2f} vnd".format(root.price)
+                text: "{:,} item".format(root.price) if root._isOrder else "{:,.2f} vnd".format(root.price)
                 halign: "left"
                 adaptive_height: True
                 text_size: self.width, None
@@ -79,7 +79,7 @@ Builder.load_string(
         spacing: dp(12)
         padding: dp(6), dp(6), dp(6), dp(6)
         MDLabel:
-            text: "{:,.2f} vnd".format(float(root.descriptions)) if root._list_of_order else root.descriptions
+            text: "{:,.2f} vnd".format(float(root.descriptions)) if root._isOrder else root.descriptions
             pos_hint: {"center_y": .5}
             theme_text_color: "Primary"
             halign: "center"
@@ -93,48 +93,45 @@ Builder.load_string(
     #md_bg_color: app.theme_cls.primary_color
     RecycleView:
         id: rv_menu
-        #canvas.before:
-        #    Color:
-        #        rgba: app.theme_cls.divider_color
-        #    RoundedRectangle:
-        #        radius: [12]
-        #        size: self.size
-        #        pos: self.pos
+        canvas.before:
+            Color:
+                rgba: app.theme_cls.divider_color
+            RoundedRectangle:
+                radius: [12]
+                size: self.size
+                pos: self.pos
         viewclass: 'MenuCardItem'
         data: root.data
         bar_width: dp(0)
         do_scroll_x: False
-        SelectableRecycleGridLayout:
+        RecycleGridLayout:
             cols: root.cols
-            key_selection: 'selectable'
-            padding: root.width * 0.02, root.height * 0.02
-            spacing: min(root.width, root.height) * 0.02
-            default_size: dp(168), dp(152)
-            default_size_hint: 1/self.cols, None
+            default_size: None, dp(152)
+            default_size_hint: 1, None
             size_hint_y: None
             height: self.minimum_height
-            #multiselect: True
-            #touch_multiselect: True
+            padding: root.width * 0.02, root.height * 0.02
+            spacing: min(root.width, root.height) * 0.02
     """
 )
 
 
 class Menu(dict):
-    def __init__(self, name, quantity, price, image, _list_of_order):
+    def __init__(self, name, quantity, price, image, isOrder):
         dict.__init__(
             self,
             name=name,
             quantity=quantity,
             price=price,
             image=image,
-            _list_of_order=_list_of_order
+            _isOrder=isOrder
         )
 
 
 class MenuRecycleView(MDBoxLayout):
-    _selected_item = NumericProperty()
-    _total_order = NumericProperty(0)
-    _menu_item = ObjectProperty(None)
+    #_total_order = NumericProperty(0)
+    #_selected_item = NumericProperty()
+    #_menu_item = ObjectProperty(None)
     data = ListProperty()
     rv_menu = ObjectProperty()
     cols = NumericProperty(1)
@@ -145,26 +142,24 @@ class MenuRecycleView(MDBoxLayout):
 
     @mainthread
     def on_data(self, instance, data):
-        print(len(self.data))
-        if len(self.data) > 0 and len(self.data) <= 2:
-            self.cols = 1
-        elif len(self.data) == 3:
-            self.cols = 2
-        else:
-            self.cols = 3
         self.rv_menu.refresh_from_data()
-
-
-class SelectableRecycleGridLayout(FocusBehavior, LayoutSelectionBehavior, RecycleGridLayout):
-    ''' Adds selection and focus behaviour to the view. '''
+        if data:
+            if len(data) in [1, 2]:
+                self.cols = 1
+            elif len(data) == 3:
+                self.cols = 2
+            else:
+                self.cols = 3
+        else:
+            pass
 
 
 class MenuCardItem(RecycleDataViewBehavior, MDCard):
     image = StringProperty()
-    _list_of_order = ListProperty(None)
     descriptions = StringProperty('')
     name = StringProperty()
     price = NumericProperty()
+    _isOrder = BooleanProperty(False)
 
     index = None
     selected = BooleanProperty(False)
@@ -173,21 +168,21 @@ class MenuCardItem(RecycleDataViewBehavior, MDCard):
     def __init__(self, **kwargs):
         super(MenuCardItem, self).__init__(**kwargs)
 
-    def refresh_view_attrs(self, rv, index, data):
-        """ Catch and handle the view changes """
-        self.index = index
-        return super(MenuCardItem, self).refresh_view_attrs(rv, index, data)
+    # def refresh_view_attrs(self, rv, index, data):
+    #    """ Catch and handle the view changes """
+    #    self.index = index
+    #    return super(MenuCardItem, self).refresh_view_attrs(rv, index, data)
 
-    def on_touch_down(self, touch):
+    # def on_touch_down(self, touch):
 
-        if super(MenuCardItem, self).on_touch_down(touch):
-            return True
-        if self.collide_point(*touch.pos) and self.selectable:
-            return self.parent.select_with_touch(self.index, touch)
+    #    if super(MenuCardItem, self).on_touch_down(touch):
+    #        return True
+    #    if self.collide_point(*touch.pos) and self.selectable:
+    #        return self.parent.select_with_touch(self.index, touch)
 
-    def apply_selection(self, rv, index, is_selected):
-        ''' Respond to the selection of items in the view. '''
-        self.selected = is_selected
+    # def apply_selection(self, rv, index, is_selected):
+    #    ''' Respond to the selection of items in the view. '''
+    #    self.selected = is_selected
 
-    def on_release(self):
-        self.parent.parent._selected_item = self.index
+    # def on_release(self):
+    #    self.parent.parent._selected_item = self.index

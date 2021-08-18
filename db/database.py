@@ -151,9 +151,43 @@ class MyDatabase:
             print(e)
             return None
 
+    def get_orders_orderBy_code(self) -> List[Dict]:
+        try:
+            codes = self.db_session.query(model.Order.code).distinct().all()
+            if codes:
+                result = []
+                for code in codes:
+                    order = {}
+                    order["list_items"] = []
+                    cart = self.db_session.query(model.Order).filter(
+                        model.Order.code == code[0]).all()
+                    total_money = 0
+                    for od in cart:
+                        total_money += od.price*od.quantity
+                        item = {
+                            "name": od.product,
+                            "quantity": od.quantity,
+                            "price": od.price,
+                            "image": "assets/images/product/" + od.product + ".png"
+                        }
+                        order["list_items"].append(item)
+                    order["descriptions"] = str(round(
+                        (total_money + total_money*0.05), 2))
+                    order["price"] = len(cart)
+                    order["name"] = code[0]
+                    order["image"] = "assets/images/order.png"
+                    order["_isOrder"] = True
+                    result.append(order)
+                return result
+            else:
+                return None
+        except Exception:
+            return None
+
     def get_orders(self, skip: int = 0, limit: int = 100) -> List[model.Order]:
         try:
-            return self.db_session.query(model.Order).offset(skip).limit(limit).all()
+            return self.db_session.query(model.Order).order_by(
+                model.Order.code).offset(skip).limit(limit).all()
         except Exception as e:
             raise Exception(e)
             return None

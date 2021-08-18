@@ -1,5 +1,5 @@
 Traceback (most recent call last):
-  File "D:\PYTHON\Kivy\kivyproject\main.py", line 32, in <module>
+  File "D:\PYTHON\Kivy\kivyproject\main.py", line 35, in <module>
     KivyMDApp().run()
   File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\app.py", line 950, in run
     runTouchApp()
@@ -7,34 +7,78 @@ Traceback (most recent call last):
     EventLoop.mainloop()
   File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 347, in mainloop
     self.idle()
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 399, in idle
-    Clock.tick_draw()
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\clock.py", line 783, in tick_draw
-    self._process_events_before_frame()
-  File "kivy\_clock.pyx", line 658, in kivy._clock.CyClockBase._process_events_before_frame
-  File "kivy\_clock.pyx", line 701, in kivy._clock.CyClockBase._process_events_before_frame
-  File "kivy\_clock.pyx", line 697, in kivy._clock.CyClockBase._process_events_before_frame
-  File "kivy\_clock.pyx", line 218, in kivy._clock.ClockEvent.tick
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\recycleview\__init__.py", line 259, in refresh_views
-    lm.set_visible_views(indices, data, viewport)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\recyclelayout.py", line 235, in set_visible_views
-    new, remaining, old = self.recycleview.view_adapter.set_visible_views(
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\recycleview\views.py", line 406, in set_visible_views
-    view = get_view(index, data[index],
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\recycleview\views.py", line 267, in get_view
-    self.refresh_view_attrs(index, data_item, view)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\recycleview\views.py", line 286, in refresh_view_attrs
-    view.refresh_view_attrs(self.recycleview, index, data_item)
-  File "D:\PYTHON\Kivy\kivyproject\libs\uix\components\menu.py", line 179, in refresh_view_attrs
-    return super(MenuCardItem, self).refresh_view_attrs(rv, index, data)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\recycleview\views.py", line 77, in refresh_view_attrs
-    setattr(self, key, value)
-  File "kivy\properties.pyx", line 498, in kivy.properties.Property.__set__
-  File "kivy\properties.pyx", line 545, in kivy.properties.Property.set
-  File "kivy\properties.pyx", line 600, in kivy.properties.Property.dispatch
-  File "kivy\_event.pyx", line 1248, in kivy._event.EventObservers.dispatch
-  File "kivy\_event.pyx", line 1130, in kivy._event.EventObservers._dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\lang\builder.py", line 66, in call_fn
-    e_value = eval(value, idmap)
-  File "<string>", line 62, in <module>
-ValueError: could not convert string to float: 'Coffee'
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 391, in idle
+    self.dispatch_input()
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 342, in dispatch_input
+    post_dispatch_input(*pop(0))
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 248, in post_dispatch_input
+    listener.dispatch('on_motion', etype, me)
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\core\window\__init__.py", line 1416, in on_motion
+    self.dispatch('on_touch_up', me)
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\core\window\__init__.py", line 1452, in on_touch_up
+    if w.dispatch('on_touch_up', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\screenmanager.py", line 1209, in on_touch_up
+    return super(ScreenManager, self).on_touch_up(touch)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
+    if child.dispatch('on_touch_up', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\relativelayout.py", line 313, in on_touch_up
+    ret = super(RelativeLayout, self).on_touch_up(touch)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
+    if child.dispatch('on_touch_up', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
+    if child.dispatch('on_touch_up', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
+    if child.dispatch('on_touch_up', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
+    if child.dispatch('on_touch_up', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
+    if child.dispatch('on_touch_up', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\screenmanager.py", line 1209, in on_touch_up
+    return super(ScreenManager, self).on_touch_up(touch)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
+    if child.dispatch('on_touch_up', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\relativelayout.py", line 313, in on_touch_up
+    ret = super(RelativeLayout, self).on_touch_up(touch)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
+    if child.dispatch('on_touch_up', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
+    if child.dispatch('on_touch_up', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\scrollview.py", line 950, in on_touch_up
+    if self.dispatch('on_scroll_stop', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\scrollview.py", line 989, in on_scroll_stop
+    self.simulate_touch_down(touch)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\scrollview.py", line 668, in simulate_touch_down
+    ret = super(ScrollView, self).on_touch_down(touch)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 545, in on_touch_down
+    if child.dispatch('on_touch_down', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 545, in on_touch_down
+    if child.dispatch('on_touch_down', touch):
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivymd\uix\behaviors\ripple_behavior.py", line 255, in on_touch_down
+    super().on_touch_down(touch)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\behaviors\button.py", line 151, in on_touch_down
+    self.dispatch('on_press')
+  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
+  File "D:\PYTHON\Kivy\kivyproject\libs\uix\baseclass\salestaff_screen.py", line 89, in <lambda>
+    "on_press": lambda x=item: self.add_item_to_order(x)
+  File "D:\PYTHON\Kivy\kivyproject\libs\uix\baseclass\salestaff_screen.py", line 186, in add_item_to_order
+    self.ids.rv_bill.add_item(order_item)
+  File "D:\PYTHON\Kivy\kivyproject\libs\uix\components\bill.py", line 283, in add_item
+    self.raise_quantity(item)
+  File "D:\PYTHON\Kivy\kivyproject\libs\uix\components\bill.py", line 265, in raise_quantity
+    if item["name"] == item_bill.name:
+AttributeError: 'dict' object has no attribute 'name'

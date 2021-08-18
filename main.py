@@ -16,24 +16,26 @@ Config.set('graphics', 'borderless', '1')
 """
 Registering factories from factory.json.
 """
-r = Factory.register
 
 with open("factory_registers.json") as fd:
     custom_widgets = json.load(fd)
     for module, _classes in custom_widgets.items():
         for _class in _classes:
-            r(_class, module=module)
+            Factory.register(_class, module=module)
 
 
-try:
-    from kivy.resources import resource_add_path, resource_find
-    if hasattr(sys, '_MEIPASS'):
-        resource_add_path(os.path.join(sys._MEIPASS))
-    KivyMDApp().run()
-except Exception:
-    error = traceback.format_exc()
+if __name__ == '__main__':
+    #from kivy.core.window import Window
+    #from kivy.utils import get_color_from_hex
+    # Window.clearcolor = get_color_from_hex('#101216')
+    try:
+        from kivy.resources import resource_add_path, resource_find
+        if hasattr(sys, '_MEIPASS'):
+            resource_add_path(os.path.join(sys._MEIPASS))
+        KivyMDApp().run()
+    except Exception:
+        error = traceback.format_exc()
 
-    with open("ERRORS.log", "w") as error_file:
-        error_file.write(error)
-
-    print(error)
+        with open("ERRORS.log", "w") as error_file:
+            error_file.write(error)
+        print(error)

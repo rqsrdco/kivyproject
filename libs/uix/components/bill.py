@@ -263,19 +263,19 @@ class BillRecycleView(RecycleView):
 
     def delete_item(self, item_bill):
         for item in self.data:
-            if item["name"] == item_bill.name:
+            if item["name"] == item_bill["name"]:
                 self.data.remove(item)
                 # self.refresh_from_data()
 
-    def check_item(self, item_add):
+    def add_item(self, item_add):
+        is_AddNew = True
         for item in self.data:
             if item["name"] == item_add["name"]:
-                return False
-        return True
-
-    def add_item(self, item):
-        if self.check_item(item):
-            self.data.append(item)
+                item["quantity"] += 1
+                self._update()
+                is_AddNew = False
+        if is_AddNew:
+            self.data.append(item_add)
 
 
 class BillListItem(MDCard):
