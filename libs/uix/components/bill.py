@@ -91,7 +91,7 @@ Builder.load_string(
             icon: "minus"
             #user_font_size: "18sp"
             theme_text_color: "Custom"
-            text_color: app.theme_cls.accent_color
+            text_color: app.theme_cls.primary_color
             pos_hint: {'center_y': .5}
             on_release: root._minus_amount()
             size_hint: None, None
@@ -263,7 +263,7 @@ class BillRecycleView(RecycleView):
 
     def delete_item(self, item_bill):
         for item in self.data:
-            if item["name"] == item_bill["name"]:
+            if item["name"] == item_bill.name:
                 self.data.remove(item)
                 # self.refresh_from_data()
 

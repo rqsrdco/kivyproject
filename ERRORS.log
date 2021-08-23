@@ -1,5 +1,16 @@
 Traceback (most recent call last):
-  File "D:\PYTHON\Kivy\kivyproject\main.py", line 35, in <module>
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\lang\builder.py", line 705, in _apply_rule
+    setattr(widget_set, key, value)
+  File "kivy\weakproxy.pyx", line 35, in kivy.weakproxy.WeakProxy.__setattr__
+  File "kivy\properties.pyx", line 498, in kivy.properties.Property.__set__
+  File "kivy\properties.pyx", line 839, in kivy.properties.ListProperty.set
+  File "kivy\properties.pyx", line 716, in kivy.properties.ObservableList.__init__
+TypeError: 'int' object is not iterable
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\PYTHON\Kivy\kivyproject\main.py", line 36, in <module>
     KivyMDApp().run()
   File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\app.py", line 950, in run
     runTouchApp()
@@ -7,78 +18,52 @@ Traceback (most recent call last):
     EventLoop.mainloop()
   File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 347, in mainloop
     self.idle()
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 391, in idle
-    self.dispatch_input()
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 342, in dispatch_input
-    post_dispatch_input(*pop(0))
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 248, in post_dispatch_input
-    listener.dispatch('on_motion', etype, me)
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\core\window\__init__.py", line 1416, in on_motion
-    self.dispatch('on_touch_up', me)
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\core\window\__init__.py", line 1452, in on_touch_up
-    if w.dispatch('on_touch_up', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\screenmanager.py", line 1209, in on_touch_up
-    return super(ScreenManager, self).on_touch_up(touch)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
-    if child.dispatch('on_touch_up', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\relativelayout.py", line 313, in on_touch_up
-    ret = super(RelativeLayout, self).on_touch_up(touch)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
-    if child.dispatch('on_touch_up', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
-    if child.dispatch('on_touch_up', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
-    if child.dispatch('on_touch_up', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
-    if child.dispatch('on_touch_up', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
-    if child.dispatch('on_touch_up', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\screenmanager.py", line 1209, in on_touch_up
-    return super(ScreenManager, self).on_touch_up(touch)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
-    if child.dispatch('on_touch_up', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\relativelayout.py", line 313, in on_touch_up
-    ret = super(RelativeLayout, self).on_touch_up(touch)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
-    if child.dispatch('on_touch_up', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 567, in on_touch_up
-    if child.dispatch('on_touch_up', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\scrollview.py", line 950, in on_touch_up
-    if self.dispatch('on_scroll_stop', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\scrollview.py", line 989, in on_scroll_stop
-    self.simulate_touch_down(touch)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\scrollview.py", line 668, in simulate_touch_down
-    ret = super(ScrollView, self).on_touch_down(touch)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 545, in on_touch_down
-    if child.dispatch('on_touch_down', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 545, in on_touch_down
-    if child.dispatch('on_touch_down', touch):
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivymd\uix\behaviors\ripple_behavior.py", line 255, in on_touch_down
-    super().on_touch_down(touch)
-  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\behaviors\button.py", line 151, in on_touch_down
-    self.dispatch('on_press')
-  File "kivy\_event.pyx", line 709, in kivy._event.EventDispatcher.dispatch
-  File "D:\PYTHON\Kivy\kivyproject\libs\uix\baseclass\salestaff_screen.py", line 89, in <lambda>
-    "on_press": lambda x=item: self.add_item_to_order(x)
-  File "D:\PYTHON\Kivy\kivyproject\libs\uix\baseclass\salestaff_screen.py", line 186, in add_item_to_order
-    self.ids.rv_bill.add_item(order_item)
-  File "D:\PYTHON\Kivy\kivyproject\libs\uix\components\bill.py", line 283, in add_item
-    self.raise_quantity(item)
-  File "D:\PYTHON\Kivy\kivyproject\libs\uix\components\bill.py", line 265, in raise_quantity
-    if item["name"] == item_bill.name:
-AttributeError: 'dict' object has no attribute 'name'
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\base.py", line 387, in idle
+    Clock.tick()
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\clock.py", line 733, in tick
+    self.post_idle(ts, self.idle())
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\clock.py", line 776, in post_idle
+    self._process_events()
+  File "kivy\_clock.pyx", line 616, in kivy._clock.CyClockBase._process_events
+  File "kivy\_clock.pyx", line 649, in kivy._clock.CyClockBase._process_events
+  File "kivy\_clock.pyx", line 645, in kivy._clock.CyClockBase._process_events
+  File "kivy\_clock.pyx", line 218, in kivy._clock.ClockEvent.tick
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\clock.py", line 1095, in callback_func
+    func(*args, **kwargs)
+  File "D:\PYTHON\Kivy\kivyproject\libs\uix\baseclass\authority_screen.py", line 114, in do_login
+    self.manager.set_current("administrator", side="right")
+  File "D:\PYTHON\Kivy\kivyproject\libs\uix\root.py", line 37, in set_current
+    screen_object = eval(screen["object"])
+  File "<string>", line 1, in <module>
+  File "D:\PYTHON\Kivy\kivyproject\libs\uix\baseclass\admin_screen.py", line 176, in __init__
+    super().__init__(**kwargs)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\relativelayout.py", line 274, in __init__
+    super(RelativeLayout, self).__init__(**kw)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\floatlayout.py", line 65, in __init__
+    super(FloatLayout, self).__init__(**kwargs)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\layout.py", line 76, in __init__
+    super(Layout, self).__init__(**kwargs)
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 359, in __init__
+    self.apply_class_lang_rules(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\uix\widget.py", line 463, in apply_class_lang_rules
+    Builder.apply(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\lang\builder.py", line 541, in apply
+    self._apply_rule(
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\lang\builder.py", line 710, in _apply_rule
+    raise BuilderException(rule.ctx, rule.line,
+kivy.lang.builder.BuilderException: Parser: File "D:\PYTHON\Kivy\kivyproject\libs\uix\kv\admin_screen.kv", line 389:
+...
+    387:                                            text_color: app.theme_cls.primary_color
+    388:                                            error_color: app.theme_cls.error_color
+>>  389:                                            radius: 12
+    390:                                        MDTextField:
+    391:                                            id: first_name
+...
+TypeError: 'int' object is not iterable
+  File "d:\PYTHON\Kivy\.kivy_compiled\lib\site-packages\kivy\lang\builder.py", line 705, in _apply_rule
+    setattr(widget_set, key, value)
+  File "kivy\weakproxy.pyx", line 35, in kivy.weakproxy.WeakProxy.__setattr__
+  File "kivy\properties.pyx", line 498, in kivy.properties.Property.__set__
+  File "kivy\properties.pyx", line 839, in kivy.properties.ListProperty.set
+  File "kivy\properties.pyx", line 716, in kivy.properties.ObservableList.__init__
+

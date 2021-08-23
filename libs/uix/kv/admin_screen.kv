@@ -1,9 +1,10 @@
 #: import ew kivy.uix.effectwidget
 #: import Window kivy.core.window.Window
+#: import FadeTransition kivy.uix.screenmanager.FadeTransition
 
 <LeftPanel>
     size_hint_x: None
-    width: dp(60)
+    width: dp(68)
 
 <TitleButtons>
     canvas:
@@ -24,7 +25,7 @@
             pos: 0, Window.size[1]
             group: 'rec'
     size_hint: 1, None
-    size: 260, 50
+    size: 230, 52
     orientation: 'vertical'
     BoxLayout:
         padding: dp(16),0,dp(16),0
@@ -33,8 +34,8 @@
             icon: root.icon
             font_name: 'assets/fonts/materialdesignicons-webfont.ttf'
             size_hint: None, None
-            size: dp(32), dp(32)
-            font_size: '24sp'
+            size: dp(48), dp(48)
+            font_size: '32sp'
             color: root.color
             pos_hint: {'center_x':.5, 'center_y':.5}
 
@@ -54,12 +55,12 @@
                         color: root.color
                         halign: 'left'
                         size_hint_x: None
-                        width: self.parent.width - dp(39)
+                        width: self.parent.width - dp(46)
                         valign: 'center'
                         
                     MDIconButton:
                         icon: root.icon1
-                        font_size: '24sp'
+                        font_size: '32sp'
                         color: root.color
                         size: dp(32), dp(32)
                         font_name: 'assets/fonts/materialdesignicons-webfont.ttf'
@@ -68,6 +69,7 @@
 
 <AdminScreen>
     curr_date: curr_date
+    sm_content: sm_content
     canvas.before:
         Color:
             rgba: app.theme_cls.divider_color
@@ -100,7 +102,6 @@
                         canvas:
                             Color:
                                 rgba: 1,1,1,1
-                                
                             Rectangle:
                                 source: 'assets/images/logoclose.png'
                                 size: self.size
@@ -123,45 +124,55 @@
 
                     CointainerHeaders:
                         id: contH1
-                        icon: 'home'
+                        icon: 'view-dashboard'
                         group:'a'
                         text: 'Home'
-
-                        
+                        pos_hint: {'center_x': .5, 'center_y': .5}
                         TitleButtons:
                             size_hint: 1, None
                             height: 50
-                            text: "Dashboard"
-                            on_press:sm_content.current='dashboard'
+                            text: "Quick View"
                             on_press: self.state='down'
-                            on_press:sm_title.current='dashboard'
+                            on_press:sm_content.current='quickview'
+                            on_press:sm_title.current='quickview'
+                        TitleButtons:
+                            size_hint: 1, None
+                            height: 52
+                            text: "Report"
+                            on_press: self.state='down'
+                            on_press:sm_content.current='report'
+                            on_press:sm_title.current='report'
                     CointainerHeaders:
                         id: contH2
-                        icon: 'table'
+                        icon: 'monitor-dashboard'
                         group:'a'
-                        text: 'Table'
-
-                        
+                        text: 'Monitor Taks'
+                        pos_hint: {'center_x': .5, 'center_y': .5}
                         TitleButtons:
                             size_hint: 1, None
-                            height: 50
-                            text: "Table"
-                            on_press:sm_content.current='table'
+                            height: 52
+                            text: "Bills"
                             on_press: self.state='down'
-                            on_press:sm_title.current='table'
-                    CointainerHeaders:
-                        id: contH3
-                        icon: 'desktop-classic'
-                        group:'a'
-                        text: 'Exit'
-
-                        
+                            on_press:sm_content.current='bills'
+                            on_press:sm_title.current='bills'
                         TitleButtons:
                             size_hint: 1, None
-                            height: 50
-                            text: "Sign Out"
+                            height: 52
+                            text: "Inventory Management"
                             on_press: self.state='down'
-                            on_press: app.root.set_current("authority", side="left")
+                            on_press:sm_content.current='inventory'
+                            on_press:sm_title.current='inventory'
+                        TitleButtons:
+                            size_hint: 1, None
+                            height: 52
+                            text: "Staff Management"
+                            on_press: self.state='down'
+                            on_press:sm_content.current='staff'
+                            on_press:sm_title.current='staff'
+            MDIconButton:
+                on_release: app.root.set_current("authority", side="left")
+                icon: "location-exit"
+                pos_hint: {'center_x': .5, 'center_y': .5}
         MDBoxLayout:
             orientation: 'vertical'
             size_hint: 1, 1
@@ -171,35 +182,33 @@
                 size:1,50
                 canvas:
                     Color:
-                        rgba: 0,1,1,.3
-
+                        rgba: app.theme_cls.primary_color
                     Rectangle:
                         size: self.size
                         pos: self.pos
                 ScreenManager:
                     id: sm_title
+                    transition: FadeTransition()
                     Screen:
-                        name:'dashboard'                    
-                        Label:
-                            text:'Dashboard'
-                            font_size: '18sp'
-                            font_style:'Button'
-                            halign:'left'
-                            text_size: (self.width, None)
-                            padding_x:40
-                            color: 0,0,0,.63
-                            size_hint_x:1
+                        name:'quickview'
+                        TitleLabel:
+                            text:'Quick View'
                     Screen:
-                        name:'table'                    
-                        Label:
-                            text:'Table Data'
-                            font_size: '18sp'
-                            font_style:'Button'
-                            halign:'left'
-                            text_size: (self.width, None)
-                            padding_x:40
-                            color: 0,0,0,.63
-                            size_hint_x:1
+                        name:'report'
+                        TitleLabel:
+                            text:'Reports'
+                    Screen:
+                        name:'bills'
+                        TitleLabel:
+                            text:'Bills Taks'
+                    Screen:
+                        name: 'inventory'
+                        TitleLabel:
+                            text:'Inventory Taks'
+                    Screen:
+                        name: 'staff'
+                        TitleLabel:
+                            text:'Staff Taks'
             MDBoxLayout:
                 id: box_notify
                 size_hint:1,None
@@ -207,8 +216,10 @@
             MDBoxLayout:
                 ScreenManager:
                     id: sm_content
+                    transition: FadeTransition()
+                    staff: staff
                     Screen:
-                        name: 'dashboard'
+                        name: 'quickview'
                         canvas.before:
                             Color:
                                 rgba: app.theme_cls.divider_color
@@ -288,10 +299,333 @@
                                     MyIcon:
                                         icon: 'format-list-bulleted'
                     Screen:
-                        name: "table"
+                        name: 'report'
+                    Screen:
+                        name: "bills"
                         MyTable:
                             id: mytable
+                    Screen:
+                        name: 'inventory'
+                    Screen:
+                        name: 'staff'
+                        id: staff
+                        MDBoxLayout:
+                            orientation: 'horizontal'
+                            #adaptive_size: True
+                            spacing: dp(5)
+                            MDBoxLayout:
+                                size_hint_x: None
+                                width: dp(365)
+                                orientation: 'vertical'
+                                ScrollView:
+                                    bar_width: 0
+                                    size: self.size
+                                    do_scroll_x: False
+                                    do_scroll_y: True
+                                    GridLayout:
+                                        id: staff_list
+                                        cols: 1
+                                        row_default_height: 180
+                                        row_force_default: True
+                                        effect_cls: "ScrollEffect"
+                                        size_hint: (1, None)
+                                        height: self.minimum_height
+                                        spacing: dp(12)
+                                        padding: dp(12)
+                            MDBoxLayout:
+                                id: staff_infos
+                                orientation: 'vertical'
+                                ScrollView:
+                                    bar_width: 0
+                                    effect_cls: "ScrollEffect"
+                                    pos_hint: {'center_x': .5, 'center_y': .5}
+                                    size_hint: .68, 1
+                                    do_scroll_x: False
+                                    do_scroll_y: True
 
+                                    GridLayout:
+                                        id: container_infos
+                                        cols: 1
+                                        row_default_height: 39
+                                        spacing: dp(12)
+                                        padding: dp(12),dp(39),dp(12),dp(39)
+                                        size_hint_y:None
+                                        height: self.minimum_height
+                                        MDTextField:
+                                            id: email
+                                            icon_right: "email-variant"
+                                            hint_text: "Email"
+                                            mode: "fill"
+                                            #required: True
+                                            multiline: False
+                                            helper_text_mode: "on_error"
+                                            helper_text: "Enter text"
+                                            focus: True
+                                            on_text_validate: root.check_staff_fields()
+                                            fill_color: app.theme_cls.divider_color
+                                            current_hint_text_color: app.theme_cls.text_color
+                                            line_color_normal:  app.theme_cls.ripple_color
+                                            line_color_focus: app.theme_cls.primary_color
+                                            icon_right_color: app.theme_cls.primary_color
+                                            text_color: app.theme_cls.primary_color
+                                            error_color: app.theme_cls.error_color
+                                            radius: [12,12,12,12]
+                                        MDTextField:
+                                            id: pwd
+                                            icon_right: "key"
+                                            hint_text: "Password"
+                                            mode: "fill"
+                                            #required: True
+                                            multiline: False
+                                            helper_text_mode: "on_error"
+                                            helper_text: "Enter text"
+                                            on_text_validate: root.check_staff_fields()
+                                            fill_color: app.theme_cls.divider_color
+                                            current_hint_text_color: app.theme_cls.text_color
+                                            line_color_normal:  app.theme_cls.ripple_color
+                                            line_color_focus: app.theme_cls.primary_color
+                                            icon_right_color: app.theme_cls.primary_color
+                                            text_color: app.theme_cls.primary_color
+                                            error_color: app.theme_cls.error_color
+                                            radius: [12,12,12,12]
+                                        MDTextField:
+                                            id: first_name
+                                            icon_right: "account-tie"
+                                            hint_text: "First Name"
+                                            mode: "fill"
+                                            #required: True
+                                            multiline: False
+                                            helper_text_mode: "on_error"
+                                            helper_text: "Enter text"
+                                            on_text_validate: root.check_staff_fields()
+                                            fill_color: app.theme_cls.divider_color
+                                            current_hint_text_color: app.theme_cls.text_color
+                                            line_color_normal:  app.theme_cls.ripple_color
+                                            line_color_focus: app.theme_cls.primary_color
+                                            icon_right_color: app.theme_cls.primary_color
+                                            text_color: app.theme_cls.primary_color
+                                            error_color: app.theme_cls.error_color
+                                            radius: [12,12,12,12]
+                                        MDTextField:
+                                            id: last_name
+                                            icon_right: "account-tie"
+                                            hint_text: "Last Name"
+                                            mode: "fill"
+                                            #required: True
+                                            multiline: False
+                                            helper_text_mode: "on_error"
+                                            helper_text: "Enter text"
+                                            on_text_validate: root.check_staff_fields()
+                                            fill_color: app.theme_cls.divider_color
+                                            current_hint_text_color: app.theme_cls.text_color
+                                            line_color_normal:  app.theme_cls.ripple_color
+                                            line_color_focus: app.theme_cls.primary_color
+                                            icon_right_color: app.theme_cls.primary_color
+                                            text_color: app.theme_cls.primary_color
+                                            error_color: app.theme_cls.error_color
+                                            radius: [12,12,12,12]
+                                        MDTextField:
+                                            id: phone
+                                            icon_right: "phone-in-talk-outline"
+                                            hint_text: "Phone number"
+                                            mode: "fill"
+                                            #required: True
+                                            multiline: False
+                                            max_text_length: 10
+                                            helper_text_mode: "on_error"
+                                            helper_text: "Enter text"
+                                            on_text_validate: root.check_staff_fields()
+                                            fill_color: app.theme_cls.divider_color
+                                            current_hint_text_color: app.theme_cls.text_color
+                                            line_color_normal:  app.theme_cls.ripple_color
+                                            line_color_focus: app.theme_cls.primary_color
+                                            icon_right_color: app.theme_cls.primary_color
+                                            text_color: app.theme_cls.primary_color
+                                            error_color: app.theme_cls.error_color
+                                            radius: [12,12,12,12]
+                                        MDDropDownItem:
+                                            id: drop_gender
+                                            pos_hint: {'center_x': .5}
+                                            text: 'Gender'
+                                            on_release: root.gender_menu.open()
+                                        BoxLayout:
+                                            spacing: container_infos.width - drop_role.width - add_role.width - dp(24)
+                                            orientation: 'horizontal'
+                                            MDDropDownItem:
+                                                id: drop_role
+                                                pos_hint: {'center_y': .5}
+                                                text: 'Role'
+                                                on_release: root.role_menu.open()
+                                            Button:
+                                                id: add_role
+                                                text: "add New Role"
+                                                pos_hint: {'center_y': .5}
+                                                size_hint_x: None
+                                                width: dp(120)
+                                                on_press: root.addrole_callback()
+                                        MDLabel:
+                                            id: member_seen
+                                            adaptive_height: True
+                                            font_style: "Body2"
+                                            theme_text_color: "Primary"
+                                            halign: "center"
+                                BoxLayout:
+                                    size_hint_y: None
+                                    height: dp(52)
+                                    padding: dp(12), dp(6),dp(12),dp(6)
+                                    spacing: dp(12)
+                                    orientation: 'horizontal'
+                                    Button:
+                                        text: "Save Changes"
+                                        pos_hint: {'center_y': .5}
+                                        on_press: root.save_edited_staff()
+                                    Button:
+                                        text: "New Account"
+                                        pos_hint: {'center_y': .5}
+                                        on_press: root.save_new_staff()# root.save_new_staff()
+                                    Button:
+                                        text: "Delete Account"
+                                        pos_hint: {'center_y': .5}
+                                        on_press: root.delete_staff_detail()
+
+<AddRolePopup>
+    size_hint: None, None
+    size: 234, 157
+    title_size: 20
+    # title_font: "Verdana"
+    auto_dismiss: False
+    title_align: 'center'
+    title_color: app.theme_cls.text_color
+    separator_height: dp(0)
+    background_color: app.theme_cls.accent_color
+    BoxLayout:
+        orientation: "vertical"
+        padding: dp(12)
+        spacing: dp(39)
+
+        MDTextFieldRound:
+            id: text_field
+            size_hint_y: None
+            hint_text: "add new Role"
+            normal_color: app.theme_cls.accent_color
+            color_active: app.theme_cls.primary_light
+            icon_left: "timeline-help"
+            padding:
+                self._lbl_icon_left.texture_size[1] + dp(10) if self.icon_left else dp(15)
+
+        BoxLayout:
+            size_hint_y: None
+            height: dp(52)
+            spacing: dp(12)
+            orientation: 'horizontal'
+            Button:
+                text: "Save"
+                pos_hint: {'center_y': .5}
+                on_release: root.set_newRole()
+            Button:
+                text: "Cancel"
+                pos_hint: {'center_y': .5}
+                on_release: root.dismiss()
+
+<IconListItem>
+    IconLeftWidget:
+        icon: root.icon
+
+<StaffItem>
+    orientation: "vertical"
+    size_hint: 1, None
+    height: dp(180)
+    #size: dp(365),dp(230)
+    #adaptive_height: True
+    #size: root.parent.height,root.parent.height
+    focus_behavior: True
+    ripple_behavior: True
+    #pos_hint: {"center_x": .5, "center_y": .5}
+    radius: [12,root.height - box_bottom.height/2,12,12]
+
+    MDBoxLayout:
+        id: box_top
+        spacing: "12dp"
+        adaptive_height: True
+        orientation: "horizontal"
+
+        MDBoxLayout:
+            id: text_box
+            orientation: "vertical"
+            adaptive_height: True
+            spacing: "10dp"
+            padding: "10dp", "10dp", "10dp", "10dp"
+
+            MDLabel:
+                text: root._staff.first_name + ' ' + root._staff.last_name
+                theme_text_color: "Primary"
+                font_style: "Subtitle1"
+                bold: True
+                adaptive_height: True
+                halign: "right"
+
+            MDLabel:
+                text: root._staff.email
+                theme_text_color: "Primary"
+                font_style: "Caption"
+                bold: True
+                adaptive_height: True
+                halign: "right"
+
+            MDLabel:
+                text: root._staff.phone_number
+                theme_text_color: "Primary"
+                font_style: "Button"
+                bold: True
+                adaptive_height: True
+                halign: "right"
+
+            MDLabel:
+                text: root._staff.role.role
+                adaptive_height: True
+                font_style: "Body2"
+                theme_text_color: "Primary"
+                halign: "center"
+
+        FitImage:
+            source: root._staff.avatar_url if root._staff.avatar_url else "assets/images/user/account.png"
+            size_hint: None, None
+            size:  root.height - box_bottom.height,root.height - box_bottom.height
+            pos_hint: {"right": 1,"top": 1}
+            radius: root.height - box_bottom.height/2
+
+    MDSeparator:
+
+    MDBoxLayout:
+        id: box_bottom
+        adaptive_height: True
+        padding: "10dp", 0, 0, 0
+
+        MDLabel:
+            text: root._staff.gender
+            adaptive_height: True
+            pos_hint: {"center_y": .5}
+            theme_text_color: "Primary"
+
+        MagicButton:
+        MagicButton:
+        MagicButton:
+        MagicButton:
+        MagicButton:
+
+<MagicButton@MagicBehavior+MDIconButton>
+    icon: "star"
+    on_release: self.icon = "star-outline" if self.icon == "star" else "star"
+
+<TitleLabel@Label>
+    font_size: '18sp'
+    font_style:'Button'
+    halign:'left'
+    text_size: (self.width, None)
+    padding_x:40
+    size_hint_x:1
+    markup: True
+    color: app.theme_cls.secondary_text_color
 <MyIcon@MDIconButton>
     color: [.7,0,0,1]
     size_hint: None, None
@@ -365,7 +699,7 @@
     # title_font: "Verdana"
     auto_dismiss: False
     title_align: 'center'
-    title_color: app.theme_cls.primary_color
+    title_color: app.theme_cls.text_color
     separator_height: dp(0)
     background_color: app.theme_cls.accent_color
     BoxLayout:

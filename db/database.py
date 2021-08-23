@@ -69,6 +69,87 @@ class MyDatabase:
         self.db_session.add_all(store)
         self.db_session.commit()
 
+    def add_new_role(self, new_role: str):
+        try:
+            fetchRole = self.db_session.query(model.AccountType).filter(
+                model.AccountType.role == new_role).first()
+            if fetchRole is None:
+                role = model.AccountType(role=new_role)
+                result = self.db_session.add(role)
+                self.db_session.commit()
+                return True
+            else:
+                return False
+        except Exception:
+            return False
+
+    def get_roles(self) -> List[model.AccountType]:
+        try:
+            return self.db_session.query(model.AccountType).all()
+        except Exception:
+            return None
+
+    def get_role_id_by_name(self, name: str) -> int:
+        try:
+            result = self.db_session.query(model.AccountType).filter(
+                model.AccountType.role == name
+            ).first()
+            if result:
+                print("---------result.id----\n", result.id)
+                return result.id
+            else:
+                return None
+        except Exception:
+            return None
+
+    def get_staff(self, admin: model.User) -> List[model.User]:
+        try:
+            result = self.db_session.query(model.User).filter(
+                model.User.role_id != admin.role_id).order_by(model.User.created_at).all()
+            if result:
+                return result
+            else:
+                return None
+        except Exception:
+            return None
+
+    def create_staff_detail(self, data: dict):
+        try:
+            staff = model.User(
+                email=data['email'],
+                password=data['password'],
+                first_name=data['first_name'],
+                last_name=data['last_name'],
+                phone_number=data['phone_number'],
+                gender=data['gender'],
+                role_id=self.get_role_id_by_name(data['role_id'])
+            )
+            self.db_session.add(staff)
+            self.db_session.commit()
+            return True
+        except Exception as e:
+            print(e)
+            return False
+
+    def update_staff_detail(self, id: int, data: dict):
+        try:
+            data["role_id"] = self.get_role_id_by_name(data["role_id"])
+            self.db_session.query(model.User).filter(
+                model.User.id == id).update(data)
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
+
+    def delete_staff_detail(self, id: int):
+        try:
+            self.db_session.query(model.User).filter(
+                model.User.id == id).delete(synchronize_session=False)
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
+
     def get_category(self) -> List[model.Category]:
         try:
             return self.db_session.query(model.Category).all()

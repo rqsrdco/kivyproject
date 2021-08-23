@@ -17,8 +17,10 @@ def main():
     #kq = queries.update_order_listing(engine, 2, 3)
     # CREATE AccountType
     # dbms.init_store()
-    records = dbms.get_orders_orderBy_code()  # get_menu_by_category(3)
-    # print(records)
+    records = dbms.get_roles()  # get_menu_by_category(3)
+    for row in records:
+        print(row)
+    print(records)
     # for row in records:
     #photoPath = config.PRODUCT_PHOTO_PATH + row.name + ".png"
     #model.Product.writeTofile(row.image, photoPath)

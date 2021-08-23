@@ -86,7 +86,7 @@ class SalesStaff(MDScreen):
                             "descriptions": item["Category"].name,
                             "price": item["Menu"].sell_price,
                             "image": "assets/images/product/" + item["Product"].name + ".png",
-                            "on_press": lambda x=item: self.add_item_to_order(x)
+                            "on_press": lambda x=item: self.add_item_to_order(menu=x)
                         }
                     )
 
@@ -109,7 +109,8 @@ class SalesStaff(MDScreen):
             for order in orders:
                 _data = order.pop("list_items")
                 _data.append(order["name"])
-                order["on_press"] = lambda x=_data: self.add_item_to_order(x)
+                order["on_press"] = lambda x=_data: self.add_item_to_order(
+                    order=x)
             if self.menu_mngr.has_screen("Order"):
                 self.menu_mngr.get_screen("Order").children[0].data = orders
             else:
@@ -169,7 +170,23 @@ class SalesStaff(MDScreen):
     def open_infos(self):
         ProfilePreview().fire(title="Contact with US", image="assets/images/logoopen.png")
 
-    def add_item_to_order(self, values):  # json.loads(args[1])
+    def add_item_to_order(self, **values):
+        if 'menu' in values:
+            data = values["menu"]
+            order_item = {
+                "name": data["Product"].name,
+                "quantity": 1,
+                "price": data["Menu"].sell_price,
+                "image": "assets/images/product/" + data["Product"].name + ".png"
+            }
+            self.ids.rv_bill.add_item(order_item)
+        if 'order' in values:
+            datas = values["order"]
+            self.ids.rv_bill.data = []
+            _data = datas.copy()
+            self.ids.rv_bill._code = _data.pop(-1)
+            self.ids.rv_bill.data = _data
+        '''
         if isinstance(values, list):
             self.ids.rv_bill.data = []
             _data = values.copy()
@@ -184,7 +201,7 @@ class SalesStaff(MDScreen):
                 "image": "assets/images/product/" + values["Product"].name + ".png"
             }
             self.ids.rv_bill.add_item(order_item)
-            return
+            return'''
 
     def show_menu(self):
         MDDialog(

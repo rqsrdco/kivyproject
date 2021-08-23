@@ -32,35 +32,35 @@ def create_AccountType_objects() -> Tuple[model.AccountType, model.AccountType]:
     return cashier, admin
 
 
-def create_User_objects() -> Tuple[model.User, model.User, model.User]:
+def create_User_objects() -> Tuple[model.User]:
     '''
     User objects
     '''
     cs_test = model.User(
         first_name='Cashier',
         last_name='Test',
-        email='c',
+        email='cc',
         password='c',
-        phone_number='0908678333',
+        phone_number='0908608333',
         gender='Female',
         role_id=1
     )
     user_cs = model.User(
         first_name='Fisrt Name',
         last_name='Cashier',
-        email='first@cashier.com',
+        email='firsct@cashier.com',
         password='c',
-        phone_number='0908678339',
+        phone_number='0908118339',
         gender='Female',
         role_id=1
     )
     user_ad = model.User(
         first_name='Fisrt Name',
         last_name='Admin',
-        email='a',
+        email='ac',
         password='a',
-        phone_number='0908678786',
+        phone_number='0908008786',
         gender='Male',
-        role_id=2
+        role_id=1
     )
     return cs_test, user_cs, user_ad

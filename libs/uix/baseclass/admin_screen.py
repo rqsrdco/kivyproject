@@ -1,5 +1,6 @@
 import re
 import sqlite3 as lite
+from datetime import datetime
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
@@ -20,11 +21,52 @@ from kivy.uix.behaviors import ToggleButtonBehavior, ButtonBehavior
 from kivy.uix.boxlayout import BoxLayout
 from kivy.metrics import dp
 from kivy.uix.carousel import Carousel
+from kivy.uix.screenmanager import ScreenManager
 
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.label import MDLabel
-
+from kivymd.app import MDApp
 from ripplebehavior import RectangularRippleBehavior
+from kivymd.uix.card import MDCard
+from kivymd.uix.menu import MDDropdownMenu
+from kivymd.uix.list import OneLineIconListItem
+from kivymd.toast.kivytoast import toast
+from kivymd.uix.textfield import MDTextField
+from kivymd.uix.dropdownitem import MDDropDownItem
+import model
+
+
+class AddRolePopup(Popup):
+
+    def __init__(self, obj, **kwargs):
+        super(AddRolePopup, self).__init__(**kwargs)
+        self.title = ""
+        self.lookback = obj
+
+    def set_newRole(self):
+        new_role = self.ids.text_field.text.strip()
+        if new_role:
+            if MDApp.get_running_app().root.db.add_new_role(new_role.capitalize()):
+                self.dismiss()
+                # load new to drop
+                self.lookback.init_role_drop()
+                toast("Successfully Added New")
+            else:
+                toast(new_role.capitalize() + ' ' + 'already exists')
+        else:
+            toast("You did not enter content")
+
+
+class IconListItem(OneLineIconListItem):
+    icon = StringProperty()
+
+
+class StaffItem(MDCard):
+    _staff = ObjectProperty()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.elevation = 12
 
 
 class Ripplebtn(RectangularRippleBehavior, MDLabel):
@@ -62,7 +104,6 @@ class CointainerHeaders(ToggleButtonBehavior, BoxLayout):
         super(CointainerHeaders, self).__init__(**kwargs)
 
     def on_state(self, inst, value):
-        print(value)
         if value == 'down':
             self.show()
             self.icon1 = 'menu-up'
@@ -81,14 +122,14 @@ class CointainerHeaders(ToggleButtonBehavior, BoxLayout):
 
             elif self.width > dp(220):
                 self.ids.sm_main.current = 'two'
-        except:
+        except Exception:
             pass
 
     def show(self):
         self.color = 0, 52/255, 102/255, 1
         for wid in self.list_widgets:
             wid.halign = 'left'
-            wid.padding_x = dp(56)
+            wid.padding_x = dp(39)
             wid.shorten = True
             wid.shorten_from = 'right'
             self.add_widget(wid, state='new')
@@ -113,7 +154,7 @@ class LeftPanel(ToggleButtonBehavior, MDBoxLayout):
             anim = Animation(width=dp(230), t='in_cubic', duration=.3)
             anim.start(self)
         else:
-            anim = Animation(width=dp(60), t='out_cubic', duration=.3)
+            anim = Animation(width=dp(68), t='out_cubic', duration=.3)
             anim.start(self)
 
     def on_touch_down(self, touch):
@@ -124,21 +165,214 @@ class LeftPanel(ToggleButtonBehavior, MDBoxLayout):
 
 
 class AdminScreen(Screen):
+    admin_user = ObjectProperty()
     line_nav = BooleanProperty(False)
+    sm_content = ObjectProperty()
+    gender_items = ListProperty([])
+    role_items = ListProperty([])
+    curr_staff_id = NumericProperty(-1)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+        self.init_gender_drop()
+        self.init_role_drop()
+
+    def init_role_drop(self):
+        roles = MDApp.get_running_app().root.db.get_roles()
+        if roles:
+            self.role_items = [
+                {
+                    "viewclass": "IconListItem",
+                    "icon": "account-cash" if i.role == "Cashier" else "account-cog" if i.role == "Administrator" else "security" if i.role == "Security" else "human-baby-changing-table" if i.role == "Waiter" else "card-account-details-star",
+                    "text": f"{i.role}",
+                    "height": dp(52),
+                    "on_release": lambda x=f"{i.role}": self.set_role_item(x),
+                } for i in roles
+            ]
+        self.role_menu = MDDropdownMenu(
+            caller=self.ids.drop_role,
+            items=self.role_items,
+            position="center",
+            width_mult=4,
+        )
+        self.role_menu.bind()
+
+    def set_role_item(self, text_item):
+        self.ids.drop_role.set_item(text_item)
+        self.role_menu.dismiss()
+
+    def init_gender_drop(self):
+        self.gender_items = [
+            {
+                "viewclass": "IconListItem",
+                "icon": "gender-female" if i == "Female" else "gender-male" if i == "Male" else "gender-male-female-variant",
+                "text": f"{i}",
+                "height": dp(52),
+                "on_release": lambda x=f"{i}": self.set_gender_item(x),
+            } for i in ["Male", "Female", "XY"]
+        ]
+        self.gender_menu = MDDropdownMenu(
+            caller=self.ids.drop_gender,
+            items=self.gender_items,
+            position="center",
+            width_mult=3,
+        )
+        self.gender_menu.bind()
+
+    def set_gender_item(self, text_item):
+        self.ids.drop_gender.set_item(text_item)
+        self.gender_menu.dismiss()
+
     def on_pre_enter(self):
-        Window.size = (636, 474)
+        Window.size = (1024, 768)
         Window.minimum_width, Window.minimum_height = Window.size
 
-    def change_state_toolbar(self, value):
+    def on_enter(self):
+        self.get_staffs()
 
+    def check_validate_field(self, instance, **obj):
+        if instance.text == '':
+            instance.error = True
+            instance.focus = True
+        else:
+            instance.error = False
+            instance.focus = False
+            if obj["next"] is not None:
+                obj["next"].focus = True
+
+    def check_staff_fields(self):
+        _validate = True
+        _widgets = self.ids.container_infos.children
+        for i in _widgets:
+            if isinstance(i, MDTextField):
+                if i.text == "":
+                    i.error = True
+                    i.focus = True
+                    self.ids.member_seen.text = '%s requied' % i.hint_text
+                    _validate = False
+                    pass
+                else:
+                    i.error = False
+                    i.focus = False
+            elif isinstance(i, MDDropDownItem):
+                if i.current_item == '':
+                    self.ids.member_seen.text = 'Please choose %s' % i.text
+                    _validate = False
+                    pass
+            elif isinstance(i, BoxLayout):
+                for k in i.children:
+                    if isinstance(k, MDDropDownItem):
+                        if k.current_item == '':
+                            self.ids.member_seen.text = 'Please choose %s' % k.text
+                            _validate = False
+                            pass
+            else:
+                pass
+        return _validate
+
+    def save_new_staff(self):
+        _isValidate = self.check_staff_fields()
+        if _isValidate:
+            data = dict(
+                email=self.ids.email.text,
+                password=self.ids.pwd.text,
+                first_name=self.ids.first_name.text,
+                last_name=self.ids.last_name.text,
+                phone_number=self.ids.phone.text,
+                gender=self.ids.drop_gender.current_item,
+                role_id=self.ids.drop_role.current_item
+            )
+            ok = MDApp.get_running_app().root.db.create_staff_detail(data)
+            if ok:
+                self.reset_infos_fields()
+                self.get_staffs()
+                toast("Successfully created")
+            else:
+                toast("Create Failed")
+
+    def save_edited_staff(self):
+        if self.curr_staff_id == -1:
+            self.ids.member_seen.text = 'Please select a staff member to edit'
+            toast("Please select a staff member to edit")
+        else:
+            if self.check_staff_fields():
+                data = dict(
+                    email=self.ids.email.text,
+                    password=self.ids.pwd.text,
+                    first_name=self.ids.first_name.text,
+                    last_name=self.ids.last_name.text,
+                    phone_number=self.ids.phone.text,
+                    gender=self.ids.drop_gender.current_item,
+                    role_id=self.ids.drop_role.current_item
+                )
+                ok = MDApp.get_running_app().root.db.update_staff_detail(self.curr_staff_id, data)
+                if ok:
+                    self.reset_infos_fields()
+                    self.get_staffs()
+                    toast("Successfully updated")
+                else:
+                    toast("Update Failed")
+
+    def delete_staff_detail(self):
+        if self.curr_staff_id == -1:
+            self.ids.member_seen.text = 'Please select a staff member to Delete'
+            toast("Please select a staff member to Delete")
+        else:
+            ok = MDApp.get_running_app().root.db.delete_staff_detail(self.curr_staff_id)
+            if ok:
+                self.reset_infos_fields()
+                self.get_staffs()
+                toast("Successfully deleted")
+            else:
+                toast("Delete Failed")
+
+    def reset_infos_fields(self):
+        self.curr_staff_id = -1
+
+        self.ids.email.text = ''
+        self.ids.pwd.text = ''
+        self.ids.first_name.text = ''
+        self.ids.last_name.text = ''
+        self.ids.phone.text = ''
+        self.ids.drop_gender.current_item = ''
+        self.ids.drop_role.current_item = ''
+        self.ids.member_seen.text = ''
+
+    def change_state_toolbar(self, value):
         if value == 'normal':
             self.ids.contH1.state = 'normal'
             self.ids.contH2.state = 'normal'
-            self.ids.contH3.state = 'normal'
+            # self.ids.contH3.state = 'normal'
+
+    def show_staff_infos(self, instance):
+        self.curr_staff_id = instance._staff.id
+
+        self.ids.email.text = instance._staff.email
+        self.ids.pwd.text = instance._staff.password
+        self.ids.first_name.text = instance._staff.first_name
+        self.ids.last_name.text = instance._staff.last_name
+        self.ids.phone.text = instance._staff.phone_number
+        self.ids.drop_gender.set_item(instance._staff.gender)
+        self.ids.drop_role.set_item(instance._staff.role.role)
+        now = datetime.now()
+        dt = "{} year || {} day".format(
+            divmod((now-instance._staff.created_at).total_seconds(), 31536000)[0], (now-instance._staff.created_at).days)
+        self.ids.member_seen.text = dt
+
+    def get_staffs(self):
+        data = MDApp.get_running_app().root.db.get_staff(self.admin_user)
+        if data is not None:
+            self.ids.staff_list.clear_widgets()
+            for d in data:
+                item = StaffItem(_staff=d)
+                item.bind(on_press=self.show_staff_infos)
+                self.ids.staff_list.add_widget(item)
+
+    def addrole_callback(self):
+        ''' Instantiate and Open Popup '''
+        popup = AddRolePopup(self)
+        popup.open()
 
 
 class SongCover(MDBoxLayout):

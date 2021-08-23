@@ -1,7 +1,6 @@
 import os
 from datetime import date, datetime
 # kivy
-from kivymd.app import MDApp
 #from kivy.utils import platform
 import platform
 from kivy.properties import StringProperty
@@ -17,6 +16,7 @@ from root import Root
 # kivymd
 from kivymd.uix.picker import MDThemePicker
 from kivymd.uix.dialog import MDDialog
+from kivymd.app import MDApp
 
 
 # This is needed for supporting Windows 10 with OpenGL < v2.0
@@ -51,7 +51,7 @@ class KivyMDApp(MDApp):
 
         Window.keyboard_anim_args = {"d": 0.2, "t": "linear"}
         Window.soft_input_mode = "below_target"
-        Window.clearcolor = self.theme_cls.divider_color
+        Window.clearcolor = (1, 1, 1, 0)
 
     def build(self):
         Clock.schedule_once(self.change_theme_icon)

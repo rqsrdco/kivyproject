@@ -8,6 +8,7 @@ root_dir = os.path.split(os.path.abspath(sys.argv[0]))[0]
 sys.path.insert(0, os.path.join(root_dir, "libs", "applibs"))
 sys.path.insert(0, os.path.join(root_dir, "libs", "uix"))
 sys.path.insert(0, os.path.join(root_dir, "db"))
+sys.path.insert(0, os.path.join(root_dir, "local_database"))
 #
 import traceback  # NOQA: E402
 from kivymdapp import KivyMDApp  # NOQA: E402
