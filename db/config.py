@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 basedir = path.abspath(path.dirname(__file__))
 load_dotenv(path.join(basedir, ".env"))
 
-DEBUG = bool(environ.get('DEBUG', False))  # environ['DEBUG'] == 'True'
+DEBUG = bool(environ.get('DEBUG', True))  # environ['DEBUG'] == 'True'
 ENGINE_URL = environ.get('SQLITE')
 CLEANUP_DATA = environ.get('CLEANUP_DATA')
 PRODUCT_PHOTO_PATH = environ.get('PRODUCT_PHOTO_PATH')

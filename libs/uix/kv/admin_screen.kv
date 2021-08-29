@@ -68,7 +68,8 @@
                         pos_hint: {'center_x':.5, 'center_y':.5}
 
 <AdminScreen>
-    curr_date: curr_date
+    inventory_part: inventory_part
+    staff_part: staff_part
     sm_content: sm_content
     canvas.before:
         Color:
@@ -130,13 +131,6 @@
                         pos_hint: {'center_x': .5, 'center_y': .5}
                         TitleButtons:
                             size_hint: 1, None
-                            height: 50
-                            text: "Quick View"
-                            on_press: self.state='down'
-                            on_press:sm_content.current='quickview'
-                            on_press:sm_title.current='quickview'
-                        TitleButtons:
-                            size_hint: 1, None
                             height: 52
                             text: "Report"
                             on_press: self.state='down'
@@ -180,19 +174,15 @@
                 id: box_title
                 size_hint:1,None
                 size:1,50
-                canvas:
-                    Color:
-                        rgba: app.theme_cls.primary_color
-                    Rectangle:
-                        size: self.size
-                        pos: self.pos
+                #canvas:
+                #    Color:
+                #        rgba: app.theme_cls.primary_color
+                #    Rectangle:
+                #        size: self.size
+                #        pos: self.pos
                 ScreenManager:
                     id: sm_title
                     transition: FadeTransition()
-                    Screen:
-                        name:'quickview'
-                        TitleLabel:
-                            text:'Quick View'
                     Screen:
                         name:'report'
                         TitleLabel:
@@ -203,8 +193,23 @@
                             text:'Bills Taks'
                     Screen:
                         name: 'inventory'
-                        TitleLabel:
-                            text:'Inventory Taks'
+                        MDBoxLayout:
+                            orientation: 'horizontal'
+                            padding: dp(12),0,dp(12),0
+                            spacing: dp(12)
+                            TitleLabel:
+                                text:'Inventory Taks'
+                                pos_hint: {'center_y': .5}
+                            MDRoundFlatIconButton:
+                                icon: "alpha-p-circle-outline"
+                                text: "Products"
+                                pos_hint: {'center_y': .5}
+                                on_release: inventory_part.children[0].current = 'product'
+                            MDRoundFlatIconButton:
+                                icon: "alpha-m-circle-outline"
+                                text: "Menu & Store"
+                                pos_hint: {'center_y': .5}
+                                on_release: inventory_part.children[0].current = 'menu_store'
                     Screen:
                         name: 'staff'
                         TitleLabel:
@@ -217,276 +222,546 @@
                 ScreenManager:
                     id: sm_content
                     transition: FadeTransition()
-                    staff: staff
-                    Screen:
-                        name: 'quickview'
-                        canvas.before:
-                            Color:
-                                rgba: app.theme_cls.divider_color
-                            Rectangle:
-                                size: self.size
-                                pos: self.pos
-                        EffectWidget:
-                            effects: [ew.VerticalBlurEffect(size=10),ew.HorizontalBlurEffect(size=10)]
-                            FitImage:
-                                source: "assets/images/musicbg.jpg"
-                        MDBoxLayout:
-                            orientation: 'vertical'
-                            padding: ['10dp', '10dp', '10dp', '10dp']
-                            MDLabel:
-                                id: curr_date
-                                text: ""
-                                pos_hint: {'center_x': .5, 'center_y': .5}
-                                font_style: "Button"
-                            SongCover:
-                                canvas.before:
-                                    Color:
-                                        rgba: [1,1,1,0]
-                                    RoundedRectangle:
-                                        size: self.size
-                                        pos: self.pos
-                                        radius: [250,]
-                                id: sc
-                                size: (250, 250)
-                                size_hint: None, None
-                                pos_hint: {'center_x': .5,}
-                                RotatingImage:
-                                    angle: sc.angle
-                                    radius: [250,]
-                                    source: "assets/images/songcover.jpg"
-                            Widget:
-                                size_hint: None, None
-                                height: '25dp'
-                            Label:
-                                text: "Song Name"
-                                bold: True
-                                font_size: '25sp'
-                                size_hint_y: None
-                                height: self.texture_size[1]
-                            Label:
-                                text: "Artist Name"
-                                size_hint_y: None
-                                height: self.texture_size[1]
-                            
-                            MDBoxLayout:
-                                orientation: 'vertical'
-                                Slider:
-                                    id: progress
-                                    color: [.7,0,0,1]
-                                    min: 0
-                                    max: 100
-                                    value: 0
-                                    background_width: '20dp'
-                                    cursor_image: ''
-                                    cursor_size: ('10dp', '10dp')
-                                    value_track_color: [1,1,1,0]
-                                    value_track: True
-                                MDBoxLayout:
-                                    id: play_option
-                                    MyIcon:
-                                        icon: 'restart'
-                                    MyIcon:
-                                        icon: 'skip-previous-outline'
-                                    MyIcon:
-                                        icon: 'skip-backward-outline'
-                                    MyIcon:
-                                        icon: 'play-outline'
-                                        on_press: sc.play(progress)
-                                    MyIcon:
-                                        icon: 'skip-forward'
-                                    MyIcon:
-                                        icon: 'skip-next-outline'
-                                    MyIcon:
-                                        icon: 'format-list-bulleted'
                     Screen:
                         name: 'report'
                     Screen:
                         name: "bills"
-                        MyTable:
-                            id: mytable
                     Screen:
                         name: 'inventory'
+                        InventoryPart:
+                            id: inventory_part
                     Screen:
                         name: 'staff'
                         id: staff
-                        MDBoxLayout:
-                            orientation: 'horizontal'
-                            #adaptive_size: True
-                            spacing: dp(5)
-                            MDBoxLayout:
-                                size_hint_x: None
-                                width: dp(365)
-                                orientation: 'vertical'
-                                ScrollView:
-                                    bar_width: 0
-                                    size: self.size
-                                    do_scroll_x: False
-                                    do_scroll_y: True
-                                    GridLayout:
-                                        id: staff_list
-                                        cols: 1
-                                        row_default_height: 180
-                                        row_force_default: True
-                                        effect_cls: "ScrollEffect"
-                                        size_hint: (1, None)
-                                        height: self.minimum_height
-                                        spacing: dp(12)
-                                        padding: dp(12)
-                            MDBoxLayout:
-                                id: staff_infos
-                                orientation: 'vertical'
-                                ScrollView:
-                                    bar_width: 0
-                                    effect_cls: "ScrollEffect"
-                                    pos_hint: {'center_x': .5, 'center_y': .5}
-                                    size_hint: .68, 1
-                                    do_scroll_x: False
-                                    do_scroll_y: True
+                        StaffPart:
+                            id: staff_part
+<StaffPart>
+    orientation: 'horizontal'
+    #adaptive_size: True
+    spacing: dp(5)
+    MDBoxLayout:
+        size_hint_x: None
+        width: dp(365)
+        orientation: 'vertical'
+        ScrollView:
+            bar_width: 0
+            size: self.size
+            do_scroll_x: False
+            do_scroll_y: True
+            GridLayout:
+                id: staff_list
+                cols: 1
+                row_default_height: 180
+                row_force_default: True
+                effect_cls: "ScrollEffect"
+                size_hint: (1, None)
+                height: self.minimum_height
+                spacing: dp(12)
+                padding: dp(12)
+    MDBoxLayout:
+        id: staff_infos
+        orientation: 'vertical'
+        ScrollView:
+            bar_width: 0
+            effect_cls: "ScrollEffect"
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            size_hint: .68, 1
+            do_scroll_x: False
+            do_scroll_y: True
 
-                                    GridLayout:
-                                        id: container_infos
-                                        cols: 1
-                                        row_default_height: 39
-                                        spacing: dp(12)
-                                        padding: dp(12),dp(39),dp(12),dp(39)
-                                        size_hint_y:None
-                                        height: self.minimum_height
-                                        MDTextField:
-                                            id: email
-                                            icon_right: "email-variant"
-                                            hint_text: "Email"
-                                            mode: "fill"
-                                            #required: True
-                                            multiline: False
-                                            helper_text_mode: "on_error"
-                                            helper_text: "Enter text"
-                                            focus: True
-                                            on_text_validate: root.check_staff_fields()
-                                            fill_color: app.theme_cls.divider_color
-                                            current_hint_text_color: app.theme_cls.text_color
-                                            line_color_normal:  app.theme_cls.ripple_color
-                                            line_color_focus: app.theme_cls.primary_color
-                                            icon_right_color: app.theme_cls.primary_color
-                                            text_color: app.theme_cls.primary_color
-                                            error_color: app.theme_cls.error_color
-                                            radius: [12,12,12,12]
-                                        MDTextField:
-                                            id: pwd
-                                            icon_right: "key"
-                                            hint_text: "Password"
-                                            mode: "fill"
-                                            #required: True
-                                            multiline: False
-                                            helper_text_mode: "on_error"
-                                            helper_text: "Enter text"
-                                            on_text_validate: root.check_staff_fields()
-                                            fill_color: app.theme_cls.divider_color
-                                            current_hint_text_color: app.theme_cls.text_color
-                                            line_color_normal:  app.theme_cls.ripple_color
-                                            line_color_focus: app.theme_cls.primary_color
-                                            icon_right_color: app.theme_cls.primary_color
-                                            text_color: app.theme_cls.primary_color
-                                            error_color: app.theme_cls.error_color
-                                            radius: [12,12,12,12]
-                                        MDTextField:
-                                            id: first_name
-                                            icon_right: "account-tie"
-                                            hint_text: "First Name"
-                                            mode: "fill"
-                                            #required: True
-                                            multiline: False
-                                            helper_text_mode: "on_error"
-                                            helper_text: "Enter text"
-                                            on_text_validate: root.check_staff_fields()
-                                            fill_color: app.theme_cls.divider_color
-                                            current_hint_text_color: app.theme_cls.text_color
-                                            line_color_normal:  app.theme_cls.ripple_color
-                                            line_color_focus: app.theme_cls.primary_color
-                                            icon_right_color: app.theme_cls.primary_color
-                                            text_color: app.theme_cls.primary_color
-                                            error_color: app.theme_cls.error_color
-                                            radius: [12,12,12,12]
-                                        MDTextField:
-                                            id: last_name
-                                            icon_right: "account-tie"
-                                            hint_text: "Last Name"
-                                            mode: "fill"
-                                            #required: True
-                                            multiline: False
-                                            helper_text_mode: "on_error"
-                                            helper_text: "Enter text"
-                                            on_text_validate: root.check_staff_fields()
-                                            fill_color: app.theme_cls.divider_color
-                                            current_hint_text_color: app.theme_cls.text_color
-                                            line_color_normal:  app.theme_cls.ripple_color
-                                            line_color_focus: app.theme_cls.primary_color
-                                            icon_right_color: app.theme_cls.primary_color
-                                            text_color: app.theme_cls.primary_color
-                                            error_color: app.theme_cls.error_color
-                                            radius: [12,12,12,12]
-                                        MDTextField:
-                                            id: phone
-                                            icon_right: "phone-in-talk-outline"
-                                            hint_text: "Phone number"
-                                            mode: "fill"
-                                            #required: True
-                                            multiline: False
-                                            max_text_length: 10
-                                            helper_text_mode: "on_error"
-                                            helper_text: "Enter text"
-                                            on_text_validate: root.check_staff_fields()
-                                            fill_color: app.theme_cls.divider_color
-                                            current_hint_text_color: app.theme_cls.text_color
-                                            line_color_normal:  app.theme_cls.ripple_color
-                                            line_color_focus: app.theme_cls.primary_color
-                                            icon_right_color: app.theme_cls.primary_color
-                                            text_color: app.theme_cls.primary_color
-                                            error_color: app.theme_cls.error_color
-                                            radius: [12,12,12,12]
-                                        MDDropDownItem:
-                                            id: drop_gender
-                                            pos_hint: {'center_x': .5}
-                                            text: 'Gender'
-                                            on_release: root.gender_menu.open()
-                                        BoxLayout:
-                                            spacing: container_infos.width - drop_role.width - add_role.width - dp(24)
-                                            orientation: 'horizontal'
-                                            MDDropDownItem:
-                                                id: drop_role
-                                                pos_hint: {'center_y': .5}
-                                                text: 'Role'
-                                                on_release: root.role_menu.open()
-                                            Button:
-                                                id: add_role
-                                                text: "add New Role"
-                                                pos_hint: {'center_y': .5}
-                                                size_hint_x: None
-                                                width: dp(120)
-                                                on_press: root.addrole_callback()
-                                        MDLabel:
-                                            id: member_seen
-                                            adaptive_height: True
-                                            font_style: "Body2"
-                                            theme_text_color: "Primary"
-                                            halign: "center"
-                                BoxLayout:
+            GridLayout:
+                id: container_infos
+                cols: 1
+                row_default_height: 39
+                spacing: dp(12)
+                padding: dp(12),dp(39),dp(12),dp(39)
+                size_hint_y:None
+                height: self.minimum_height
+                StaffTextField:
+                    id: email
+                    icon_right: "email-variant"
+                    hint_text: "Email"
+                    on_text_validate: root.check_staff_fields()
+                StaffTextField:
+                    id: pwd
+                    icon_right: "key"
+                    hint_text: "Password"
+                    on_text_validate: root.check_staff_fields()
+                StaffTextField:
+                    id: first_name
+                    icon_right: "account-tie"
+                    hint_text: "First Name"
+                    on_text_validate: root.check_staff_fields()
+                StaffTextField:
+                    id: last_name
+                    icon_right: "account-tie"
+                    hint_text: "Last Name"
+                    on_text_validate: root.check_staff_fields()
+                StaffTextField:
+                    id: phone
+                    icon_right: "phone-in-talk-outline"
+                    hint_text: "Phone number"
+                    on_text_validate: root.check_staff_fields()
+                    input_filter: 'int'
+                MDDropDownItem:
+                    id: drop_gender
+                    pos_hint: {'center_x': .5}
+                    text: 'Gender'
+                    on_release: root.gender_menu.open()
+                BoxLayout:
+                    spacing: container_infos.width - drop_role.width - add_role.width - dp(24)
+                    orientation: 'horizontal'
+                    MDDropDownItem:
+                        id: drop_role
+                        pos_hint: {'center_y': .5}
+                        text: 'Role'
+                        on_release: root.role_menu.open()
+                    Button:
+                        id: add_role
+                        text: "add New Role"
+                        pos_hint: {'center_y': .5}
+                        size_hint_x: None
+                        width: dp(120)
+                        on_press: root.addrole_callback()
+                MDLabel:
+                    id: member_seen
+                    adaptive_height: True
+                    font_style: "Body2"
+                    theme_text_color: "Primary"
+                    halign: "center"
+        BoxLayout:
+            size_hint_y: None
+            height: dp(52)
+            padding: dp(12), dp(6),dp(12),dp(6)
+            spacing: dp(12)
+            orientation: 'horizontal'
+            Button:
+                text: "Save Changes"
+                pos_hint: {'center_y': .5}
+                on_press: root.save_edited_staff()
+            Button:
+                text: "New Account"
+                pos_hint: {'center_y': .5}
+                on_press: root.save_new_staff()# root.save_new_staff()
+            Button:
+                text: "Delete Account"
+                pos_hint: {'center_y': .5}
+                on_press: root.delete_staff_detail()
+<InventoryPart>
+    #orientation: 'vertical'
+    ScreenManager:
+        transition: FadeTransition()
+        Screen:
+            name: 'product'
+            MDBoxLayout:
+                orientation: 'horizontal'
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    size_hint: .45, 1
+                    MDBoxLayout:
+                        size_hint_y: None
+                        height: dp(200)
+                        ScrollView:
+                            bar_width: 0
+                            effect_cls: "ScrollEffect"
+                            pos_hint: {'center_x': .5, 'center_y': .5}
+                            #size_hint: .68, 1
+                            do_scroll_x: False
+                            do_scroll_y: True
+                            MDList:
+                                id: ls_category
+                    ScrollView:
+                        bar_width: 0
+                        effect_cls: "ScrollEffect"
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+                        #size_hint: .68, 1
+                        do_scroll_x: False
+                        do_scroll_y: True
+                        MDList:
+                            id: ls_products
+                MDBoxLayout:
+                    id: product_info
+                    orientation: 'vertical'
+                    ScrollView:
+                        bar_width: 0
+                        effect_cls: "ScrollEffect"
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+                        size_hint: .68, 1
+                        do_scroll_x: False
+                        do_scroll_y: True
+
+                        GridLayout:
+                            id: container_infoP
+                            cols: 1
+                            row_default_height: 39
+                            spacing: dp(12)
+                            padding: dp(12),dp(39),dp(12),dp(39)
+                            size_hint_y:None
+                            height: self.minimum_height
+                            MDTextField:
+                                id: product_name
+                                icon_right: "p-variant"
+                                hint_text: "Product Name"
+                                multiline: False
+                                helper_text_mode: "on_error"
+                                helper_text: "Enter Product name"
+                            MDTextField:
+                                id: product_category
+                                on_text: root.set_list_categories(self.text, True)
+                                icon_right: "c-variant"
+                                hint_text: "Product Category"
+                                multiline: False
+                                helper_text_mode: "on_error"
+                                helper_text: "Enter Product Category"
+                            RecycleView:
+                                id: rv_category
+                                key_viewclass: 'viewclass'
+                                key_size: 'height'
+
+                                RecycleBoxLayout:
+                                    padding: dp(10)
+                                    default_size: None, dp(52)
+                                    default_size_hint: 1, None
                                     size_hint_y: None
-                                    height: dp(52)
-                                    padding: dp(12), dp(6),dp(12),dp(6)
-                                    spacing: dp(12)
+                                    height: self.minimum_height
+                                    orientation: 'vertical'
+                    BoxLayout:
+                        size_hint_y: None
+                        height: dp(52)
+                        padding: dp(12), dp(6),dp(12),dp(6)
+                        spacing: dp(12)
+                        orientation: 'horizontal'
+                        Button:
+                            text: "Save Changes"
+                            pos_hint: {'center_y': .5}
+                        Button:
+                            text: "New Product"
+                            pos_hint: {'center_y': .5}
+                        Button:
+                            text: "Delete Product"
+                            pos_hint: {'center_y': .5}
+                            on_release: root.delete_curr_product()
+        Screen:
+            name: 'menu_store'
+            MDBoxLayout:
+                orientation: 'vertical'
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(52)
+                    Widget:
+                    MDLabel:
+                        text: "Menu"
+                        halign: "center"
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+                    TooltipMDIconButton:
+                        id: add_menu
+                        tooltip_text: "Add Product to Menu to Selling"
+                        #pos_hint: {'center_x': .5, 'center_y': .5}
+                        on_release: root.show_add_itemMenu()
+                    Widget:
+                    MDDropDownItem:
+                        id: drop_category
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+                        text: 'Product Category'
+                        on_release: root.category_menu.open()
+                    Widget:
+                    TooltipMDIconButton:
+                        id: add_store
+                        tooltip_text: "Import Product to Store"
+                        #pos_hint: {'center_x': .5, 'center_y': .5}
+                        on_release: root.show_add_itemStore()
+                    MDLabel:
+                        text: "Store"
+                        halign: "center"
+                        pos_hint: {'center_x': .5, 'center_y': .5}
+                    Widget:
+                
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            id: add_itemMenu
+                            size_hint_y: None
+                            height: 0
+                            padding: dp(39)
+                            spacing: dp(12)
+                            ScrollView:
+                                bar_width: 0
+                                effect_cls: "ScrollEffect"
+                                pos_hint: {'center_x': .5, 'center_y': .5}
+                                #size_hint: .68, 1
+                                do_scroll_x: False
+                                do_scroll_y: True
+                                MDList:
+                                    id: container_menu_product
+                            MDBoxLayout:
+                                orientation: 'vertical'
+                                adaptive_height: True
+                                spacing: dp(12)
+                                padding: dp(12)
+                                MDLabel:
+                                    id: p_name
+                                    halign: "center"
+                                    pos_hint: {'center_y': .5}
+                                MDTextField:
+                                    id: sell_price_menu
+                                    icon_right: "cash-usd"
+                                    hint_text: "Selling Price"
+                                    input_filter: 'float'
+                                    multiline: False
+                                    pos_hint: {'center_x': .5, 'center_y': .5}
+                                    size_hint_x: .63
+                                    helper_text_mode: "on_error"
+                                    helper_text: "Enter Sell Price"
+                                MDBoxLayout:
                                     orientation: 'horizontal'
-                                    Button:
-                                        text: "Save Changes"
-                                        pos_hint: {'center_y': .5}
-                                        on_press: root.save_edited_staff()
-                                    Button:
-                                        text: "New Account"
-                                        pos_hint: {'center_y': .5}
-                                        on_press: root.save_new_staff()# root.save_new_staff()
-                                    Button:
-                                        text: "Delete Account"
-                                        pos_hint: {'center_y': .5}
-                                        on_press: root.delete_staff_detail()
+                                    adaptive_height: True
+                                    pos_hint: {'center_x': .5, 'center_y': .5}
+                                    MDIconButton:
+                                        id: btn_addPM
+                                        icon: "plus"
+                                        user_font_size: "39sp"
+                                        theme_text_color: "Custom"
+                                        text_color: app.theme_cls.primary_color
+                                        on_release: root.add_product_toMenu()
+                                    Widget:
+                                    MDIconButton:
+                                        id: btn_cancelA
+                                        icon: "cancel"
+                                        user_font_size: "39sp"
+                                        theme_text_color: "Custom"
+                                        text_color: app.theme_cls.primary_color
+                                        on_release: root.show_add_itemMenu()
+
+                        ScrollView:
+                            bar_width: 0
+                            effect_cls: "ScrollEffect"
+                            pos_hint: {'center_x': .5, 'center_y': .5}
+                            #size_hint: .68, 1
+                            do_scroll_x: False
+                            do_scroll_y: True
+                            GridLayout:
+                                id: container_menu
+                                cols: 1
+                                row_default_height: 52
+                                spacing: dp(12)
+                                padding: dp(12),dp(12),dp(12),dp(39)
+                                size_hint_y:None
+                                height: self.minimum_height
+                    MDBoxLayout:
+                        size_hint: None , 1
+                        width: dp(6)
+                        canvas.before:
+                            Color:
+                                rgba: app.theme_cls.ripple_color
+                            RoundedRectangle:
+                                size: self.size
+                                pos: self.pos
+                                radius: [dp(6),dp(6),dp(6),dp(6)]
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            id: add_itemStore
+                            size_hint_y: None
+                            height: 0
+                            padding: dp(39)
+                            spacing: dp(12)
+                            ScrollView:
+                                bar_width: 0
+                                effect_cls: "ScrollEffect"
+                                pos_hint: {'center_x': .5, 'center_y': .5}
+                                #size_hint: .68, 1
+                                do_scroll_x: False
+                                do_scroll_y: True
+                                MDList:
+                                    id: container_store_product
+                            MDBoxLayout:
+                                orientation: 'vertical'
+                                adaptive_height: True
+                                spacing: dp(12)
+                                padding: dp(12)
+                                MDLabel:
+                                    id: txt_name_store
+                                    pos_hint: {'center_y': .5}
+                                    halign: "center"
+                                MDTextField:
+                                    id: input_price_store
+                                    icon_right: "home-currency-usd"
+                                    hint_text: "Import Price"
+                                    input_filter: 'float'
+                                    multiline: False
+                                    pos_hint: {'center_x': .5, 'center_y': .5}
+                                    size_hint_x: .63
+                                    helper_text_mode: "on_error"
+                                    helper_text: "Enter Import Price"
+                                MDTextField:
+                                    id: qty_number
+                                    icon_right: "numeric"
+                                    hint_text: "Quantity"
+                                    input_filter: 'int'
+                                    multiline: False
+                                    pos_hint: {'center_x': .5, 'center_y': .5}
+                                    size_hint_x: .63
+                                    helper_text_mode: "on_error"
+                                    helper_text: "Enter Quantity"
+                                MDBoxLayout:
+                                    orientation: 'horizontal'
+                                    adaptive_height: True
+                                    pos_hint: {'center_x': .5, 'center_y': .5}
+                                    MDIconButton:
+                                        id: btn_addPS
+                                        icon: "plus"
+                                        user_font_size: "39sp"
+                                        theme_text_color: "Custom"
+                                        text_color: app.theme_cls.primary_color
+                                        on_release: root.add_product_toStore()
+                                    Widget:
+                                    MDIconButton:
+                                        id: btn_cancelA
+                                        icon: "cancel"
+                                        user_font_size: "39sp"
+                                        theme_text_color: "Custom"
+                                        text_color: app.theme_cls.primary_color
+                                        on_release: 
+                                            add_itemStore.height = 0
+                                            root._curr_Product = None
+                        ScrollView:
+                            bar_width: 0
+                            effect_cls: "ScrollEffect"
+                            pos_hint: {'center_x': .5, 'center_y': .5}
+                            #size_hint: .68, 1
+                            do_scroll_x: False
+                            do_scroll_y: True
+                            GridLayout:
+                                id: container_store
+                                cols: 1
+                                row_default_height: 52
+                                spacing: dp(12)
+                                padding: dp(12),dp(39),dp(12),dp(39)
+                                size_hint_y:None
+                                height: self.minimum_height
+
+<ProductItem>
+    text: f"{root.product.name}"
+    secondary_text: f"{root.category.name}" if root.category else ""
+
+    ImageLeftWidget:
+        source: f"assets/images/product/{root.product.name}.png"
+<MenuContent>
+    padding: dp(12), dp(6),dp(12),dp(6)
+    spacing: dp(12)
+    orientation: 'vertical'
+    size_hint_y: None
+    height: dp(155)
+    canvas.before:
+        Color:
+            rgba: app.theme_cls.ripple_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: dp(39),0,dp(39),0
+        MDTextField:
+            id: sell_price
+            text: str(root._menu_item["Menu"].sell_price)
+            hint_text: "Selling price"
+            input_filter: 'float'
+            pos_hint: {'center_x': .5, 'center_y': .5}
+    MDBoxLayout:
+        size_hint_y: None
+        height: dp(52)
+        orientation: 'horizontal'
+        padding: (root.width - save_menu.width - delete_menu.width -dp(12))/2, 0,(root.width - save_menu.width - delete_menu.width -dp(12))/2,0
+        spacing: dp(12)
+        MDIconButton:
+            id: save_menu
+            icon: "content-save"
+            user_font_size: "39sp"
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
+            color: app.theme_cls.primary_color
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            on_release: root.save_menu_edited_item(sell_price.text)
+        MDIconButton:
+            id: delete_menu
+            icon: "delete-alert"
+            user_font_size: "39sp"
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
+            color: app.theme_cls.accent_color
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            on_release: root.delete_menu_content()
+
+<StoreContent>
+    padding: dp(12), dp(6),dp(12),dp(6)
+    spacing: dp(12)
+    orientation: 'vertical'
+    size_hint_y: None
+    height: dp(200)
+    canvas.before:
+        Color:
+            rgba: app.theme_cls.ripple_color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: dp(39),0,dp(39),0
+        MDTextField:
+            id: input_price
+            text: str(root._store_item["Store"].input_price)
+            hint_text: "Import price"
+            input_filter: 'float'
+            pos_hint: {'center_x': .5, 'center_y': .5}
+        MDTextField:
+            id: qty
+            text: str(root._store_item["Store"].quantity)
+            hint_text: "Quantity"
+            input_filter: 'int'
+            pos_hint: {'center_x': .5, 'center_y': .5}
+    MDBoxLayout:
+        size_hint_y: None
+        height: dp(52)
+        orientation: 'horizontal'
+        padding: (root.width - save_store.width - delete_store.width -dp(12))/2, 0,(root.width - save_store.width - delete_store.width -dp(12))/2,0
+        spacing: dp(12)
+        MDIconButton:
+            id: save_store
+            icon: "content-save"
+            user_font_size: "39sp"
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
+            color: app.theme_cls.primary_color
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            on_release: root.save_store_edited_item(input_price.text, qty.text)
+        MDIconButton:
+            id: delete_store
+            icon: "delete-alert"
+            user_font_size: "39sp"
+            theme_text_color: "Custom"
+            text_color: app.theme_cls.primary_color
+            color: app.theme_cls.accent_color
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            on_release: root.delete_store_content()
+
+<StaffTextField@MDTextField>
+    mode: "fill"
+    multiline: False
+    helper_text_mode: "on_error"
+    helper_text: "Enter text"
+    fill_color: app.theme_cls.divider_color
+    current_hint_text_color: app.theme_cls.text_color
+    line_color_normal:  app.theme_cls.ripple_color
+    line_color_focus: app.theme_cls.primary_color
+    icon_right_color: app.theme_cls.primary_color
+    text_color: app.theme_cls.primary_color
+    error_color: app.theme_cls.error_color
+    radius: [12,12,12,12]
 
 <AddRolePopup>
     size_hint: None, None
@@ -530,7 +805,11 @@
 <IconListItem>
     IconLeftWidget:
         icon: root.icon
-
+<TooltipMDIconButton@MDIconButton+MDTooltip>
+    icon: "tooltip-plus"
+    user_font_size: "39sp"
+    theme_text_color: "Custom"
+    text_color: app.theme_cls.primary_color
 <StaffItem>
     orientation: "vertical"
     size_hint: 1, None
@@ -626,199 +905,3 @@
     size_hint_x:1
     markup: True
     color: app.theme_cls.secondary_text_color
-<MyIcon@MDIconButton>
-    color: [.7,0,0,1]
-    size_hint: None, None
-    user_font_size: '20sp'
-    theme_text_color: 'Custom'
-    size: ('20dp', '20dp')
-    text_color: [1,1,1,1]
-
-<RotatingImage@FitImage>
-    angle: 0
-    canvas.before:
-        PushMatrix
-        Rotate:
-            angle: root.angle
-            origin: self.center
-    canvas.after:
-        PopMatrix
-
-<MyTable>
-    states_cities_or_areas: states_cities_or_areas
-
-    BoxLayout:
-        orientation: 'vertical'
-
-        BoxLayout:
-            canvas.before:
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-
-            size_hint_y: 1
-
-            MenuButton:
-                id: btn
-                text: 'Bills'
-                size : (60,30)
-                on_release: root.display_states()
-
-
-        BoxLayout:
-            canvas.before:
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-
-                Color:
-                    rgb: (1,1,1)
-
-            Label:
-                size_hint_x: 45
-
-        BoxLayout:
-            id: states_cities_or_areas
-            size_hint_y: 10
-
-        Label:
-            size_hint_y: 1
-
-<PopupLabelCell>
-    size_hint: (None, None)
-    height: 30
-    text_size: self.size
-    halign: "left"
-    valign: "middle"
-
-<EditStatePopup>
-    container: container
-    size_hint: None, None
-    size: 432, 279
-    title_size: 20
-    # title_font: "Verdana"
-    auto_dismiss: False
-    title_align: 'center'
-    title_color: app.theme_cls.text_color
-    separator_height: dp(0)
-    background_color: app.theme_cls.accent_color
-    BoxLayout:
-        orientation: "vertical"
-        #canvas.before:
-        #    Color:
-        #        rgba: app.theme_cls.divider_color
-        #    Rectangle:
-        #        size: self.size
-        #        pos: self.pos
-        ScrollView:
-            bar_width: 10
-            bar_color: 1, 0, 0, 1   # red
-            bar_inactive_color: 0, 0, 1, 1   # blue
-            effect_cls: "ScrollEffect"
-            scroll_type: ['bars']
-            size_hint: (1, 1)
-
-            GridLayout:
-                id: container
-                cols: 2
-                row_default_height: 30
-                cols_minimum: {0: 100, 1: 300}
-                # spacing: 10, 10
-                # padding: 20, 20
-                size_hint: (None, None)
-                height: self.minimum_height
-
-        BoxLayout:
-            size_hint_y: None
-            height: dp(52)
-            padding: dp(39), dp(6),dp(39),0
-            spacing: dp(39)
-            orientation: 'horizontal'
-            Button:
-                text: "Save Changes"
-                pos_hint: {'center_y': .5}
-                on_release:
-                    root.dismiss()
-            Button:
-                text: "Cancel Changes"
-                pos_hint: {'center_y': .5}
-                on_release: root.dismiss()
-
-<SelectableButton>
-    canvas.before:
-        Color:
-            rgba: (0, 0.517, 0.705, 1) if self.selected else (0, 0.517, 0.705, 1)
-        Rectangle:
-            pos: self.pos
-            size: self.size
-    background_color: [1, 0, 0, 1]  if self.selected else [1, 1, 1, 1]  # dark red else dark grey
-    on_press: app.root.get_screen("administrator").ids.mytable.table.rv.on_mouse_select(self)
-
-<HeaderCell>
-    size_hint: (None, None)
-    height: 25
-    text_size: self.size
-    halign: "left"
-    valign: "middle"
-    background_disabled_normal: ''
-    disabled_color: (1, 1, 1, 1)
-
-    canvas.before:
-        Color:
-            rgba: 1, 0.502, 0, 1
-        Rectangle:
-            pos: self.pos
-            size: self.size
-
-<TableHeader>
-    header: header
-    bar_width: 0
-    do_scroll: False
-    size_hint: (1, None)
-    height: 25
-    effect_cls: "ScrollEffect"
-
-    GridLayout:
-        id: header
-        rows: 1
-        cols_minimum: root.cols_minimum
-        size_hint: (None, None)
-        width: self.minimum_width
-        height: self.minimum_height
-
-<RV>
-    row_controller: row_controller
-
-    bar_width: 10
-    bar_color: 1, 0, 0, 1   # red
-    bar_inactive_color: 0, 0, 1, 1   # blue
-    effect_cls: "ScrollEffect"
-    scroll_type: ['bars']
-
-    data: root.rv_data
-    viewclass: 'SelectableButton'
-
-    SelectableRecycleGridLayout:
-        id: row_controller
-        key_selection: 'selectable'
-        cols: root.total_col_headings
-        cols_minimum: root.cols_minimum
-        default_size: None, dp(26)
-        default_size_hint: 1, None
-        size_hint: None, None
-        height: self.minimum_height
-        width: self.minimum_width
-        multiselect: True
-        touch_multiselect: True
-
-
-<MenuButton@Button>
-    text_size: self.size
-    valign: "middle"
-    padding_x: 5
-    size : (80,30)
-    size_hint : (None, None)
-    background_color: 90 , 90, 90, 90
-    background_normal: ''
-    color: 0, 0.517, 0.705, 1
-    border: (0, 10, 0, 0)

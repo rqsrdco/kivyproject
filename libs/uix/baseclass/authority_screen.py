@@ -114,7 +114,7 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
                     self.manager.set_current("administrator", side="right")
                     MDApp.get_running_app().get_date()
                     ad = self.manager.get_screen("administrator")
-                    ad.curr_date.text = MDApp.get_running_app().date
+                    #ad.curr_date.text = MDApp.get_running_app().date
                     ad.admin_user = user
                 else:
                     self.manager.set_current("salesstaff", side="right")

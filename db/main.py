@@ -1,7 +1,7 @@
 from sqlalchemy import and_, or_, asc, desc, text, between
 from sqlalchemy.sql import select, alias, func
 from sqlalchemy.sql.expression import update
-
+import model
 import objects
 import queries
 from database import MyDatabase
@@ -17,10 +17,10 @@ def main():
     #kq = queries.update_order_listing(engine, 2, 3)
     # CREATE AccountType
     # dbms.init_store()
-    records = dbms.get_roles()  # get_menu_by_category(3)
+    records = dbms.check_product_exist_in_menu(
+        model.Product(id=1))  # get_menu_by_category(3)
     for row in records:
         print(row)
-    print(records)
     # for row in records:
     #photoPath = config.PRODUCT_PHOTO_PATH + row.name + ".png"
     #model.Product.writeTofile(row.image, photoPath)

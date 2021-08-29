@@ -1,5 +1,5 @@
 from sqlalchemy.orm import declarative_base, sessionmaker, Session
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, and_
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 import random
 from typing import List, Dict
@@ -169,10 +169,81 @@ class MyDatabase:
         except Exception as e:
             raise Exception(e)
 
+    def get_ALlproduct_with_category(self, *args):
+        try:
+            if args:
+                return self.db_session.query(model.Product, model.Category).join(
+                    model.Category).filter(and_(
+                        model.Product.category_id == model.Category.id,
+                        model.Product.category_id == args[0].id
+                    )).all()
+            else:
+                return self.db_session.query(model.Product, model.Category).join(
+                    model.Category).filter(model.Product.category_id == model.Category.id).all()
+        except Exception:
+            return None
+
+    def delete_product(self, p: model.Product):
+        try:
+            self.db_session.query(model.Product).filter(
+                model.Product.id == p.id).delete()
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
+
     def get_products(self):
         try:
             return self.db_session.query(
                 model.Product).all()
+        except Exception:
+            return None
+
+    def check_product_exist_in_menu(self, product: model.Product):
+        try:
+            result = self.db_session.query(model.Menu).filter(
+                model.Menu.product_id == product.id
+            ).first()
+            if result is not None:
+                return True
+            else:
+                return False
+        except Exception:
+            return False
+
+    def check_product_exist_in_store(self, product: model.Store):
+        try:
+            result = self.db_session.query(model.Store).filter(
+                model.Store.product_id == product.id
+            ).first()
+            if result is not None:
+                return True
+            else:
+                return False
+        except Exception:
+            return False
+
+    def add_item_to_menu(self, m: model.Menu):
+        try:
+            self.db_session.add(m)
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
+
+    def add_item_to_store(self, m: model.Store):
+        try:
+            self.db_session.add(m)
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
+
+    def get_product_by_category(self, category: model.Category):
+        try:
+            return self.db_session.query(model.Product).filter(
+                model.Product.category_id == category.id
+            ).all()
         except Exception:
             return None
 
@@ -184,6 +255,71 @@ class MyDatabase:
             return result[0]
         except Exception as e:
             raise Exception(e)
+
+    def get_menu_width_category(self, category: model.Category):
+        try:
+            records = self.db_session.query(model.Menu, model.Product, model.Category).filter(and_(
+                model.Menu.product_id == model.Product.id,
+                model.Product.category_id == model.Category.id,
+                model.Category.id == category.id
+            )).order_by(model.Product.name).all()
+            return records
+        except Exception:
+            return None
+
+    def get_store_width_category(self, category: model.Category):
+        try:
+            records = self.db_session.query(model.Store, model.Product, model.Category).filter(and_(
+                model.Store.product_id == model.Product.id,
+                model.Product.category_id == model.Category.id,
+                model.Category.id == category.id
+            )).order_by(model.Product.name).all()
+            return records
+        except Exception:
+            return None
+
+    def update_menu_item(self, menu: model.Menu):
+        try:
+            self.db_session.query(model.Menu).filter(
+                model.Menu.id == menu.id
+            ).update({
+                "sell_price": menu.sell_price
+            })
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
+
+    def update_store_item(self, store: model.Store):
+        try:
+            self.db_session.query(model.Store).filter(
+                model.Store.id == store.id
+            ).update({
+                "input_price": store.input_price,
+                "quantity": store.quantity
+            })
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
+
+    def delete_store_content(self, store: model.Store):
+        try:
+            self.db_session.query(model.Store).filter(
+                model.Store.id == store.id).delete()
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
+
+    def delete_menu_content(self, menu: model.Menu):
+        try:
+            self.db_session.query(model.Menu).filter(
+                model.Menu.id == menu.id).delete()
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
 
     def get_quantity_in_store(self, id: int) -> int:
         try:

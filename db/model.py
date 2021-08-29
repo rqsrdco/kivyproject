@@ -144,13 +144,12 @@ class Store(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     product_id = Column(Integer, ForeignKey('product.id'), unique=True)
-    products = relationship(
-        "Product", backref=backref("store", uselist=False))
+    products = relationship("Product", backref=backref("store", uselist=False))
     input_price = Column(Float)
     quantity = Column(Integer)
 
     def __repr__(self):
-        return "Store(product= %s, input_price= %s, quantity= %s)" % (self.product, self.input_price, self.quantity)
+        return "Store(product_id= %s, input_price= %s, quantity= %s)" % (self.product_id, self.input_price, self.quantity)
 
 
 class Menu(Base):
