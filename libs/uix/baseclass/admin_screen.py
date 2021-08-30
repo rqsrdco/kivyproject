@@ -32,10 +32,13 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivymd.toast.kivytoast import toast
 from kivymd.uix.textfield import MDTextField
 from kivymd.uix.dropdownitem import MDDropDownItem
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 import model
 from kivymd.uix.list import TwoLineAvatarListItem, OneLineListItem, OneLineIconListItem
-from kivymd.uix.expansionpanel import MDExpansionPanelThreeLine, MDExpansionPanel
-#from kivy.event import EventDispatcher
+from kivymd.uix.expansionpanel import MDExpansionPanelThreeLine, MDExpansionPanel, MDExpansionPanelOneLine
+from kivy.event import EventDispatcher
+from kivy.utils import get_color_from_hex as CH
 
 
 class MenuContent(MDBoxLayout):
@@ -61,6 +64,69 @@ class MenuContent(MDBoxLayout):
         if kq:
             self._inventory.get_menu_by_category(
                 self._menu_item["Category"])
+
+
+class CategoryContent(MDBoxLayout):
+    category = ObjectProperty()
+    homesweethome = ObjectProperty()
+    dialog = ObjectProperty(None)
+
+    def dialog_close(self, *args):
+        self.dialog.dismiss(force=True)
+
+    def save_new_category(self):
+        name = self.ids.ct_name.text
+        db = MDApp.get_running_app().root.db
+        if name == '':
+            self.ids.ct_name.focus = True
+            self.ids.ct_name.error = True
+        else:
+            self.ids.ct_name.focus = False
+            self.ids.ct_name.error = False
+            # check name exist ?
+            _isIn = db.check_category_exist_byName(name.capitalize())
+            if _isIn is None:
+                new_id = db.add_newCategory(name.capitalize())
+                # update products with new category
+                db.update_product_with_newCategory(self.category.id, new_id.id)
+                # delete old category
+                db.delete_category(self.category)
+                # reload ctegories
+                self.homesweethome.init_category_list()
+                self.homesweethome.get_product_byCategory(new_id)
+            else:
+                self.ids.ct_name.focus = True
+                self.ids.ct_name.error = True
+                toast(f"{name.capitalize()} existed !")
+
+    def delete_curr_category(self):
+        if not self.dialog:
+            self.dialog = MDDialog(
+                title=f"Are you want to Delete {self.category.name} ?",
+                text=f"this will delete all products with this category({self.category.name}).",
+                type="custom",
+                buttons=[
+                    MDFlatButton(
+                        text="CANCEL", text_color=CH("#FF0000"),
+                        on_release=self.dialog_close
+                    ),
+                    MDFlatButton(
+                        text="OK", text_color=CH("#FF0000"),
+                        on_release=self.delete_now
+                    ),
+                ],
+            )
+        self.dialog.open()
+
+    def delete_now(self, *args):
+        db = MDApp.get_running_app().root.db
+        # delete products with category
+        db.delete_product_byCategory_Id(self.category.id)
+        # delete category
+        db.delete_category(self.category)
+        self.dialog_close()
+        self.homesweethome.init_category_list()
+        self.homesweethome.ids.ls_products.clear_widgets()
 
 
 class StoreContent(MDBoxLayout):
@@ -142,7 +208,7 @@ class InventoryPart(MDBoxLayout):
         db = MDApp.get_running_app().root.db
         results = None
         if args:
-            results = db.get_ALlproduct_with_category(args[1])
+            results = db.get_ALlproduct_with_category(args[0])
         else:
             results = db.get_ALlproduct_with_category()
 
@@ -180,12 +246,129 @@ class InventoryPart(MDBoxLayout):
             else:
                 add_category_item(c)
 
+    def save_edited_product(self):
+        db = MDApp.get_running_app().root.db
+        name = self.ids.product_name.text
+        category = self.ids.product_category.text
+        if name == '':
+            self.ids.product_name.error = True
+            self.ids.product_name.focus = True
+            toast("enter Product name !")
+        else:
+            self.ids.product_name.error = False
+            self.ids.product_name.focus = False
+            name = name.capitalize()
+            chk = db.check_product_exist_byName(name)
+            if chk is not None:
+                if category == '':
+                    self.ids.product_category.error = True
+                    self.ids.product_category.focus = True
+                    toast("select a category or type new")
+                else:
+                    if category.capitalize() not in [c.name for c in self.categories]:
+                        id = db.add_new_category(category)
+                        if id is not None:
+                            db.update_product_categoryID(chk, id)
+                            self.ids.product_name.text = ''
+                            self.ids.product_category.text = ''
+                            self.ids.product_name.error = False
+                            self.ids.product_name.focus = False
+                            self.ids.product_category.error = False
+                            self.ids.product_category.focus = False
+                            # update new category for exist product
+                            toast(f"{name} updated with new Category !")
+                            self.init_category_list()
+                            self.get_product_byCategory(self._pc.category)
+                            self._pc = None
+                    else:
+                        if category.capitalize() != self._pc.category.name:
+                            _id = db.get_categoryID_byName(
+                                category.capitalize())
+                            db.update_product_categoryID(
+                                chk, _id)
+                            self.ids.product_name.text = ''
+                            self.ids.product_category.text = ''
+                            self.ids.product_name.error = False
+                            self.ids.product_name.focus = False
+                            self.ids.product_category.error = False
+                            self.ids.product_category.focus = False
+                            # update new category for exist product
+                            toast(f"{name} updated with change Cagetory !")
+                            self.get_product_byCategory(self._pc.category)
+                            self._pc = None
+                        else:
+                            toast("Nothing changed !")
+            else:
+                toast("press Save New Product !")
+
+    def save_new_product(self):
+        db = MDApp.get_running_app().root.db
+        name = self.ids.product_name.text
+        category = self.ids.product_category.text
+        if name == '':
+            self.ids.product_name.error = True
+            self.ids.product_name.focus = True
+            toast("enter Product name !")
+        else:
+            self.ids.product_name.error = False
+            self.ids.product_name.focus = False
+            name = name.capitalize()
+            chk = db.check_product_exist_byName(name)
+            if chk is None:
+                if category == '':
+                    self.ids.product_category.error = True
+                    self.ids.product_category.focus = True
+                    toast("select a category or type new")
+                else:
+                    id = None
+                    self.ids.product_category.error = False
+                    self.ids.product_category.focus = False
+                    if category.capitalize() not in [c.name for c in self.categories]:
+                        id = db.add_new_category(category.capitalize())
+                        # new product + new category
+                        if id is not None:
+                            p = model.Product(
+                                name=name,
+                                category_id=id
+                            )
+                            db.add_new_product(p)
+                            toast(f"new {name} added !")
+                            self.ids.product_name.text = ''
+                            self.ids.product_category.text = ''
+                            self.ids.product_name.error = False
+                            self.ids.product_name.focus = False
+                            self.ids.product_category.error = False
+                            self.ids.product_category.focus = False
+                            self.init_category_list()
+                            self.get_product_byCategory(self._pc.category)
+                            self._pc = None
+                    else:
+                        id = db.get_categoryID_byName(category.capitalize())
+                        # new product + exist category
+                        if id is not None:
+                            p = model.Product(
+                                name=name,
+                                category_id=id
+                            )
+                            db.add_new_product(p)
+                            toast(f"new {name} added !")
+                            self.ids.product_name.text = ''
+                            self.ids.product_category.text = ''
+                            self.ids.product_name.error = False
+                            self.ids.product_name.focus = False
+                            self.ids.product_category.error = False
+                            self.ids.product_category.focus = False
+                            self.get_product_byCategory(self._pd.category)
+                            self._pc = None
+            else:
+                toast(f"{name} existed")
+
     def delete_curr_product(self):
         if self._pc is not None:
             db = MDApp.get_running_app().root.db
             kq = db.delete_product(self._pc.product)
             if kq:
-                self.get_product_byCategory(1, self._pc.category)
+                self.get_product_byCategory(self._pc.category)
                 self._pc = None
                 self.ids.product_name.text = ''
                 self.ids.product_category.text = ''
@@ -195,20 +378,37 @@ class InventoryPart(MDBoxLayout):
         self.ids.product_name.text = value.product.name
         self.ids.product_category.text = value.category.name
 
+    def show_category_option(self, instance, category):
+        instance.parent.on_open = lambda x=category: self.get_product_byCategory(
+            x)
+        instance.parent.on_close = lambda x=self: self.ids.ls_products.clear_widgets()
+
     def init_category_list(self):
-        self.ids.ls_category.add_widget(IconListItem(
-            icon="format-list-bulleted-type",
-            text="All Product",
-            on_press=lambda x: self.get_product_byCategory()
-        ))
+        self.ids.ls_category.clear_widgets()
+        self.ids.ls_category.add_widget(
+            IconListItem(
+                icon="format-list-bulleted-type",
+                text="All Product",
+                on_press=lambda x: self.get_product_byCategory()
+            )
+        )
+        self.categories = MDApp.get_running_app().root.db.get_category()
         if self.categories:
             for category in self.categories:
-                self.ids.ls_category.add_widget(IconListItem(
-                    icon="format-list-bulleted-type",
-                    text=f"{category.name}",
-                    on_press=lambda x=category, y=category: self.get_product_byCategory(
-                        x, y)
-                ))
+                self.ids.ls_category.add_widget(
+                    MDExpansionPanel(
+                        icon="format-list-bulleted-type",
+                        content=CategoryContent(
+                            category=category,
+                            homesweethome=self
+                        ),
+                        panel_cls=MDExpansionPanelOneLine(
+                            text=f"{category.name}",
+                            on_press=lambda i, c=category: self.show_category_option(
+                                i, c)
+                        )
+                    )
+                )
 
     def init_category_drop(self, **kwargs):
         self.categories = kwargs["db"].get_category()

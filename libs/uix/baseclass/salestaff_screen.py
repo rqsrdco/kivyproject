@@ -73,30 +73,31 @@ class SalesStaff(MDScreen):
                 screen.name = category.name
                 # MENU
                 menu_rv = MenuRecycleView()
-                menu_items = self.db.get_menu_by_category(category.id)
-                for item in menu_items:
-                    # {
-                    # 'Menu': Menu(id=38, product_id=38, sell_price=29379.26),
-                    # 'Product': Product(id= 38,name= Drink 37, category_id= 3),
-                    # 'Category': Category(id=3, name=Drink)
-                    # }
-                    menu_rv.data.append(
-                        {
-                            "name": item["Product"].name,
-                            "descriptions": item["Category"].name,
-                            "price": item["Menu"].sell_price,
-                            "image": "assets/images/product/" + item["Product"].name + ".png",
-                            "on_press": lambda x=item: self.add_item_to_order(menu=x)
-                        }
-                    )
+                menu_items = MDApp.get_running_app().root.db.get_menu_by_category(category.id)
+                if menu_items is not None:
+                    for item in menu_items:
+                        # {
+                        # 'Menu': Menu(id=38, product_id=38, sell_price=29379.26),
+                        # 'Product': Product(id= 38,name= Drink 37, category_id= 3),
+                        # 'Category': Category(id=3, name=Drink)
+                        # }
+                        menu_rv.data.append(
+                            {
+                                "name": item["Product"].name,
+                                "descriptions": item["Category"].name,
+                                "price": item["Menu"].sell_price,
+                                "image": "assets/images/product/" + item["Product"].name + ".png",
+                                "on_press": lambda x=item: self.add_item_to_order(menu=x)
+                            }
+                        )
 
-                # menu_rv.bind(on__selected_item=self.add_item_to_order)
-                screen.add_widget(menu_rv)
-                self.menu_mngr.add_widget(screen)
+                    # menu_rv.bind(on__selected_item=self.add_item_to_order)
+                    screen.add_widget(menu_rv)
+                    self.menu_mngr.add_widget(screen)
 
-                # NAV BTN DATA
-                icon = "coffee" if category.id == 1 else "food" if category.id == 2 else "cup-water"
-                self.speed_dial.data["%s" % category.name] = "%s" % icon
+                    # NAV BTN DATA
+                    icon = "coffee" if category.id == 1 else "food" if category.id == 2 else "cup-water"
+                    self.speed_dial.data["%s" % category.name] = "%s" % icon
         else:
             pass
 

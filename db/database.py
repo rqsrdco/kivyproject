@@ -21,7 +21,7 @@ class MyDatabase:
 
     def __init__(self):
         self.db_engine = create_engine(
-            config.ENGINE_URL, encoding='utf-8', echo=config.DEBUG)
+            config.ENGINE_URL, encoding='utf-8', echo=False)  # config.DEBUG)
         # create DATABASE TABLES
         model.Base.metadata.create_all(self.db_engine)
         session = sessionmaker(bind=self.db_engine)
@@ -156,6 +156,13 @@ class MyDatabase:
         except Exception as e:
             raise Exception(e)
 
+    def check_category_exist_byName(self, name: str):
+        try:
+            return self.db_session.query(model.Category).filter(
+                model.Category.name == name).first()
+        except Exception:
+            return False
+
     def get_menu_by_category(self, category: int = 1) -> List[Dict]:
         try:
             records = self.db_session.query(model.Menu, model.Product, model.Category).join(model.Product, model.Menu.product_id == model.Product.id).join(
@@ -192,12 +199,91 @@ class MyDatabase:
         except Exception:
             return False
 
+    def check_product_exist_byName(self, name: str):
+        try:
+            return self.db_session.query(model.Product).filter(
+                model.Product.name == name).first()
+        except Exception:
+            return None
+
+    def get_categoryID_byName(self, name: str):
+        try:
+            result = self.db_session.query(model.Category.id).filter(
+                model.Category.name == name).first()
+            if result:
+                return result[0]
+            else:
+                return None
+        except Exception:
+            return None
+
     def get_products(self):
         try:
             return self.db_session.query(
                 model.Product).all()
         except Exception:
             return None
+
+    def delete_category(self, c: model.Category):
+        try:
+            self.db_session.query(model.Category).filter(
+                model.Category.id == c.id).delete()
+            self.db_session.commit()
+        except Exception:
+            return False
+
+    def delete_product_byCategory_Id(self, c_id: int):
+        try:
+            self.db_session.query(model.Product).filter(
+                model.Product.category_id == c_id).delete()
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
+
+    def update_product_with_newCategory(self, old_id: int, new_id: int):
+        try:
+            self.db_session.query(model.Product).filter(
+                model.Product.category_id == old_id).update({"category_id": new_id})
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
+
+    def update_product_categoryID(self, p: model.Product, id: int):
+        try:
+            self.db_session.query(model.Product).filter(
+                model.Product.id == p.id).update({"category_id": id})
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
+
+    def add_newCategory(self, name: str):
+        try:
+            c = model.Category(name=name)
+            self.db_session.add(c)
+            self.db_session.commit()
+            return c
+        except Exception:
+            return None
+
+    def add_new_category(self, name: str):
+        try:
+            c = model.Category(name=name)
+            self.db_session.add(c)
+            self.db_session.commit()
+            return c.id
+        except Exception:
+            return None
+
+    def add_new_product(self, p: model.Product):
+        try:
+            self.db_session.add(p)
+            self.db_session.commit()
+            return True
+        except Exception:
+            return False
 
     def check_product_exist_in_menu(self, product: model.Product):
         try:

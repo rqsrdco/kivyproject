@@ -2,6 +2,42 @@
 #: import Window kivy.core.window.Window
 #: import FadeTransition kivy.uix.screenmanager.FadeTransition
 
+
+<CategoryContent>
+    orientation: 'vertical'
+    adaptive_height: True
+    spacing: dp(12)
+    padding: dp(12)
+    canvas.before:
+        Color:
+            rgba: app.theme_cls.bg_normal
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    MDTextField:
+        id: ct_name
+        text: root.category.name
+        hint_text: "Product Category"
+        multiline: False
+        helper_text_mode: "on_error"
+        helper_text: "Enter Product Category"
+    MDBoxLayout:
+        orientation: 'horizontal'
+        adaptive_height: True
+        spacing: dp(12)
+        Button:
+            id: save_c
+            text: "Save Change"
+            size_hint_y: None
+            height: dp(48)
+            on_release: root.save_new_category()
+        Button:
+            id: delete_c
+            text: "Delete"
+            size_hint_y: None
+            height: dp(48)
+            on_release: root.delete_curr_category()
+
 <LeftPanel>
     size_hint_x: None
     width: dp(68)
@@ -127,7 +163,7 @@
                         id: contH1
                         icon: 'view-dashboard'
                         group:'a'
-                        text: 'Home'
+                        text: 'Overview'
                         pos_hint: {'center_x': .5, 'center_y': .5}
                         TitleButtons:
                             size_hint: 1, None
@@ -145,14 +181,7 @@
                         TitleButtons:
                             size_hint: 1, None
                             height: 52
-                            text: "Bills"
-                            on_press: self.state='down'
-                            on_press:sm_content.current='bills'
-                            on_press:sm_title.current='bills'
-                        TitleButtons:
-                            size_hint: 1, None
-                            height: 52
-                            text: "Inventory Management"
+                            text: "Product & Menu"
                             on_press: self.state='down'
                             on_press:sm_content.current='inventory'
                             on_press:sm_title.current='inventory'
@@ -174,12 +203,6 @@
                 id: box_title
                 size_hint:1,None
                 size:1,50
-                #canvas:
-                #    Color:
-                #        rgba: app.theme_cls.primary_color
-                #    Rectangle:
-                #        size: self.size
-                #        pos: self.pos
                 ScreenManager:
                     id: sm_title
                     transition: FadeTransition()
@@ -187,10 +210,6 @@
                         name:'report'
                         TitleLabel:
                             text:'Reports'
-                    Screen:
-                        name:'bills'
-                        TitleLabel:
-                            text:'Bills Taks'
                     Screen:
                         name: 'inventory'
                         MDBoxLayout:
@@ -359,8 +378,9 @@
                     orientation: 'vertical'
                     size_hint: .45, 1
                     MDBoxLayout:
-                        size_hint_y: None
-                        height: dp(200)
+                        #size_hint_y: None
+                        #height: dp(200)
+                        size_hint_y: .45
                         ScrollView:
                             bar_width: 0
                             effect_cls: "ScrollEffect"
@@ -417,7 +437,6 @@
                                 id: rv_category
                                 key_viewclass: 'viewclass'
                                 key_size: 'height'
-
                                 RecycleBoxLayout:
                                     padding: dp(10)
                                     default_size: None, dp(52)
@@ -434,9 +453,11 @@
                         Button:
                             text: "Save Changes"
                             pos_hint: {'center_y': .5}
+                            on_release: root.save_edited_product()
                         Button:
                             text: "New Product"
                             pos_hint: {'center_y': .5}
+                            on_release: root.save_new_product()
                         Button:
                             text: "Delete Product"
                             pos_hint: {'center_y': .5}
