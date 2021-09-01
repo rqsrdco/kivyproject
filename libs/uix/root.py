@@ -5,20 +5,16 @@ from kivy.core.window import Window
 from kivy.uix.screenmanager import ScreenManager, SwapTransition
 from kivy.properties import ObjectProperty
 from kivy.clock import mainthread
-# SQLite
-#from databaseSQLite import DatabaseSQLite
-from db.database import MyDatabase
 MODULE_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 
 class Root(ScreenManager):
-    db = ObjectProperty(None)
     previous_screen = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        print("\nRoot------------__init__")
         Window.bind(on_keyboard=self._goto_previous_screen)
-        self.db = MyDatabase()
         self.transition = SwapTransition()
         # Clock.schedule_once(self.add_screens)
         # getting screens data from screens.json

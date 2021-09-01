@@ -47,8 +47,7 @@ class SalesStaff(MDScreen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.db = MDApp.get_running_app().root.db
-        self.categories = self.db.get_category()
+        self.categories = MDApp.get_running_app().db.get_category()
 
         self.speed_dial = MDFloatingActionButtonSpeedDial()
         self.speed_dial.data = {}
@@ -73,7 +72,7 @@ class SalesStaff(MDScreen):
                 screen.name = category.name
                 # MENU
                 menu_rv = MenuRecycleView()
-                menu_items = MDApp.get_running_app().root.db.get_menu_by_category(category.id)
+                menu_items = MDApp.get_running_app().db.get_menu_by_category(category.id)
                 if menu_items is not None:
                     for item in menu_items:
                         # {
@@ -103,7 +102,7 @@ class SalesStaff(MDScreen):
 
     @ mainthread
     def show_ordered_if_exist(self, *args):
-        orders = self.db.get_orders_orderBy_code()
+        orders = MDApp.get_running_app().db.get_orders_orderBy_code()
         if orders is not None and len(orders) > 0:
             if self.speed_dial.data.get("Order") is None:
                 self.speed_dial.data["Order"] = "cart"

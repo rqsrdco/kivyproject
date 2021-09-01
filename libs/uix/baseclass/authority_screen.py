@@ -101,7 +101,7 @@ class AuthorityScreen(ThemableBehavior, MDScreen):
     def do_login(self, email, pwd):
         user = None
         try:
-            user = self.manager.db.get_user_by_email(email)
+            user = MDApp.get_running_app().db.get_user_by_email(email)
         except Exception:
             pass
         if user is None or email != user.email:

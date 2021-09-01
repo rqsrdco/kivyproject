@@ -1,5 +1,5 @@
 import re
-import sqlite3 as lite
+import time
 from datetime import datetime
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.textinput import TextInput
@@ -34,11 +34,13 @@ from kivymd.uix.textfield import MDTextField
 from kivymd.uix.dropdownitem import MDDropDownItem
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
-import model
 from kivymd.uix.list import TwoLineAvatarListItem, OneLineListItem, OneLineIconListItem
 from kivymd.uix.expansionpanel import MDExpansionPanelThreeLine, MDExpansionPanel, MDExpansionPanelOneLine
 from kivy.event import EventDispatcher
 from kivy.utils import get_color_from_hex as CH
+from kivymd.uix.snackbar import Snackbar
+
+from sqlalchemy_sqlite import Menu, Store, Product
 
 
 class MenuContent(MDBoxLayout):
@@ -48,35 +50,52 @@ class MenuContent(MDBoxLayout):
     def save_menu_edited_item(self, txt_field):
         menu = self._menu_item["Menu"]
         if len(txt_field) >= 1 and float(txt_field) != menu.sell_price:
-            data = model.Menu(
+            data = Menu(
                 id=menu.id,
                 product_id=menu.product_id,
                 sell_price=round(float(txt_field), 2)
             )
-            kq = MDApp.get_running_app().root.db.update_menu_item(data)
+            kq = MDApp.get_running_app().db.update_menu_item(data)
             if kq:
                 self._inventory.get_menu_by_category(
                     self._menu_item["Category"])
 
     def delete_menu_content(self):
-        kq = MDApp.get_running_app().root.db.delete_menu_content(
+        kq = MDApp.get_running_app().db.delete_menu_content(
             self._menu_item["Menu"])
         if kq:
             self._inventory.get_menu_by_category(
                 self._menu_item["Category"])
 
 
-class CategoryContent(MDBoxLayout):
+class CategoryContent(MDBoxLayout, EventDispatcher):
     category = ObjectProperty()
     homesweethome = ObjectProperty()
     dialog = ObjectProperty(None)
+
+    def __init__(self, **kwargs):
+        self.register_event_type('on_test')
+        super().__init__(**kwargs)
+
+    def on_parent(self, widget, parent):
+        self.dispatch("on_test", parent)
+
+    def on_test(self, *args):
+        Snackbar(
+            text="Title is missing!",
+            snackbar_x=dp((Window.width*.5 - (dp(12) * 2))/2),
+            snackbar_y="12dp",
+            size_hint_y=.08,
+            size_hint_x=(Window.width*.5 - (dp(12) * 2)) / Window.width,
+            bg_color=(0, 179/255, 0, 1),
+            font_size="18sp"
+        ).open()
 
     def dialog_close(self, *args):
         self.dialog.dismiss(force=True)
 
     def save_new_category(self):
         name = self.ids.ct_name.text
-        db = MDApp.get_running_app().root.db
         if name == '':
             self.ids.ct_name.focus = True
             self.ids.ct_name.error = True
@@ -84,13 +103,16 @@ class CategoryContent(MDBoxLayout):
             self.ids.ct_name.focus = False
             self.ids.ct_name.error = False
             # check name exist ?
-            _isIn = db.check_category_exist_byName(name.capitalize())
+            _isIn = MDApp.get_running_app().db.check_category_exist_byName(
+                name.capitalize())
             if _isIn is None:
-                new_id = db.add_newCategory(name.capitalize())
+                new_id = MDApp.get_running_app().db.add_newCategory(
+                    name.capitalize())
                 # update products with new category
-                db.update_product_with_newCategory(self.category.id, new_id.id)
+                MDApp.get_running_app().db.update_product_with_newCategory(
+                    self.category.id, new_id.id)
                 # delete old category
-                db.delete_category(self.category)
+                MDApp.get_running_app().db.delete_category(self.category)
                 # reload ctegories
                 self.homesweethome.init_category_list()
                 self.homesweethome.get_product_byCategory(new_id)
@@ -119,11 +141,11 @@ class CategoryContent(MDBoxLayout):
         self.dialog.open()
 
     def delete_now(self, *args):
-        db = MDApp.get_running_app().root.db
         # delete products with category
-        db.delete_product_byCategory_Id(self.category.id)
+        MDApp.get_running_app().db.delete_product_byCategory_Id(
+            self.category.id)
         # delete category
-        db.delete_category(self.category)
+        MDApp.get_running_app().db.delete_category(self.category)
         self.dialog_close()
         self.homesweethome.init_category_list()
         self.homesweethome.ids.ls_products.clear_widgets()
@@ -152,19 +174,19 @@ class StoreContent(MDBoxLayout):
     def save_store_edited_item(self, price, qty):
         store = self._store_item["Store"]
         if self._check_float_txt(price, store.input_price) or self._check_int_txt(qty, store.quantity):
-            data = model.Store(
+            data = Store(
                 id=store.id,
                 product_id=store.product_id,
                 input_price=round(float(price), 2),
                 quantity=int(qty)
             )
-            kq = MDApp.get_running_app().root.db.update_store_item(data)
+            kq = MDApp.get_running_app().db.update_store_item(data)
             if kq:
                 self._inventory.get_store_by_category(
                     self._store_item["Category"])
 
     def delete_store_content(self):
-        kq = MDApp.get_running_app().root.db.delete_store_content(
+        kq = MDApp.get_running_app().db.delete_store_content(
             store=self._store_item["Store"])
         if kq:
             self._inventory.get_store_by_category(
@@ -205,12 +227,13 @@ class InventoryPart(MDBoxLayout):
             self.ids.add_itemStore.height = 0
 
     def get_product_byCategory(self, *args):
-        db = MDApp.get_running_app().root.db
         results = None
         if args:
-            results = db.get_ALlproduct_with_category(args[0])
+            results = MDApp.get_running_app().db.get_ALlproduct_with_category(
+                args[0])
         else:
-            results = db.get_ALlproduct_with_category()
+            results = MDApp.get_running_app().db.get_ALlproduct_with_category(
+            )
 
         if results is not None:
             self.ids.ls_products.clear_widgets()
@@ -247,7 +270,6 @@ class InventoryPart(MDBoxLayout):
                 add_category_item(c)
 
     def save_edited_product(self):
-        db = MDApp.get_running_app().root.db
         name = self.ids.product_name.text
         category = self.ids.product_category.text
         if name == '':
@@ -258,7 +280,8 @@ class InventoryPart(MDBoxLayout):
             self.ids.product_name.error = False
             self.ids.product_name.focus = False
             name = name.capitalize()
-            chk = db.check_product_exist_byName(name)
+            chk = MDApp.get_running_app().db.check_product_exist_byName(
+                name)
             if chk is not None:
                 if category == '':
                     self.ids.product_category.error = True
@@ -266,9 +289,11 @@ class InventoryPart(MDBoxLayout):
                     toast("select a category or type new")
                 else:
                     if category.capitalize() not in [c.name for c in self.categories]:
-                        id = db.add_new_category(category)
+                        id = MDApp.get_running_app().db.add_new_category(
+                            category)
                         if id is not None:
-                            db.update_product_categoryID(chk, id)
+                            MDApp.get_running_app().db.update_product_categoryID(
+                                chk, id)
                             self.ids.product_name.text = ''
                             self.ids.product_category.text = ''
                             self.ids.product_name.error = False
@@ -282,9 +307,9 @@ class InventoryPart(MDBoxLayout):
                             self._pc = None
                     else:
                         if category.capitalize() != self._pc.category.name:
-                            _id = db.get_categoryID_byName(
+                            _id = MDApp.get_running_app().db.get_categoryID_byName(
                                 category.capitalize())
-                            db.update_product_categoryID(
+                            MDApp.get_running_app().db.update_product_categoryID(
                                 chk, _id)
                             self.ids.product_name.text = ''
                             self.ids.product_category.text = ''
@@ -302,7 +327,6 @@ class InventoryPart(MDBoxLayout):
                 toast("press Save New Product !")
 
     def save_new_product(self):
-        db = MDApp.get_running_app().root.db
         name = self.ids.product_name.text
         category = self.ids.product_category.text
         if name == '':
@@ -313,7 +337,8 @@ class InventoryPart(MDBoxLayout):
             self.ids.product_name.error = False
             self.ids.product_name.focus = False
             name = name.capitalize()
-            chk = db.check_product_exist_byName(name)
+            chk = MDApp.get_running_app().db.check_product_exist_byName(
+                name)
             if chk is None:
                 if category == '':
                     self.ids.product_category.error = True
@@ -324,14 +349,15 @@ class InventoryPart(MDBoxLayout):
                     self.ids.product_category.error = False
                     self.ids.product_category.focus = False
                     if category.capitalize() not in [c.name for c in self.categories]:
-                        id = db.add_new_category(category.capitalize())
+                        id = MDApp.get_running_app().db.add_new_category(
+                            category.capitalize())
                         # new product + new category
                         if id is not None:
-                            p = model.Product(
+                            p = Product(
                                 name=name,
                                 category_id=id
                             )
-                            db.add_new_product(p)
+                            MDApp.get_running_app().db.add_new_product(p)
                             toast(f"new {name} added !")
                             self.ids.product_name.text = ''
                             self.ids.product_category.text = ''
@@ -343,14 +369,15 @@ class InventoryPart(MDBoxLayout):
                             self.get_product_byCategory(self._pc.category)
                             self._pc = None
                     else:
-                        id = db.get_categoryID_byName(category.capitalize())
+                        id = MDApp.get_running_app().db.get_categoryID_byName(
+                            category.capitalize())
                         # new product + exist category
                         if id is not None:
-                            p = model.Product(
+                            p = Product(
                                 name=name,
                                 category_id=id
                             )
-                            db.add_new_product(p)
+                            MDApp.get_running_app().db.add_new_product(p)
                             toast(f"new {name} added !")
                             self.ids.product_name.text = ''
                             self.ids.product_category.text = ''
@@ -365,8 +392,8 @@ class InventoryPart(MDBoxLayout):
 
     def delete_curr_product(self):
         if self._pc is not None:
-            db = MDApp.get_running_app().root.db
-            kq = db.delete_product(self._pc.product)
+            kq = MDApp.get_running_app().db.delete_product(
+                self._pc.product)
             if kq:
                 self.get_product_byCategory(self._pc.category)
                 self._pc = None
@@ -392,7 +419,7 @@ class InventoryPart(MDBoxLayout):
                 on_press=lambda x: self.get_product_byCategory()
             )
         )
-        self.categories = MDApp.get_running_app().root.db.get_category()
+        self.categories = MDApp.get_running_app().db.get_category()
         if self.categories:
             for category in self.categories:
                 self.ids.ls_category.add_widget(
@@ -411,7 +438,7 @@ class InventoryPart(MDBoxLayout):
                 )
 
     def init_category_drop(self, **kwargs):
-        self.categories = kwargs["db"].get_category()
+        self.categories = MDApp.get_running_app().db.get_category()
         self.init_category_list()
         self.category_items = [
             {
@@ -432,6 +459,7 @@ class InventoryPart(MDBoxLayout):
         )
 
     def set_category_item(self, category_item):
+        start = time.time()
         self._curr_categories = category_item
         self.ids.drop_category.set_item(category_item.name)
 
@@ -440,6 +468,8 @@ class InventoryPart(MDBoxLayout):
         self.get_product_list(category_item)
 
         self.category_menu.dismiss()
+        endt = (time.time() - start)*1000
+        print(f"[+] Elapsed Time : \n [{round(endt,2)}] ms ")
 
     def set_currP(self, *args):
         self._curr_Product = args[1].product
@@ -451,8 +481,8 @@ class InventoryPart(MDBoxLayout):
             self.ids.p_name.text = ''
 
     def get_product_list(self, category_item):
-        self.product_items = MDApp.get_running_app(
-        ).root.db.get_product_by_category(category_item)
+        self.product_items = MDApp.get_running_app().db.get_product_by_category(
+            category_item)
         if self.product_items:
             self.ids.container_menu_product.clear_widgets()
             self.ids.container_store_product.clear_widgets()
@@ -481,16 +511,15 @@ class InventoryPart(MDBoxLayout):
             self.ids.qty_number.error = True
             self.ids.qty_number.focus = True
         else:
-            db = MDApp.get_running_app().root.db
-            if not db.check_product_exist_in_store(self._curr_Product):
+            if not MDApp.get_running_app().db.check_product_exist_in_store(self._curr_Product):
                 i_price = round(float(self.ids.input_price_store.text), 2)
                 qty = int(self.ids.qty_number.text)
-                store = model.Store(
+                store = Store(
                     product_id=self._curr_Product.id,
                     input_price=i_price,
                     quantity=qty
                 )
-                db.add_item_to_store(store)
+                MDApp.get_running_app().db.add_item_to_store(store)
                 self.show_add_itemStore()
                 self.get_store_by_category(self._curr_categories)
             else:
@@ -507,19 +536,20 @@ class InventoryPart(MDBoxLayout):
         else:
             self.ids.sell_price_menu.error = False
             self.ids.sell_price_menu.focus = False
-            db = MDApp.get_running_app().root.db
-            if not db.check_product_exist_in_menu(self._curr_Product):
+            if not MDApp.get_running_app().db.check_product_exist_in_menu(self._curr_Product):
                 price = round(float(self.ids.sell_price_menu.text), 2)
-                menu = model.Menu(
+                menu = Menu(
                     product_id=self._curr_Product.id, sell_price=price)
-                db.add_item_to_menu(menu)
+                MDApp.get_running_app().db.add_item_to_menu(
+                    menu)
                 self.show_add_itemMenu()
                 self.get_menu_by_category(self._curr_categories)
             else:
                 toast("already exist")
 
     def get_menu_by_category(self, category):
-        menu = MDApp.get_running_app().root.db.get_menu_width_category(category)
+        menu = MDApp.get_running_app().db.get_menu_width_category(
+            category)
         self.ids.container_menu.clear_widgets()
         for p in menu:
             name = p["Product"].name
@@ -540,7 +570,8 @@ class InventoryPart(MDBoxLayout):
             )
 
     def get_store_by_category(self, category):
-        store = MDApp.get_running_app().root.db.get_store_width_category(category)
+        store = MDApp.get_running_app().db.get_store_width_category(
+            category)
         self.ids.container_store.clear_widgets()
         for p in store:
             name = p["Product"].name
@@ -569,7 +600,7 @@ class StaffPart(MDBoxLayout):
     _home = ObjectProperty()
 
     def init_role_drop(self):
-        roles = MDApp.get_running_app().root.db.get_roles()
+        roles = MDApp.get_running_app().db.get_roles()
         if roles:
             self.role_items = [
                 {
@@ -610,7 +641,7 @@ class StaffPart(MDBoxLayout):
             position="center",
             width_mult=3,
             # elevation=12,
-            #radius=[12, 12, 12, 12]
+            # radius=[12, 12, 12, 12]
         )
         self.gender_menu.bind()
 
@@ -670,7 +701,8 @@ class StaffPart(MDBoxLayout):
                 gender=self.ids.drop_gender.current_item,
                 role_id=self.ids.drop_role.current_item
             )
-            ok = self._home.manager.db.create_staff_detail(data)
+            ok = MDApp.get_running_app().db.create_staff_detail(
+                data)
             if ok:
                 self.reset_infos_fields()
                 self.get_staffs()
@@ -693,8 +725,7 @@ class StaffPart(MDBoxLayout):
                     gender=self.ids.drop_gender.current_item,
                     role_id=self.ids.drop_role.current_item
                 )
-                ok = self._home.manager.db.update_staff_detail(
-                    self.curr_staff_id, data)
+                ok = MDApp.get_running_app().db.update_staff_detail(self.curr_staff_id, data)
                 if ok:
                     self.reset_infos_fields()
                     self.get_staffs()
@@ -707,7 +738,8 @@ class StaffPart(MDBoxLayout):
             self.ids.member_seen.text = 'Please select a staff member to Delete'
             toast("Please select a staff member to Delete")
         else:
-            ok = self._home.manager.db.delete_staff_detail(self.curr_staff_id)
+            ok = MDApp.get_running_app().db.delete_staff_detail(
+                self.curr_staff_id)
             if ok:
                 self.reset_infos_fields()
                 self.get_staffs()
@@ -736,14 +768,15 @@ class StaffPart(MDBoxLayout):
         self.ids.last_name.text = instance._staff.last_name
         self.ids.phone.text = instance._staff.phone_number
         self.ids.drop_gender.set_item(instance._staff.gender)
-        self.ids.drop_role.set_item(instance._staff.role.role)
+        self.ids.drop_role.set_item(str(instance._staff.role_id))
         now = datetime.now()
         dt = "{} year || {} day".format(
             divmod((now-instance._staff.created_at).total_seconds(), 31536000)[0], (now-instance._staff.created_at).days)
         self.ids.member_seen.text = dt
 
     def get_staffs(self):
-        data = self._home.manager.db.get_staff(self._home.admin_user)
+        data = MDApp.get_running_app().db.get_staff(
+            self._home.admin_user)
         if data is not None:
             self.ids.staff_list.clear_widgets()
             for d in data:
@@ -772,7 +805,7 @@ class AddRolePopup(Popup):
     def set_newRole(self):
         new_role = self.ids.text_field.text.strip()
         if new_role:
-            if self.lookback._home.manager.db.add_new_role(new_role.capitalize()):
+            if MDApp.get_running_app().db.add_new_role(new_role.capitalize()):
                 self.dismiss()
                 # load new to drop
                 self.lookback.init_role_drop()
@@ -909,7 +942,7 @@ class AdminScreen(Screen):
     def on_pre_enter(self):
         Window.size = (1024, 768)
         Window.minimum_width, Window.minimum_height = Window.size
-        self.inventory_part.init_category_drop(db=self.manager.db)
+        self.inventory_part.init_category_drop()
 
     def on_enter(self):
         self.staff_part.get_staffs()

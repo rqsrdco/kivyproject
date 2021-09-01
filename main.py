@@ -26,9 +26,9 @@ with open("factory_registers.json") as fd:
 
 
 if __name__ == '__main__':
-    #from kivy.core.window import Window
-    #from kivy.utils import get_color_from_hex
-    # Window.clearcolor = get_color_from_hex('#101216')
+    from kivy.core.window import Window
+    from kivy.utils import get_color_from_hex
+    Window.clearcolor = get_color_from_hex('#101216')
     try:
         from kivy.resources import resource_add_path, resource_find
         if hasattr(sys, '_MEIPASS'):

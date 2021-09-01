@@ -1,9 +1,10 @@
 import os
+import sys
 from datetime import date, datetime
 # kivy
-#from kivy.utils import platform
-import platform
-from kivy.properties import StringProperty
+from kivy.utils import platform
+#import platform
+from kivy.properties import StringProperty, ObjectProperty
 from kivy.core.window import Window
 from kivy.clock import Clock
 # applibs
@@ -17,21 +18,33 @@ from root import Root
 from kivymd.uix.picker import MDThemePicker
 from kivymd.uix.dialog import MDDialog
 from kivymd.app import MDApp
-
-
+# db
+from sqlalchemy_sqlite import AlchemySQLite
 # This is needed for supporting Windows 10 with OpenGL < v2.0
-if platform.system() == "Windows":
+if platform == "win":
     os.environ["KIVY_GL_BACKEND"] = "angle_sdl2"
+
+if platform == 'android':
+    from android.permissions import request_permissions, Permission
+    request_permissions([
+        Permission.WRITE_EXTERNAL_STORAGE,
+        Permission.READ_EXTERNAL_STORAGE,
+        Permission.INTERNET,
+    ])
 
 
 class KivyMDApp(MDApp):
+    db = ObjectProperty()
     theme_icon = StringProperty("theme-light-dark")
     date = StringProperty()
     time = StringProperty()
     ip = StringProperty()
 
     def __init__(self, **kwargs):
+        print(f"\nApp------------__init__({kwargs})")
+        self.db = AlchemySQLite()
         super(KivyMDApp, self).__init__(**kwargs)
+
         font_definitions.register_fonts()
 
         self.title = "KivyMD App"
@@ -54,11 +67,13 @@ class KivyMDApp(MDApp):
         Window.clearcolor = (1, 1, 1, 0)
 
     def build(self):
+        print("\nApp------------build()")
         Clock.schedule_once(self.change_theme_icon)
         self.root = Root()
         self.root.set_current("authority")
 
     def on_start(self):
+        print("\nApp------------on_start()")
         statusbar.set_color(self.theme_cls.primary_color)
 
     def show_theme_picker(self):
@@ -104,8 +119,9 @@ class KivyMDApp(MDApp):
         now = datetime.now()
         time = '{}:{}:{}'.format(now.hour, now.minute, now.second)
         self.time = time
+        #clock_time = datetime.strftime(datetime.now(), "%I:%M:%S %p")
 
-    def get_local_IP():
+    def get_local_IP(self):
         import socket
         try:
             host_name = socket.gethostname()
@@ -117,7 +133,7 @@ class KivyMDApp(MDApp):
                 radius=[20, 7, 20, 7],
             ).open()
 
-    def get_public_IP():
+    def get_public_IP(self):
         import requests
         try:
             public_ip = requests.get(

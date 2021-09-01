@@ -11,7 +11,7 @@ from datetime import date, datetime
 from kivymd.app import MDApp
 from kivymd.toast import toast
 from kivy.clock import mainthread
-import model
+from sqlalchemy_sqlite import Bill, Order
 
 Builder.load_string(
     """
@@ -151,7 +151,7 @@ class BillRecycleView(RecycleView):
     def __init__(self, **kwargs):
         super(BillRecycleView, self).__init__(**kwargs)
         self.data = []
-        self.db = MDApp.get_running_app().root.db
+        self.db = MDApp.get_running_app().db
 
     def _update(self):
         if not self.data:
@@ -179,7 +179,7 @@ class BillRecycleView(RecycleView):
     def _insert_to_bills(self):
         bills = []
         for order in self.data:
-            _cur_bill = model.Bill(
+            _cur_bill = Bill(
                 code=self._code,
                 quantity=order["quantity"],
                 price=order["price"],
@@ -237,7 +237,7 @@ class BillRecycleView(RecycleView):
         user = MDApp.get_running_app().root.get_screen("salesstaff").user
         orders = []
         for order in self.data:
-            _cur_order = model.Order(
+            _cur_order = Order(
                 code=self._code,
                 quantity=order["quantity"],
                 price=order["price"],
